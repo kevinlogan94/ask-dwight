@@ -1,5 +1,5 @@
 <template>
-  <ComingsoonForm />
+  <ComingSoonForm />
 </template>
   
   <script setup lang="ts">

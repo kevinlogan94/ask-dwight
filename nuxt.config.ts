@@ -11,6 +11,6 @@ export default defineNuxtConfig({
   css: [
     '~/assets/main.css'
   ],
-  modules: ['@nuxt/ui', '@nuxt/icon', "@formkit/auto-animate"],
+  modules: ['@nuxt/ui', '@nuxt/icon', '@vueuse/motion/nuxt', "@formkit/auto-animate"],
   compatibilityDate: '2024-11-01'
 })
