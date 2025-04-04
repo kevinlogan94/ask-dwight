@@ -1,6 +1,11 @@
 <template>
-  <div>
+  <UApp :ui="{ tooltip: true }">
     <NuxtRouteAnnouncer />
-    <NuxtWelcome />
-  </div>
+    <!-- <NuxtWelcome /> -->
+    <ColorModeButton />
+    <AIInput />
+  </UApp>
 </template>
+
+<script setup lang="ts">
+</script>
