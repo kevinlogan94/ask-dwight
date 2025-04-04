@@ -9,7 +9,7 @@ export default defineNuxtConfig({
     }
   },
   css: [
-    '~/assets/main.scss'
+    '~/assets/main.css'
   ],
   modules: ['@nuxt/ui', '@nuxt/icon'],
   compatibilityDate: '2024-11-01'
