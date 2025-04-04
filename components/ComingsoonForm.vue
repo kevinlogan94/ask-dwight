@@ -12,6 +12,7 @@
         placeholder="you@example.com"
         type="email"
         required
+        autofocus
       />
       <UButton
         :disabled="!isValidEmail"
