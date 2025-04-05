@@ -11,6 +11,15 @@ export default defineNuxtConfig({
   css: [
     '~/assets/main.css'
   ],
-  modules: ['@nuxt/ui', '@nuxt/icon', '@vueuse/motion/nuxt', "@formkit/auto-animate"],
-  compatibilityDate: '2024-11-01'
+  modules: [
+    '@nuxt/ui', 
+    '@nuxt/icon', 
+    '@vueuse/motion/nuxt', 
+    "@formkit/auto-animate",
+    'nuxt-gtag'
+  ],
+  gtag: {
+    id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_MEASUREMENT_ID
+  },
+  compatibilityDate: '2025-04-05'
 })
