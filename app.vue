@@ -1,6 +1,6 @@
 <template>
   <UApp :ui="{ tooltip: true }">
-    <div class="bg-gradient-to-b from-gray-50 to-gray-300 dark:from-gray-900 dark:to-gray-800">
+    <div class="bg-gradient-to-b min-h-screen to-gray-400 dark:from-gray-900 dark:to-gray-800">
     <Navbar />
     <NuxtRouteAnnouncer />
     <NuxtPage />  
