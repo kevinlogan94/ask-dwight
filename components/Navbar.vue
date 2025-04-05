@@ -3,6 +3,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex">
+          asdf
           <NuxtLink to="/" class="flex items-center">
             <img src="/favicon.ico" alt="Ask Dwight Logo" class="h-8 w-auto" />
             <span class="ml-3 font-bold text-xl text-gray-900 dark:text-white">Ask Dwight</span>
