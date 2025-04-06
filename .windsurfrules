@@ -3,4 +3,6 @@
 3. I'm new to Nuxt
 4. I'm using Nuxt UI, the free version
 5. I'm using @vueuse/motion/nuxt
-6. Always double-check the latest documentation
+7. I'm using netlify for form submission
+8. I'm using nuxt-gtag for google analytics
+9. Always prioritize the latest documentation for the tools that I'm using over what is on external sites.
