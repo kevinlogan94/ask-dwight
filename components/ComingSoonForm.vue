@@ -7,7 +7,7 @@
       Coming Soon
     </h1>
     <p class="text-lg text-gray-600 mb-6" v-motion-slide-bottom :delay="300">
-      Dwayne is launching soon. Get early access and updates.
+      Dwight is launching soon. Get early access and updates.
     </p>
 
     <form
