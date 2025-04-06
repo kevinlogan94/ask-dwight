@@ -1,1 +1,14 @@
+# Robots.txt for Ask Dwight
+# Last updated: 2025-04-05
 
+User-agent: *
+Allow: /
+
+# Allow crawling of all images
+Allow: /images/
+
+# Crawl-delay directive
+Crawl-delay: 10
+
+# Host directive
+Host: ask-dwight.com
