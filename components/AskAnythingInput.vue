@@ -1,6 +1,7 @@
 <template>
-  <div
+  <form
     class="search-input bg-neutral-800/70 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2 border border-neutral-700 shadow-lg"
+    @submit.prevent="handleSubmit"
   >
     <input
       v-model="searchQuery"
@@ -9,13 +10,13 @@
       class="flex-1 bg-transparent border-none outline-none placeholder:text-neutral-400 text-base"
     />
     <button
-      @click="onSubmit(searchQuery); searchQuery = ''"
+      type="submit"
       class="bg-primary-600 hover:bg-primary-700 rounded-lg p-2 transition-colors duration-200 flex items-center justify-center"
       :disabled="!searchQuery.trim()"
     >
       <Icon name="heroicons:arrow-right" class="w-5 h-5" />
     </button>
-  </div>
+  </form>
 </template>
 
 <script setup lang="ts">
@@ -27,6 +28,13 @@ const props = defineProps({
 })
 
 const searchQuery = ref("")
+
+const handleSubmit = () => {
+  if (searchQuery.value.trim() && props.onSubmit) {
+    props.onSubmit(searchQuery.value)
+    searchQuery.value = ''
+  }
+}
 </script>
 
 <style scoped>
