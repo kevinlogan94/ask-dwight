@@ -9,7 +9,7 @@
           <!-- System message with loading state -->
           <div v-if="message.sender === 'system'" class="flex items-start">
             <div class="max-w-[80%]">
-              <div class="bg-gray-800/60 backdrop-blur-sm rounded-lg p-3 text-white">
+              <div class="bg-gray-800 backdrop-blur-sm rounded-lg p-3 text-white">
                 <!-- Use the typing animation component when loading -->
                 <TypingAnimation v-if="message.status === 'loading'" />
                 <p v-else>{{ message.content }}</p>
@@ -32,12 +32,8 @@
     <!-- Fixed elements container at bottom -->
     <div class="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-gradient-to-t from-gray-950 to-transparent pb-4 pt-8">
       <div class="w-full max-w-3xl mx-auto">
-        <!-- Scroll down indicator - only shown when not at bottom -->
-        <div v-if="!isAtBottom" class="flex justify-center mb-4">
-          <UButton variant="ghost" class="rounded-full p-2 bg-gray-800/60" @click="scrollToBottom">
-            <Icon name="heroicons:arrow-down" class="w-5 h-5" />
-          </UButton>
-        </div>
+        <!-- Scroll down button component -->
+        <ScrollToBottomButton ref="scrollButton" />
 
         <!-- Input container -->
         <div class="px-4 md:px-6 pb-4">
@@ -50,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import type { ScrollToBottomButtonInstance } from '~/components/ScrollToBottomButton.vue'
 
 interface Message {
   id: string
@@ -92,7 +89,7 @@ const messages = ref<Message[]>([
   }
 ])
 
-const isAtBottom = ref(true)
+const scrollButton = ref<ScrollToBottomButtonInstance | null>(null)
 
 const sendMessage = (message: string) => {
   console.log('Sending message:', message);
@@ -119,7 +116,7 @@ const sendMessage = (message: string) => {
   })
   
   // Scroll to bottom to show loading indicator
-  scrollToBottom()
+  scrollButton.value?.scrollToBottom()
 
   // Simulate AI response (in a real app, this would be an API call)
   setTimeout(() => {
@@ -139,57 +136,15 @@ const sendMessage = (message: string) => {
     })
     
     // Scroll to bottom again after response is added
-    scrollToBottom()
+    scrollButton.value?.scrollToBottom()
   }, 1000)
 }
 
-const scrollToBottom = async () => {
-  console.log('Scrolling to bottom');
-  
-  // First wait for Vue to update the DOM
-  await nextTick()
-  
-  // Update our position state
-  isAtBottom.value = true
-  
-  // Scroll window to the bottom
-  window.scrollTo({
-    top: document.body.scrollHeight,
-    behavior: 'smooth'
-  })
-}
-
-// Check if user is at bottom of document
-const checkIfAtBottom = () => {
-  // Get scroll position and document height
-  const scrollPosition = window.scrollY + window.innerHeight
-  const documentHeight = document.body.scrollHeight
-  
-  // Consider "at bottom" if within 100px of the bottom
-  isAtBottom.value = documentHeight - scrollPosition < 100
-}
-
-// Scroll to bottom on initial load and setup scroll listener
+// Scroll to bottom on initial load
 onMounted(() => {
-  scrollToBottom()
-  
-  // Add scroll event listener to check position
-  window.addEventListener('scroll', checkIfAtBottom)
+  scrollButton.value?.scrollToBottom()
 })
 
-// Clean up event listener when component is unmounted
-onUnmounted(() => {
-  window.removeEventListener('scroll', checkIfAtBottom)
-})
-
-// Watch for changes in the messages array
-watch(() => messages.value.length, () => {
-  // If user was already at bottom, scroll to bottom when new messages are added
-  // Otherwise, don't auto-scroll and show the button instead
-  if (isAtBottom.value) {
-    scrollToBottom()
-  }
-})
 </script>
 
 <style scoped>
