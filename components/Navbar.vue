@@ -1,6 +1,6 @@
 <template>
-  <nav class="fixed w-full z-50 bg-white dark:bg-gray-900 shadow">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <nav class="fixed w-full bg-white dark:bg-gray-900 shadow">
+    <div class="px-4">
       <div class="flex justify-between h-16">
         <div class="flex items-center">
           <!-- Only show sidebar toggle on chat page -->
@@ -14,10 +14,10 @@
             aria-label="Toggle sidebar"
           />
 
-          <NuxtLink to="/" class="flex items-center">
-            <img src="/favicon.ico" alt="Ask Dwight Logo" class="h-8 w-auto" />
-            <span class="ml-3 font-bold text-xl text-gray-900 dark:text-white">Ask Dwight</span>
-          </NuxtLink>
+          <div class="flex items-center">
+          <Icon name="heroicons:chat-bubble-left-right" class="w-6 h-6 text-primary-500 mr-2" />
+          <h1 class="text-lg font-bold">Ask Dwight</h1>
+        </div>
         </div>
       </div>
     </div>
