@@ -39,7 +39,7 @@
     <div class="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-gradient-to-t from-gray-950 to-transparent pb-4 pt-8">
       <div class="w-full max-w-3xl mx-auto">
         <!-- Scroll down button component -->
-        <ScrollToBottomButton ref="scrollButton" />
+        <ScrollToBottomButton ref="scrollButton" /> 
 
         <!-- Input container -->
         <div class="px-4 md:px-6 pb-4">
@@ -52,7 +52,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ScrollToBottomButtonInstance } from '~/components/ScrollToBottomButton.vue'
+import type { ScrollToBottomButtonInstance } from '~/components/chat/ScrollToBottomButton.vue'
+import SuggestionChips from '~/components/chat/SuggestionChips.vue'
+import TypingAnimation from '~/components/chat/TypingAnimation.vue'
+import ScrollToBottomButton from '~/components/chat/ScrollToBottomButton.vue'
 
 interface Message {
   id: string
