@@ -10,11 +10,15 @@
       <div class="flex items-center justify-between p-4 border-b border-gray-800">
         <div class="flex items-center">
           <Icon name="heroicons:chat-bubble-left-right" class="w-6 h-6 text-primary-500 mr-2" />
-          <h1 class="text-lg font-bold">Dwight</h1>
+          <h1 class="text-lg font-bold">Ask Dwight</h1>
         </div>
-        <button @click="toggleSidebar" class="text-gray-400 hover:text-white">
-          <Icon name="heroicons:chevron-left" class="w-5 h-5" />
-        </button>
+        <UButton 
+          @click="toggleSidebar"
+          icon="heroicons:x-mark"
+          color="gray"
+          variant="ghost"
+          aria-label="Toggle sidebar"
+        />
       </div>
 
       <!-- New conversation button -->
@@ -23,11 +27,9 @@
           color="primary"
           variant="soft"
           class="w-full"
+          :icon="'heroicons:plus'"
           @click="handleNewConversation"
         >
-          <template #prefix>
-            <Icon name="heroicons:plus" class="w-4 h-4" />
-          </template>
           New Conversation
         </UButton>
       </div>
