@@ -1,5 +1,5 @@
 <template>
-  <nav class="fixed w-full bg-white dark:bg-gray-900 shadow">
+  <nav class="fixed w-full bg-white z-30 dark:bg-gray-900 shadow">
     <div class="px-4">
       <div class="flex justify-between h-16">
         <div class="flex items-center">
@@ -14,10 +14,15 @@
             aria-label="Toggle sidebar"
           />
 
+          
+
           <div class="flex items-center">
-          <Icon name="heroicons:chat-bubble-left-right" class="w-6 h-6 text-primary-500 mr-2" />
-          <h1 class="text-lg font-bold">Ask Dwight</h1>
-        </div>
+            <Icon name="heroicons:chat-bubble-left-right" class="w-6 h-6 text-primary-500 mr-2" />
+            <h1 class="text-lg font-bold">Ask Dwight</h1>
+            <span v-if="route.path.includes('/chat') && chatStore.selectedConversation" class="ml-2 text-gray-600 dark:text-gray-400 font-medium">
+              - {{ chatStore.selectedConversation.title }}
+            </span>
+          </div>
         </div>
       </div>
     </div>

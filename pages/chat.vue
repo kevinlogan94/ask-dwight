@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen w-full flex">
+  <div class="min-h-screen w-full flex pt-16">
     <!-- Sidebar component -->
     <ChatSidebar />
     
