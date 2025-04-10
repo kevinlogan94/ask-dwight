@@ -34,7 +34,8 @@ export default defineNuxtConfig({
     '@nuxt/icon', 
     '@vueuse/motion/nuxt', 
     "@formkit/auto-animate",
-    'nuxt-gtag'
+    'nuxt-gtag',
+    '@pinia/nuxt'
   ],
   gtag: {
     id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_MEASUREMENT_ID
