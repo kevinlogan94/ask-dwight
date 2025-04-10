@@ -18,7 +18,7 @@
               <SuggestionChips 
                   v-if="message.sender === 'system' && message.status !== 'loading' && message.suggestions?.length" 
                   :suggestions="message.suggestions || []" 
-                  @select="(suggestion) => handleSuggestionSelect(suggestion, message)" 
+                  @select="(suggestion: string) => handleSuggestionSelect(suggestion, message)" 
                   class="mt-3" />
             </div>
           </div>
