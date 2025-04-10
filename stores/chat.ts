@@ -62,7 +62,8 @@ export const useChatStore = defineStore('chat', () => {
   
   const selectedConversationId = ref<string | null>(null)
   const sidebarOpen = ref(false)
-  
+  const aiResponsePending = ref(false)
+
   // Getters
   const selectedConversation = computed<Conversation | undefined>(() => {
     return conversations.value.find(c => c.id === selectedConversationId.value)
@@ -166,6 +167,8 @@ export const useChatStore = defineStore('chat', () => {
       createNewConversation()
     }
     
+    aiResponsePending.value = true
+    
     // Add user message
     addMessage({
       content,
@@ -193,6 +196,8 @@ export const useChatStore = defineStore('chat', () => {
         status: 'sent',
         suggestions: ['Tell me about yourself', 'How can you help me?', 'Show me examples']
       })
+      
+      aiResponsePending.value = false
     }, 1000)
     
     return true
@@ -210,6 +215,7 @@ export const useChatStore = defineStore('chat', () => {
     conversations,
     selectedConversationId,
     sidebarOpen,
+    aiResponsePending,
     
     // Getters
     selectedConversation,

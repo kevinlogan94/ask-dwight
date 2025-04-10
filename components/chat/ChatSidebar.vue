@@ -8,17 +8,17 @@
     >
       <!-- Sidebar header with logo and close button -->
       <div class="flex items-center justify-between p-4 border-b border-gray-800">
+        <UButton 
+          @click="toggleSidebar"
+          icon="heroicons:x-mark"
+          color="neutral"
+          variant="ghost"
+          aria-label="Toggle sidebar"
+        />
         <div class="flex items-center">
           <Icon name="heroicons:chat-bubble-left-right" class="w-6 h-6 text-primary-500 mr-2" />
           <h1 class="text-lg font-bold">Ask Dwight</h1>
         </div>
-        <UButton 
-          @click="toggleSidebar"
-          icon="heroicons:x-mark"
-          color="gray"
-          variant="ghost"
-          aria-label="Toggle sidebar"
-        />
       </div>
 
       <!-- New conversation button -->

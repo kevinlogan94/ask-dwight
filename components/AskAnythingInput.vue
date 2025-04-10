@@ -7,19 +7,26 @@
       v-model="searchQuery"
       type="text"
       placeholder="Ask anything..."
+      autofocus
       class="flex-1 bg-transparent border-none outline-none placeholder:text-neutral-400 text-base"
     />
-    <button
+    <UButton
       type="submit"
-      class="bg-primary-600 hover:bg-primary-700 rounded-lg p-2 transition-colors duration-200 flex items-center justify-center"
-      :disabled="!searchQuery.trim()"
-    >
-      <Icon name="heroicons:arrow-right" class="w-5 h-5" />
-    </button>
+      color="success"
+      variant="solid"
+      :disabled="!searchQuery.trim() || chatStore.aiResponsePending"
+      icon="heroicons:arrow-right"
+      :loading="chatStore.aiResponsePending"
+      class="h-8"
+    />
   </form>
 </template>
 
 <script setup lang="ts">
+import { useChatStore } from '~/stores/chat'
+
+const chatStore = useChatStore();
+
 const props = defineProps({
   onSubmit: {
     type: Function,
@@ -43,8 +50,6 @@ const handleSubmit = () => {
 }
 
 .search-input:focus-within {
-  box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.5); /* purple-600 with opacity */
+  box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.5);
 }
 </style>
-
-

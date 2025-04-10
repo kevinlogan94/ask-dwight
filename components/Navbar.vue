@@ -8,7 +8,7 @@
             v-if="route.path.includes('/chat')"
             @click="toggleSidebar"
             :icon="chatStore.sidebarOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'"
-            color="gray"
+            color="neutral"
             variant="ghost"
             class="mr-3"
             aria-label="Toggle sidebar"
