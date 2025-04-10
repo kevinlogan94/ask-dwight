@@ -14,6 +14,12 @@
                 <TypingAnimation v-if="message.status === 'loading'" />
                 <p v-else>{{ message.content }}</p>
               </div>
+              <!-- Show suggestion chips for system messages with suggestions -->
+              <SuggestionChips 
+                  v-if="message.sender === 'system' && message.status !== 'loading' && message.suggestions?.length" 
+                  :suggestions="message.suggestions || []" 
+                  @select="(suggestion) => handleSuggestionSelect(suggestion, message)" 
+                  class="mt-3" />
             </div>
           </div>
 
@@ -54,6 +60,7 @@ interface Message {
   sender: 'user' | 'system'
   timestamp: Date
   status?: 'loading' | 'sent'
+  suggestions?: string[]
 }
 
 const messages = ref<Message[]>([
@@ -85,7 +92,8 @@ const messages = ref<Message[]>([
     id: '5',
     content: 'I can help you with a variety of tasks. What are you working on today?',
     sender: 'system',
-    timestamp: new Date()
+    timestamp: new Date(),
+    suggestions: ['Web development', 'Writing an email', 'Planning a trip']
   }
 ])
 
@@ -132,12 +140,22 @@ const sendMessage = (message: string) => {
       content: "I'm here to help! What can I assist you with today?",
       sender: 'system',
       timestamp: new Date(),
-      status: 'sent'
+      status: 'sent',
+      suggestions: ['Tell me about yourself', 'How can you help me?', 'Show me examples']
     })
     
     // Scroll to bottom again after response is added
     scrollButton.value?.scrollToBottom()
   }, 1000)
+}
+
+// Handle suggestion click
+const handleSuggestionSelect = (suggestion: string, message: Message) => {
+  // Remove suggestions from this message so they disappear
+  message.suggestions = []
+  
+  // Send the selected suggestion as a user message
+  sendMessage(suggestion)
 }
 
 // Scroll to bottom on initial load
