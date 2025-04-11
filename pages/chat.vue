@@ -10,10 +10,10 @@
     >
       <!-- Chat container - centered with max width -->
       <div class="flex-1 flex flex-col w-full max-w-3xl mx-auto pb-32">
-        <!-- Chat messages area with scroll -->
-        <div class="flex-1 py-4 px-4 md:px-6 overflow-y-auto">
+        <!-- Chat messages area-->
+        <div class="flex-1 py-4 px-4 md:px-6">
           <!-- Dynamic message rendering from messages array -->
-          <div v-for="message in chatStore.currentMessages" :key="message.id" class="mb-4">
+          <div v-for="message in chatStore.currentMessages" :key="message.id" class="mb-4" v-motion-slide-bottom>
             <!-- System message with loading state -->
             <div v-if="message.sender === 'system'" class="flex items-start">
               <div class="max-w-[80%]">
