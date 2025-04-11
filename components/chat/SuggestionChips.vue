@@ -1,17 +1,17 @@
 <template>
   <div class="suggestion-chips-container mb-4 mt-2">
     <!-- Suggestions static header with icon -->
-    <div class="text-xs text-gray-400 mb-2 flex items-center gap-1">
+    <div class="text-lg text-gray-400 mb-2 flex items-center gap-1">
       <Icon name="heroicons:light-bulb" class="w-3.5 h-3.5" />
       <span>Continue with:</span>
     </div>
     
     <!-- Suggestion buttons -->
-    <div class="flex flex-column gap-2">
+    <div class="flex gap-2 flex-col">
       <UButton
         v-for="(suggestion, index) in suggestions"
         :key="index"
-        size="sm"
+        size="lg"
         color="success"
         variant="soft"
         class="suggestion-chip"
