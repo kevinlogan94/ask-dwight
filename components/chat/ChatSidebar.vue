@@ -3,11 +3,11 @@
 
     <!-- Sidebar container -->
     <div
-      class="conversation-sidebar fixed inset-y-0 left-0 w-64 bg-gray-900 text-white transition-transform duration-300 flex flex-col"
+      class="conversation-sidebar fixed inset-y-0 left-0 w-64 transition-transform duration-300 flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
       :class="{ '-translate-x-full': !isOpen }"
     >
       <!-- Sidebar header with logo and close button -->
-      <div class="flex items-center justify-between p-4 border-b border-gray-800">
+      <div class="flex items-center justify-between p-4 border-b border-gray-400 dark:border-gray-800">
         <UButton 
           @click="toggleSidebar"
           icon="heroicons:x-mark"
@@ -16,13 +16,13 @@
           aria-label="Toggle sidebar"
         />
         <div class="flex items-center">
-          <Icon name="heroicons:chat-bubble-left-right" class="w-6 h-6 text-primary-500 mr-2" />
+          <Icon name="heroicons:chat-bubble-left-right" class="w-6 h-6 text-primary-600 dark:text-primary-500 mr-2" />
           <h1 class="text-lg font-bold">Ask Dwight</h1>
         </div>
       </div>
 
       <!-- New conversation button -->
-      <div class="p-4 border-b border-gray-800">
+      <div class="p-4 border-b border-gray-400 dark:border-gray-800">
         <UButton
           color="primary"
           variant="soft"
@@ -38,7 +38,7 @@
 
       <!-- Conversation list -->
       <div class="flex-1 overflow-y-auto py-2 px-2">
-        <div v-if="chatStore.conversations.length === 0" class="p-4 text-center text-gray-400">
+        <div v-if="chatStore.conversations.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
           No conversations yet
         </div>
         
@@ -48,7 +48,7 @@
           size="sm"
           color="secondary"
           variant="ghost"
-          class="w-full mb-2 text-left"
+          class="w-full mb-2 text-left text-gray-700 dark:text-gray-300"
           :class="{ 'bg-primary-500/10': conversation.id === chatStore.selectedConversationId }"
           @click="selectConversation(conversation)"
         >
@@ -60,8 +60,8 @@
       </div>
       
       <!-- Sidebar footer with ColorModeButton -->
-      <div class="mt-auto p-4 border-t border-gray-800 flex items-center justify-between">
-        <div class="text-sm text-gray-400">
+      <div class="mt-auto p-4 border-t border-gray-400 dark:border-gray-800 flex items-center justify-between">
+        <div class="text-sm text-gray-500 dark:text-gray-400">
           <span>© {{ new Date().getFullYear() }} Ask Dwight</span>
         </div>
         <ColorModeButton />
