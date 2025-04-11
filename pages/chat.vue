@@ -26,7 +26,7 @@
                 <SuggestionChips 
                   v-if="message.sender === 'system' && message.status !== 'loading' && message.suggestions?.length" 
                   :suggestions="message.suggestions || []" 
-                  @select="(suggestion: string) => handleSuggestionSelect(suggestion, message)" 
+                  @select="(suggestion: string) => handleSuggestionSelect(suggestion)" 
                   class="mt-3" 
                 />
               </div>
@@ -76,6 +76,7 @@ const scrollButton = ref<ScrollToBottomButtonInstance | null>(null)
 
 // Handle sending a new message using the store
 const sendMessage = (message: string) => {
+  chatStore.clearSuggestions()
   chatStore.sendMessage(message)
   
   // Scroll to bottom to show the new message
@@ -88,8 +89,8 @@ const sendMessage = (message: string) => {
 }
 
 // Handle suggestion chip selection
-const handleSuggestionSelect = (suggestion: string, message: Message) => {
-  chatStore.clearSuggestions(message.id)
+const handleSuggestionSelect = (suggestion: string) => {
+  chatStore.clearSuggestions()
   sendMessage(suggestion)
 }
 

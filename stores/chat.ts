@@ -147,13 +147,13 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
   
-  function clearSuggestions(messageId: string) {
+  function clearSuggestions() {
     if (!selectedConversationId.value) return
     
     const conversation = conversations.value.find(c => c.id === selectedConversationId.value)
     if (!conversation) return
     
-    const message = conversation.messages.find(m => m.id === messageId)
+    const message = conversation.messages[conversation.messages.length - 1]
     if (message) {
       message.suggestions = []
     }
