@@ -4,10 +4,10 @@
     class="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center text-center px-4"
   >
     <div class="flex flex-col items-center justify-center mb-8" v-motion-slide-bottom>
-      <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="h-36 w-36 mb-4" />
-      <span class="font-bold text-4xl text-gray-900 dark:text-white">Ask Dwight</span>
+      <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="h-36 w-36 mb-4" v-motion-slide-bottom/>
+      <span class="font-bold text-4xl text-gray-900 dark:text-white" v-motion-slide-bottom :delay="300">Ask Dwight</span>
     </div>
-    <h1 class="text-lg mb-6 dark:text-gray-400 text-gray-600" v-motion-slide-bottom :delay="100">
+    <h1 class="text-lg mb-6 dark:text-gray-400 text-gray-600" v-motion-slide-bottom :delay="500">
       AI Sales Assistant that plans your outreach, scores your leads, and boosts replies.
     </h1>
 
@@ -18,7 +18,7 @@
       netlify
     >
     <input type="hidden" name="form-name" value="early-access" />
-      <div v-motion-slide-bottom :delay="500">
+      <div v-motion-slide-bottom :delay="700">
         <UInput
           v-model="email"
           placeholder="you@example.com"
@@ -28,7 +28,7 @@
           autofocus
         />
       </div>
-      <div v-motion-slide-bottom :delay="700">
+      <div v-motion-slide-bottom :delay="900">
         <UButton
           :disabled="!isValidEmail"
           type="submit"
