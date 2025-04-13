@@ -16,7 +16,7 @@
           aria-label="Toggle sidebar"
         />
         <div class="flex items-center">
-          <Icon name="heroicons:chat-bubble-left-right" class="w-6 h-6 text-primary-600 dark:text-primary-500 mr-2" />
+          <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="w-6 h-6 mr-2" />
           <h1 class="text-lg font-bold">Ask Dwight</h1>
         </div>
       </div>
