@@ -3,12 +3,13 @@
   <div
     class="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center text-center px-4"
   >
-    <h1 class="text-4xl font-bold mb-2" v-motion-slide-bottom :delay="100">
-      Coming Soon
+    <div class="flex flex-col items-center justify-center mb-8" v-motion-slide-bottom>
+      <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="h-36 w-36 mb-4" />
+      <span class="font-bold text-4xl text-gray-900 dark:text-white">Ask Dwight</span>
+    </div>
+    <h1 class="text-lg mb-6 dark:text-gray-400 text-gray-600" v-motion-slide-bottom :delay="100">
+      AI Sales Assistant that plans your outreach, scores your leads, and boosts replies.
     </h1>
-    <p class="text-lg text-gray-600 mb-6" v-motion-slide-bottom :delay="300">
-      Dwight is launching soon. Get early access and updates.
-    </p>
 
     <form
       @submit.prevent="submit"
@@ -32,7 +33,7 @@
           :disabled="!isValidEmail"
           type="submit"
           class="w-full justify-center justify"
-          label="Notify Me"
+          label="Join the waitlist!"
         />
       </div>
       <p v-if="submitted" class="text-green-600 text-sm" v-motion-pop>
