@@ -40,5 +40,10 @@ export default defineNuxtConfig({
   gtag: {
     id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_MEASUREMENT_ID
   },
+  runtimeConfig: {
+    public: {
+      chatgptApiKey: process.env.NUXT_PUBLIC_CHATGPT_API_KEY
+    }
+  },
   compatibilityDate: '2025-04-05'
 })

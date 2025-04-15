@@ -14,17 +14,29 @@
         <div class="flex-1 py-4 px-4 md:px-6">
           <!-- Dynamic message rendering from messages array -->
           <div v-for="message in chatStore.currentMessages" :key="message.id" class="mb-4" v-motion-slide-bottom>
-            <!-- System message with loading state -->
+            
+            <!-- System Message (Loading, Errors) -->
             <div v-if="message.sender === 'system'" class="flex items-start">
               <div class="max-w-[80%]">
                 <div class="bg-gray-800 backdrop-blur-sm rounded-lg p-3 text-white">
-                  <!-- Use the typing animation component when loading -->
+                  <!-- Use the typing animation component only when loading -->
                   <TypingAnimation v-if="message.status === 'loading'" />
+                  <!-- Display content if not loading (e.g., for error messages) -->
                   <p v-else>{{ message.content }}</p>
                 </div>
-                <!-- Show suggestion chips for system messages with suggestions -->
+              </div>
+            </div>
+
+            <!-- Assistant Message (AI Response) -->
+            <div v-else-if="message.sender === 'assistant'" class="flex items-start">
+              <div class="max-w-[80%]">
+                <div class="bg-gray-800 backdrop-blur-sm rounded-lg p-3 text-white">
+                  <!-- Display AI response content -->
+                  <p>{{ message.content }}</p>
+                </div>
+                <!-- Show suggestion chips for assistant messages if available -->
                 <SuggestionChips 
-                  v-if="message.sender === 'system' && message.status !== 'loading' && message.suggestions?.length" 
+                  v-if="message.suggestions?.length" 
                   :suggestions="message.suggestions || []" 
                   @select="(suggestion: string) => handleSuggestionSelect(suggestion)" 
                   class="mt-3" 
@@ -32,14 +44,15 @@
               </div>
             </div>
 
-            <!-- User message -->
-            <div v-else class="flex items-start justify-end">
+            <!-- User Message -->
+            <div v-else-if="message.sender === 'user'" class="flex items-start justify-end">
               <div class="max-w-[80%]">
                 <div class="bg-primary-600 backdrop-blur-sm rounded-lg p-3 text-white">
                   <p>{{ message.content }}</p>
                 </div>
               </div>
             </div>
+            
           </div>
         </div>
       </div>

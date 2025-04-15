@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia'
+import type { ChatCompletionMessage, ChatCompletionMessageParam } from 'openai/resources/chat/completions';
+import { useOpenAIClient } from '~/composables/useOpenAIClient';
 
 export interface Message {
   id: string
   content: string
-  sender: 'user' | 'system'
+  sender: 'user' | 'assistant' | 'system'
   timestamp: Date
   status?: 'loading' | 'sent'
   suggestions?: string[]
@@ -27,7 +29,7 @@ export const useChatStore = defineStore('chat', () => {
         {
           id: '1',
           content: "Hey! I'm here — hit me with whatever you need.",
-          sender: 'system',
+          sender: 'assistant',
           timestamp: new Date()
         },
         {
@@ -39,7 +41,7 @@ export const useChatStore = defineStore('chat', () => {
         {
           id: '3',
           content: "Hey hey! What's up?",
-          sender: 'system',
+          sender: 'assistant',
           timestamp: new Date()
         },
         {
@@ -51,7 +53,7 @@ export const useChatStore = defineStore('chat', () => {
         {
           id: '5',
           content: 'I can help you with a variety of tasks. What are you working on today?',
-          sender: 'system',
+          sender: 'assistant',
           timestamp: new Date(),
           suggestions: ['Web development', 'Writing an email', 'Planning a trip']
         }
@@ -82,7 +84,7 @@ export const useChatStore = defineStore('chat', () => {
         {
           id: crypto.randomUUID(),
           content: "Hello! How can I help you today?",
-          sender: 'system',
+          sender: 'assistant',
           timestamp: new Date(),
           suggestions: ['Tell me about yourself', 'What can you do?', 'I need help with a task']
         }
@@ -159,12 +161,18 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
   
-  function sendMessage(content: string) {
+  async function sendMessage(content: string) {
     if (!content.trim()) return
     
-    // Create a new conversation if none is selected
-    if (!selectedConversationId.value) {
-      createNewConversation()
+    // Create a new conversation if none is selected or get the current one
+    let conversation = selectedConversation.value;
+    if (!conversation) {
+      conversation = createNewConversation();
+      if (!conversation) { 
+          console.error("Failed to create or find a conversation.")
+          return false;
+      }
+      selectedConversationId.value = conversation.id; 
     }
     
     aiResponsePending.value = true
@@ -183,22 +191,56 @@ export const useChatStore = defineStore('chat', () => {
       status: 'loading'
     })
     const loadingMessageId = loadingMessage.id
-    
-    // Simulate AI response (in a real app, this would be an API call)
-    setTimeout(() => {
-      // Remove loading message
+
+    try {
+      // Prepare messages for the API (only user and assistant roles)
+      const messagesForApi: ChatCompletionMessageParam[] = conversation.messages
+        // Filter out loading AND system messages before sending to API
+        .filter(msg => msg.status !== 'loading' && msg.sender !== 'system') 
+        .map(msg => ({
+          // Role directly maps from sender ('user' or 'assistant')
+          role: msg.sender as 'user' | 'assistant', 
+          content: msg.content
+        }));
+
+      // Get the function from our new composable
+      const { getClientSideChatCompletion } = useOpenAIClient(); 
+
+      // Call the client-side OpenAI utility function
+      const responseMessage: ChatCompletionMessage | null = await getClientSideChatCompletion(messagesForApi);
+
+      // Remove loading message regardless of success or failure
       removeMessage(loadingMessageId)
-      
-      // Add the actual response
+
+      if (responseMessage && responseMessage.content) {
+        // Add the actual AI response
+        addMessage({
+          content: responseMessage.content,
+          sender: 'assistant',
+          status: 'sent',
+        });
+      } else {
+        // Add an error message if the API call failed or returned no content
+        addMessage({
+          content: "Sorry, I couldn't get a response. Please check the console for errors.",
+          sender: 'system',
+          status: 'sent',
+        });
+        console.error('Failed to get response from getClientSideChatCompletion');
+      }
+    } catch (error) {
+      console.error('Error during sendMessage:', error);
+      // Remove loading message in case of an exception
+      removeMessage(loadingMessageId)
+      // Add an error message
       addMessage({
-        content: "I'm here to help! What can I assist you with today?",
+        content: 'An unexpected error occurred. Please try again later.',
         sender: 'system',
         status: 'sent',
-        suggestions: ['Tell me about yourself', 'How can you help me?', 'Show me examples']
-      })
-      
-      aiResponsePending.value = false
-    }, 1000)
+      });
+    } finally {
+      aiResponsePending.value = false 
+    }
     
     return true
   }
