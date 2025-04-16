@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { useOpenAIClient } from '~/composables/useOpenAIClient';
+import { useLocalStorage } from '@vueuse/core';
 
 export interface Message {
   id: string
@@ -20,48 +21,13 @@ export interface Conversation {
 }
 
 export const useChatStore = defineStore('chat', () => {
+  // Constants
+  const DEFAULT_ERROR_MESSAGE = "Your sales coach is temporarily off the grid—probably closing a deal or wrestling an API. Don't worry. We're rerouting. Try again in a few.";
+
   // State
-  const conversations = ref<Conversation[]>([
-    {
-      id: crypto.randomUUID(),
-      title: 'Getting Started',
-      messages: [
-        {
-          id: '1',
-          content: "Hey! I'm here — hit me with whatever you need.",
-          sender: 'assistant',
-          timestamp: new Date()
-        },
-        {
-          id: '2',
-          content: 'test',
-          sender: 'user',
-          timestamp: new Date()
-        },
-        {
-          id: '3',
-          content: "Hey hey! What's up?",
-          sender: 'assistant',
-          timestamp: new Date()
-        },
-        {
-          id: '4',
-          content: 'hello',
-          sender: 'user',
-          timestamp: new Date()
-        },
-        {
-          id: '5',
-          content: 'I can help you with a variety of tasks. What are you working on today?',
-          sender: 'assistant',
-          timestamp: new Date(),
-          suggestions: ['Web development', 'Writing an email', 'Planning a trip']
-        }
-      ],
-      createdAt: new Date()
-    }
-  ])
-  
+
+  // Set up local storage for conversations. Set the default value to an empty array. This is set if there is nothing in local storage.
+  const conversations = useLocalStorage<Conversation[]>('chat-conversations', [])
   const selectedConversationId = ref<string | null>(null)
   const sidebarOpen = ref(false)
   const aiResponsePending = ref(false)
@@ -70,43 +36,83 @@ export const useChatStore = defineStore('chat', () => {
   const selectedConversation = computed<Conversation | undefined>(() => {
     return conversations.value.find(c => c.id === selectedConversationId.value)
   })
-  
+
   const currentMessages = computed<Message[]>(() => {
     return selectedConversation.value?.messages || []
   })
-  
+
   // Actions
-  function createNewConversation() {
+  async function createNewConversation() {
+    aiResponsePending.value = true;
+    const { getClientSideChatCompletion } = useOpenAIClient();
+
+    var messageforApi: ChatCompletionMessageParam[] = [{
+      content: "Hey",
+      role: 'user'
+    }] 
+
+    // Create new conversation
     const newConversation: Conversation = {
       id: crypto.randomUUID(),
       title: 'New Conversation',
-      messages: [
-        {
-          id: crypto.randomUUID(),
-          content: "Hello! How can I help you today?",
-          sender: 'assistant',
-          timestamp: new Date(),
-          suggestions: ['Tell me about yourself', 'What can you do?', 'I need help with a task']
-        }
-      ],
+      messages: [],
       createdAt: new Date()
-    }
-    
+    };
     conversations.value.push(newConversation)
     selectedConversationId.value = newConversation.id
+
+    // Add loading message and get its ID
+    const loadingMessage = addMessage({
+      content: '',
+      sender: 'system',
+      status: 'loading'
+    })
+    const loadingMessageId = loadingMessage.id
+
+    try {
+      const responseMessage: ChatCompletionMessage | null = await getClientSideChatCompletion(messageforApi);
+
+      // Remove loading message regardless of success or failure
+      removeMessage(loadingMessageId)
+
+      if (responseMessage?.content) {
+        addMessage({
+          content: responseMessage.content,
+          sender: 'assistant',
+          suggestions: ['Tell me about yourself', 'What can you do?', 'I need help with a task'],
+          status: 'sent'
+        });
+      } else {
+        addMessage({
+          content: DEFAULT_ERROR_MESSAGE,
+          sender: 'system',
+          status: 'sent'
+        });
+      }
+    } catch (error) {
+      console.error('Error creating new conversation:', error);
+      removeMessage(loadingMessageId)
+      addMessage({
+        content: DEFAULT_ERROR_MESSAGE,
+        sender: 'system',
+        status: 'sent'
+      });
+    }
+
+    aiResponsePending.value = false;
     return newConversation
   }
-  
+
   function selectConversation(conversationId: string) {
     selectedConversationId.value = conversationId
-    
+
     // Mark conversation as read when selected
     const conversation = conversations.value.find(c => c.id === conversationId)
     if (conversation?.unread) {
       conversation.unread = false
     }
   }
-  
+
   function toggleSidebar(isOpen?: boolean) {
     if (typeof isOpen === 'boolean') {
       sidebarOpen.value = isOpen
@@ -114,13 +120,13 @@ export const useChatStore = defineStore('chat', () => {
       sidebarOpen.value = !sidebarOpen.value
     }
   }
-  
+
   function addMessage(message: Omit<Message, 'id' | 'timestamp'>): Message {
     // Create a new conversation if none is selected
     if (!selectedConversationId.value) {
       createNewConversation()
     }
-    
+
     const conversation = conversations.value.find(c => c.id === selectedConversationId.value)
     if (conversation) {
       const newMessage: Message = {
@@ -131,59 +137,59 @@ export const useChatStore = defineStore('chat', () => {
       conversation.messages.push(newMessage)
       return newMessage
     }
-    
+
     // This should not happen in normal operation, but we need to return something
     // to satisfy TypeScript
     throw new Error('Failed to add message: No conversation selected')
   }
-  
+
   function removeMessage(messageId: string) {
     if (!selectedConversationId.value) return
-    
+
     const conversation = conversations.value.find(c => c.id === selectedConversationId.value)
     if (!conversation) return
-    
+
     const messageIndex = conversation.messages.findIndex(m => m.id === messageId)
     if (messageIndex !== -1) {
       conversation.messages.splice(messageIndex, 1)
     }
   }
-  
+
   function clearSuggestions() {
     if (!selectedConversationId.value) return
-    
+
     const conversation = conversations.value.find(c => c.id === selectedConversationId.value)
     if (!conversation) return
-    
+
     const message = conversation.messages[conversation.messages.length - 1]
     if (message) {
       message.suggestions = []
     }
   }
-  
+
   async function sendMessage(content: string) {
     if (!content.trim()) return
-    
+
     // Create a new conversation if none is selected or get the current one
     let conversation = selectedConversation.value;
     if (!conversation) {
-      conversation = createNewConversation();
-      if (!conversation) { 
-          console.error("Failed to create or find a conversation.")
-          return false;
+      conversation = await createNewConversation();
+      if (!conversation) {
+        console.error("Failed to create or find a conversation.")
+        return false;
       }
-      selectedConversationId.value = conversation.id; 
+      selectedConversationId.value = conversation.id;
     }
-    
+
     aiResponsePending.value = true
-    
+
     // Add user message
     addMessage({
       content,
       sender: 'user',
       status: 'sent'
     })
-    
+
     // Add loading message and get its ID
     const loadingMessage = addMessage({
       content: '',
@@ -196,15 +202,15 @@ export const useChatStore = defineStore('chat', () => {
       // Prepare messages for the API (only user and assistant roles)
       const messagesForApi: ChatCompletionMessageParam[] = conversation.messages
         // Filter out loading AND system messages before sending to API
-        .filter(msg => msg.status !== 'loading' && msg.sender !== 'system') 
+        .filter(msg => msg.status !== 'loading' && msg.sender !== 'system')
         .map(msg => ({
           // Role directly maps from sender ('user' or 'assistant')
-          role: msg.sender as 'user' | 'assistant', 
+          role: msg.sender as 'user' | 'assistant',
           content: msg.content
         }));
 
       // Get the function from our new composable
-      const { getClientSideChatCompletion } = useOpenAIClient(); 
+      const { getClientSideChatCompletion } = useOpenAIClient();
 
       // Call the client-side OpenAI utility function
       const responseMessage: ChatCompletionMessage | null = await getClientSideChatCompletion(messagesForApi);
@@ -222,7 +228,7 @@ export const useChatStore = defineStore('chat', () => {
       } else {
         // Add an error message if the API call failed or returned no content
         addMessage({
-          content: "Sorry, I couldn't get a response. Please check the console for errors.",
+          content: DEFAULT_ERROR_MESSAGE,
           sender: 'system',
           status: 'sent',
         });
@@ -234,35 +240,35 @@ export const useChatStore = defineStore('chat', () => {
       removeMessage(loadingMessageId)
       // Add an error message
       addMessage({
-        content: 'An unexpected error occurred. Please try again later.',
+        content: DEFAULT_ERROR_MESSAGE,
         sender: 'system',
         status: 'sent',
       });
     } finally {
-      aiResponsePending.value = false 
+      aiResponsePending.value = false
     }
-    
+
     return true
   }
-  
+
   // Initialize with first conversation selected
   onMounted(() => {
     if (conversations.value.length > 0 && !selectedConversationId.value) {
       selectedConversationId.value = conversations.value[0].id
     }
   })
-  
+
   return {
     // State
     conversations,
     selectedConversationId,
     sidebarOpen,
     aiResponsePending,
-    
+
     // Getters
     selectedConversation,
     currentMessages,
-    
+
     // Actions
     createNewConversation,
     selectConversation,

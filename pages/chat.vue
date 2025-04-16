@@ -109,6 +109,9 @@ const handleSuggestionSelect = (suggestion: string) => {
 
 // Scroll to bottom on initial load
 onMounted(() => {
+  if (!chatStore.selectedConversationId) {
+    chatStore.createNewConversation()
+  }
   scrollButton.value?.scrollToBottom()
 })
 
