@@ -1,6 +1,6 @@
 import { OpenAI } from 'openai';
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from 'openai/resources/chat/completions';
-import { DWAYNE_INSTRUCTIONS } from '~/composables/config/dwayne-instructions';
+import { DWIGHT_INSTRUCTIONS } from '~/composables/config/dwight-instructions';
 
 // Keep the client instance in the module scope to act like a singleton
 let openai: OpenAI | null = null;
@@ -11,7 +11,6 @@ export const useOpenAIClient = () => {
   if (!isInitialized) {
     // Call useRuntimeConfig safely inside the composable
     const config = useRuntimeConfig();
-    console.log("Config:", config);
     const apiKey = config.public.chatgptApiKey;
 
     if (typeof apiKey === 'string' && apiKey) {
@@ -40,7 +39,7 @@ export const useOpenAIClient = () => {
     }
 
     const chatMessages: ChatCompletionMessageParam[] = [
-      { role: 'system', content: DWAYNE_INSTRUCTIONS },
+      { role: 'system', content: DWIGHT_INSTRUCTIONS },
       ...messages,
     ];
 
