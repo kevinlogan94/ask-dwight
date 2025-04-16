@@ -79,7 +79,11 @@ export const useChatStore = defineStore('chat', () => {
         addMessage({
           content: responseMessage.content,
           sender: 'assistant',
-          suggestions: ['Tell me about yourself', 'What can you do?', 'I need help with a task'],
+          suggestions: [
+            'I need to fix my follow-up. It’s sloppy and costing me deals.', 
+            'Outreach is decent, but replies are weak. Need stronger hooks.', 
+            'Lead scoring feels like guessing. I want it to mean something.'
+          ],
           status: 'sent'
         });
       } else {

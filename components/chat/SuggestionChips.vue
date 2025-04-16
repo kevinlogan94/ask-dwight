@@ -14,7 +14,7 @@
         size="lg"
         color="success"
         variant="soft"
-        class="suggestion-chip bg-success-100 hover:bg-success-200 dark:bg-success-800/10 dark:hover:bg-success-800/20 text-success-800 dark:text-success-300"
+        class="suggestion-chip bg-success-100 hover:bg-success-200 dark:bg-success-800/10 dark:hover:bg-success-800/20 text-success-800 dark:text-success-300 text-start"
         @click="handleClick(suggestion)"
       >
         {{ suggestion }}
