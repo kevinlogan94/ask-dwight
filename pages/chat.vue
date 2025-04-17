@@ -37,7 +37,7 @@
                 <!-- Show suggestion chips for assistant messages if available -->
                 <SuggestionChips 
                   v-if="message.suggestions?.length" 
-                  :suggestions="message.suggestions || []" 
+                  :suggestions="message.suggestions" 
                   @select="(suggestion: string) => handleSuggestionSelect(suggestion)" 
                   class="mt-3" 
                 />

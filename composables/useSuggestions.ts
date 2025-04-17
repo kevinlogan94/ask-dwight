@@ -16,6 +16,10 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
       return;
     }
 
+    // Set placeholder suggestions while loading
+    const assistantMsg = conversation.value.messages[conversation.value.messages.length - 1];
+    assistantMsg.suggestions = ['loading', 'loading', 'loading'];
+
     var messagesForApi = organizeMessagesForApi(conversation.value.messages);
 
     messagesForApi.push({
@@ -31,17 +35,11 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
     
         //organize suggestions into latest message from AI
         if (response && response.content) {
-        //   console.log("Generated suggestions:", response.content)
-            
           const suggestions = response.content
           .split("\n")
           .map((s) => s.trim())
     
-        //   console.log("Suggestions:", suggestions)
-    
-          const assistantMessage =
-          conversation.value.messages[conversation.value.messages.length - 1];
-          assistantMessage.suggestions = suggestions;
+          assistantMsg.suggestions = suggestions;
           return;
         }
         console.error("Failed to generate suggestions: No response from API");

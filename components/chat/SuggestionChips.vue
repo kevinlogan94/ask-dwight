@@ -8,17 +8,22 @@
     
     <!-- Suggestion buttons -->
     <div class="flex gap-2 flex-col">
-      <UButton
-        v-for="(suggestion, index) in suggestions"
-        :key="index"
-        size="lg"
-        color="success"
-        variant="soft"
-        class="suggestion-chip bg-success-100 hover:bg-success-200 dark:bg-success-800/10 dark:hover:bg-success-800/20 text-success-800 dark:text-success-300 text-start"
-        @click="handleClick(suggestion)"
-      >
-        {{ suggestion }}
-      </UButton>
+      <template v-for="(suggestion, index) in suggestions" :key="index">
+        <USkeleton
+          v-if="suggestion === 'loading'"
+          class="h-8 w-full rounded dark:bg-success-800/10 bg-success-100"
+        />
+        <UButton
+          v-else
+          size="lg"
+          color="success"
+          variant="soft"
+          class="suggestion-chip bg-success-100 hover:bg-success-200 dark:bg-success-800/10 dark:hover:bg-success-800/20 text-success-800 dark:text-success-300 text-start"
+          @click="handleClick(suggestion)"
+        >
+          {{ suggestion }}
+        </UButton>
+      </template>
     </div>
   </div>
 </template>
