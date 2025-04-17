@@ -53,10 +53,12 @@ export const useChatStore = defineStore('chat', () => {
       role: 'user'
     }] 
 
+    const conversationNumber = conversations.value.length + 1;
+
     // Create new conversation
     const newConversation: Conversation = {
       id: crypto.randomUUID(),
-      title: 'New Conversation',
+      title: `Conversation ${conversationNumber}`,
       messages: [],
       createdAt: new Date()
     };
