@@ -8,7 +8,7 @@
       <span class="font-bold text-4xl text-gray-900 dark:text-white" v-motion-slide-bottom :delay="300">Ask Dwight</span>
     </div>
     <h1 class="text-lg mb-6 dark:text-gray-400 text-gray-600" v-motion-slide-bottom :delay="500">
-      AI Sales Assistant that plans your outreach, scores your leads, and boosts replies.
+      Conquer AI. Win Business. Fear Nothing.
     </h1>
 
     <form
@@ -33,7 +33,7 @@
           :disabled="!isValidEmail"
           type="submit"
           class="w-full justify-center justify"
-          label="Join the waitlist!"
+          label="Join the Waitlist"
         />
       </div>
       <p v-if="submitted" class="text-green-600 text-sm" v-motion-pop>
