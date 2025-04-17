@@ -1,5 +1,4 @@
 export function useHelpers() {
-    
   function organizeMessagesForApi(messages: Message[]) {
     return messages
       .filter((msg) => msg.status !== "loading" && msg.sender !== "system")

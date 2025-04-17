@@ -1,5 +1,5 @@
-import { marked } from 'marked';
-import DOMPurify from 'isomorphic-dompurify';
+import { marked } from "marked";
+import DOMPurify from "isomorphic-dompurify";
 
 /**
  * Composable for parsing Markdown content safely.
@@ -12,7 +12,7 @@ export function useMarkdown() {
    */
   const parse = async (markdownString: string | null | undefined): Promise<string> => {
     if (!markdownString) {
-      return '';
+      return "";
     }
     try {
       const rawHtml = await marked.parse(markdownString);
@@ -20,7 +20,7 @@ export function useMarkdown() {
       const cleanHtml = DOMPurify.sanitize(rawHtml);
       return cleanHtml;
     } catch (error) {
-      console.error('Error parsing Markdown:', error);
+      console.error("Error parsing Markdown:", error);
       // Return the original string as fallback in case of error
       return markdownString;
     }

@@ -5,14 +5,11 @@
       <Icon name="heroicons:light-bulb" class="w-3.5 h-3.5 dark:text-gray-400" />
       <span class="font-medium">Continue with:</span>
     </div>
-    
+
     <!-- Suggestion buttons -->
     <div class="flex gap-2 flex-col">
       <template v-for="(suggestion, index) in suggestions" :key="index">
-        <USkeleton
-          v-if="suggestion === 'loading'"
-          class="h-8 w-full rounded dark:bg-success-800/10 bg-success-100"
-        />
+        <USkeleton v-if="suggestion === 'loading'" class="h-8 w-full rounded dark:bg-success-800/10 bg-success-100" />
         <UButton
           v-else
           size="lg"
@@ -30,17 +27,16 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  suggestions: string[]
-}>()
+  suggestions: string[];
+}>();
 
 const emit = defineEmits<{
-  select: [suggestion: string]
-}>()
+  select: [suggestion: string];
+}>();
 
 function handleClick(suggestion: string) {
-  emit('select', suggestion)
+  emit("select", suggestion);
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

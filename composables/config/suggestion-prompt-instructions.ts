@@ -1,4 +1,4 @@
-import { DWIGHT_INSTRUCTIONS } from './dwight-instructions';
+import { DWIGHT_INSTRUCTIONS } from "./dwight-instructions";
 
 // System prompt specifically for generating suggestions, incorporating Dwight's persona
 export const SUGGESTION_SYSTEM_PROMPT = `

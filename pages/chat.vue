@@ -2,19 +2,15 @@
   <div class="min-h-screen w-full flex pt-16">
     <!-- Sidebar component -->
     <ChatSidebar />
-    
+
     <!-- Main chat area with transition for sidebar -->
-    <div 
-      class="flex-1 flex flex-col transition-all duration-300"
-      :class="{ 'ml-0 lg:ml-64': chatStore.sidebarOpen }"
-    >
+    <div class="flex-1 flex flex-col transition-all duration-300" :class="{ 'ml-0 lg:ml-64': chatStore.sidebarOpen }">
       <!-- Chat container - centered with max width -->
       <div class="flex-1 flex flex-col w-full max-w-3xl mx-auto pb-32">
         <!-- Chat messages area-->
         <div class="flex-1 py-4 px-4 md:px-6">
           <!-- Dynamic message rendering from messages array -->
           <div v-for="message in chatStore.currentMessages" :key="message.id" class="mb-4" v-motion-slide-bottom>
-            
             <!-- System Message (Loading, Errors) -->
             <div v-if="message.sender === 'system'" class="flex items-start">
               <div class="max-w-[80%]">
@@ -35,11 +31,11 @@
                   <div class="prose prose-invert max-w-none" v-html="message.htmlContent || message.content"></div>
                 </div>
                 <!-- Show suggestion chips for assistant messages if available -->
-                <SuggestionChips 
-                  v-if="message.suggestions?.length" 
-                  :suggestions="message.suggestions" 
-                  @select="(suggestion: string) => handleSuggestionSelect(suggestion)" 
-                  class="mt-3" 
+                <SuggestionChips
+                  v-if="message.suggestions?.length"
+                  :suggestions="message.suggestions"
+                  @select="(suggestion: string) => handleSuggestionSelect(suggestion)"
+                  class="mt-3"
                 />
               </div>
             </div>
@@ -52,17 +48,18 @@
                 </div>
               </div>
             </div>
-            
           </div>
         </div>
       </div>
-      
+
       <!-- Fixed elements container at bottom -->
-      <div class="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-gradient-to-t from-gray-950 to-transparent pb-4 pt-8 transition-all duration-300"
-           :class="{ 'ml-0 lg:ml-64': chatStore.sidebarOpen }">
+      <div
+        class="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-gradient-to-t from-gray-950 to-transparent pb-4 pt-8 transition-all duration-300"
+        :class="{ 'ml-0 lg:ml-64': chatStore.sidebarOpen }"
+      >
         <div class="w-full max-w-3xl mx-auto">
           <!-- Scroll down button component -->
-          <ScrollToBottomButton ref="scrollButton" /> 
+          <ScrollToBottomButton ref="scrollButton" />
 
           <!-- Input container -->
           <div class="px-4 md:px-6 pb-4">
@@ -76,43 +73,42 @@
 </template>
 
 <script setup lang="ts">
-import type { ScrollToBottomButtonInstance } from '~/components/chat/ScrollToBottomButton.vue'
-import SuggestionChips from '~/components/chat/SuggestionChips.vue'
-import TypingAnimation from '~/components/chat/TypingAnimation.vue'
-import ScrollToBottomButton from '~/components/chat/ScrollToBottomButton.vue'
-import ChatSidebar from '~/components/chat/ChatSidebar.vue'
-import { useChatStore, type Message } from '~/stores/chat'
+import type { ScrollToBottomButtonInstance } from "~/components/chat/ScrollToBottomButton.vue";
+import SuggestionChips from "~/components/chat/SuggestionChips.vue";
+import TypingAnimation from "~/components/chat/TypingAnimation.vue";
+import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
+import ChatSidebar from "~/components/chat/ChatSidebar.vue";
+import { useChatStore, type Message } from "~/stores/chat";
 
 // Use the chat store
-const chatStore = useChatStore()
-const scrollButton = ref<ScrollToBottomButtonInstance | null>(null)
+const chatStore = useChatStore();
+const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 
 // Handle sending a new message using the store
 const sendMessage = (message: string) => {
-  chatStore.sendMessage(message)
-  
+  chatStore.sendMessage(message);
+
   // Scroll to bottom to show the new message
-  scrollButton.value?.scrollToBottom()
-  
+  scrollButton.value?.scrollToBottom();
+
   // Scroll again after the response comes in (handled by the store)
   setTimeout(() => {
-    scrollButton.value?.scrollToBottom()
-  }, 1100) // Wait slightly longer than the store's timeout
-}
+    scrollButton.value?.scrollToBottom();
+  }, 1100); // Wait slightly longer than the store's timeout
+};
 
 // Handle suggestion chip selection
 const handleSuggestionSelect = (suggestion: string) => {
-  sendMessage(suggestion)
-}
+  sendMessage(suggestion);
+};
 
 // Scroll to bottom on initial load
 onMounted(() => {
   if (!chatStore.conversations.length) {
-    chatStore.createNewConversation()
+    chatStore.createNewConversation();
   }
-  scrollButton.value?.scrollToBottom()
-})
-
+  scrollButton.value?.scrollToBottom();
+});
 </script>
 
 <style scoped>

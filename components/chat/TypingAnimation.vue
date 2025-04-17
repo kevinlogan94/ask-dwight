@@ -26,7 +26,7 @@
   background-color: #fff;
   border-radius: 50%;
   opacity: 0.4;
-  animation: typing .5s infinite ease-in-out;
+  animation: typing 0.5s infinite ease-in-out;
 }
 
 .typing-animation span:nth-child(1) {
@@ -42,7 +42,8 @@
 }
 
 @keyframes typing {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
     opacity: 0.4;
   }

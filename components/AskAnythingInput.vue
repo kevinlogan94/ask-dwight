@@ -23,25 +23,25 @@
 </template>
 
 <script setup lang="ts">
-import { useChatStore } from '~/stores/chat'
+import { useChatStore } from "~/stores/chat";
 
 const chatStore = useChatStore();
 
 const props = defineProps({
   onSubmit: {
     type: Function,
-    default: undefined
-  }
-})
+    default: undefined,
+  },
+});
 
-const searchQuery = ref("")
+const searchQuery = ref("");
 
 const handleSubmit = () => {
   if (searchQuery.value.trim() && props.onSubmit) {
-    props.onSubmit(searchQuery.value)
-    searchQuery.value = ''
+    props.onSubmit(searchQuery.value);
+    searchQuery.value = "";
   }
-}
+};
 </script>
 
 <style scoped>
