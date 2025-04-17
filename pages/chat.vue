@@ -32,7 +32,7 @@
               <div class="max-w-[80%]">
                 <div class="bg-gray-800 backdrop-blur-sm rounded-lg p-3 text-white">
                   <!-- Display AI response content -->
-                  <p class="whitespace-pre-line">{{ message.content }}</p>
+                  <div class="prose prose-invert max-w-none" v-html="message.htmlContent || message.content"></div>
                 </div>
                 <!-- Show suggestion chips for assistant messages if available -->
                 <SuggestionChips 

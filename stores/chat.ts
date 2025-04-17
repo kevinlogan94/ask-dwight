@@ -4,10 +4,12 @@ import { useOpenAIClient } from '~/composables/useOpenAIClient';
 import { useLocalStorage } from '@vueuse/core';
 import { useSuggestions } from '~/composables/useSuggestions';
 import { useHelpers } from '~/composables/useHelpers';
+import { useMarkdown } from '~/composables/useMarkdown';
 
 export interface Message {
   id: string
   content: string
+  htmlContent?: string
   sender: 'user' | 'assistant' | 'system'
   timestamp: Date
   status?: 'loading' | 'sent'
@@ -80,11 +82,15 @@ export const useChatStore = defineStore('chat', () => {
       removeMessage(loadingMessageId)
 
       if (responseMessage?.content) {
+        const { parse } = useMarkdown();
+        const htmlContent = await parse(responseMessage.content);
+
         addMessage({
           content: responseMessage.content,
+          htmlContent: htmlContent,
           sender: 'assistant',
           suggestions: [
-            'I need to fix my follow-up. It’s sloppy and costing me deals.', 
+            'I need to fix my follow-up. It is sloppy and costing me deals.', 
             'Outreach is decent, but replies are weak. Need stronger hooks.', 
             'Lead scoring feels like guessing. I want it to mean something.'
           ],
@@ -209,9 +215,13 @@ export const useChatStore = defineStore('chat', () => {
       removeMessage(loadingMessageId)
 
       if (responseMessage && responseMessage.content) {
-        // Add the actual AI response
+        const { parse } = useMarkdown();
+        const htmlContent = await parse(responseMessage.content);
+
+        // Add the actual AI response with parsed HTML
         addMessage({
           content: responseMessage.content,
+          htmlContent: htmlContent,
           sender: 'assistant',
           status: 'sent',
         });
