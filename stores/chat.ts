@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { useOpenAIClient } from '~/composables/useOpenAIClient';
 import { useLocalStorage } from '@vueuse/core';
+import { useSuggestions } from '~/composables/useSuggestions';
+import { useHelpers } from '~/composables/useHelpers';
 
 export interface Message {
   id: string
@@ -27,7 +29,7 @@ export const useChatStore = defineStore('chat', () => {
   // State
 
   // Set up local storage for conversations. Set the default value to an empty array. This is set if there is nothing in local storage.
-  const conversations = useLocalStorage<Conversation[]>('chat-conversations', [])
+  let conversations = ref<Conversation[]>([])
   const selectedConversationId = ref<string | null>(null)
   const sidebarOpen = ref(false)
   const aiResponsePending = ref(false)
@@ -159,21 +161,10 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  function clearSuggestions() {
-    if (!selectedConversationId.value) return
-
-    const conversation = conversations.value.find(c => c.id === selectedConversationId.value)
-    if (!conversation) return
-
-    const message = conversation.messages[conversation.messages.length - 1]
-    if (message) {
-      message.suggestions = []
-    }
-  }
-
   async function sendMessage(content: string) {
     if (!content.trim()) return
-
+    clearSuggestions();
+    
     // Create a new conversation if none is selected or get the current one
     let conversation = selectedConversation.value;
     if (!conversation) {
@@ -204,14 +195,7 @@ export const useChatStore = defineStore('chat', () => {
 
     try {
       // Prepare messages for the API (only user and assistant roles)
-      const messagesForApi: ChatCompletionMessageParam[] = conversation.messages
-        // Filter out loading AND system messages before sending to API
-        .filter(msg => msg.status !== 'loading' && msg.sender !== 'system')
-        .map(msg => ({
-          // Role directly maps from sender ('user' or 'assistant')
-          role: msg.sender as 'user' | 'assistant',
-          content: msg.content
-        }));
+      const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(conversation.messages);
 
       // Get the function from our new composable
       const { getClientSideChatCompletion } = useOpenAIClient();
@@ -229,6 +213,9 @@ export const useChatStore = defineStore('chat', () => {
           sender: 'assistant',
           status: 'sent',
         });
+
+        // Generate suggestions after adding the assistant message
+        generateSuggestions();
       } else {
         // Add an error message if the API call failed or returned no content
         addMessage({
@@ -255,8 +242,13 @@ export const useChatStore = defineStore('chat', () => {
     return true
   }
 
+  const { organizeMessagesForApi } = useHelpers();
+  const { generateSuggestions, clearSuggestions } = useSuggestions(selectedConversation);
+
   // Initialize with first conversation selected
   onMounted(() => {
+    conversations.value = useLocalStorage<Conversation[]>('chat-conversations', []).value;
+
     if (conversations.value.length > 0 && !selectedConversationId.value) {
       selectedConversationId.value = conversations.value[0].id
     }
@@ -279,7 +271,6 @@ export const useChatStore = defineStore('chat', () => {
     toggleSidebar,
     addMessage,
     removeMessage,
-    clearSuggestions,
     sendMessage
   }
 })

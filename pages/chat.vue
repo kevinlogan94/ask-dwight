@@ -32,7 +32,7 @@
               <div class="max-w-[80%]">
                 <div class="bg-gray-800 backdrop-blur-sm rounded-lg p-3 text-white">
                   <!-- Display AI response content -->
-                  <p>{{ message.content }}</p>
+                  <p class="whitespace-pre-line">{{ message.content }}</p>
                 </div>
                 <!-- Show suggestion chips for assistant messages if available -->
                 <SuggestionChips 
@@ -89,7 +89,6 @@ const scrollButton = ref<ScrollToBottomButtonInstance | null>(null)
 
 // Handle sending a new message using the store
 const sendMessage = (message: string) => {
-  chatStore.clearSuggestions()
   chatStore.sendMessage(message)
   
   // Scroll to bottom to show the new message
@@ -103,13 +102,12 @@ const sendMessage = (message: string) => {
 
 // Handle suggestion chip selection
 const handleSuggestionSelect = (suggestion: string) => {
-  chatStore.clearSuggestions()
   sendMessage(suggestion)
 }
 
 // Scroll to bottom on initial load
 onMounted(() => {
-  if (!chatStore.selectedConversationId) {
+  if (!chatStore.conversations.length) {
     chatStore.createNewConversation()
   }
   scrollButton.value?.scrollToBottom()

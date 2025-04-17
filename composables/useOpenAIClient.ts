@@ -1,6 +1,7 @@
 import { OpenAI } from 'openai';
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { DWIGHT_INSTRUCTIONS } from '~/composables/config/dwight-instructions';
+import { SUGGESTION_SYSTEM_PROMPT } from './config/suggestion-prompt-instructions';
 
 // Keep the client instance in the module scope to act like a singleton
 let openai: OpenAI | null = null;
@@ -32,14 +33,14 @@ export const useOpenAIClient = () => {
     }
   }
 
-  const getClientSideChatCompletion = async (messages: ChatCompletionMessageParam[]): Promise<ChatCompletionMessage | null> => {
+  const getClientSideChatCompletion = async (messages: ChatCompletionMessageParam[], useSuggestionsIntructions: boolean = false): Promise<ChatCompletionMessage | null> => {
     if (!openai) {
       console.error('OpenAI client is not initialized. Check API key and initialization logs.');
       return null;
     }
 
     const chatMessages: ChatCompletionMessageParam[] = [
-      { role: 'system', content: DWIGHT_INSTRUCTIONS },
+      { role: 'system', content: useSuggestionsIntructions ? SUGGESTION_SYSTEM_PROMPT : DWIGHT_INSTRUCTIONS },
       ...messages,
     ];
 
@@ -53,6 +54,7 @@ export const useOpenAIClient = () => {
       console.log("Received response from OpenAI."); // Log after receiving
 
       if (res.choices?.length > 0 && res.choices[0].message) {
+        console.log("Response from OpenAI:", res.choices[0].message.content);
         return res.choices[0].message;
       } else {
         console.error('Invalid response structure from OpenAI:', res);

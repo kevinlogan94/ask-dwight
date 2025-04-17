@@ -8,8 +8,8 @@ ${DWIGHT_INSTRUCTIONS}
 
 Based on the previous message provided by you (Dwight), generate exactly 3 concise, relevant follow-up questions or prompts that the user might ask next. These suggestions should align with your persona as Dwight and encourage meaningful sales action.
 
-Format your response ONLY as a numbered list, like this:
-1. Suggestion 1
-2. Suggestion 2
-3. Suggestion 3
+Format your response ONLY as a list, like this. Don't use bullets or numbers:
+Suggestion 1
+Suggestion 2
+Suggestion 3
 `;
