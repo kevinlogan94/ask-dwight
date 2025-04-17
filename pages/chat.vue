@@ -85,16 +85,11 @@ const chatStore = useChatStore();
 const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 
 // Handle sending a new message using the store
-const sendMessage = (message: string) => {
-  chatStore.sendMessage(message);
+const sendMessage = async (message: string) => {
+  await chatStore.sendMessage(message);
 
   // Scroll to bottom to show the new message
   scrollButton.value?.scrollToBottom();
-
-  // Scroll again after the response comes in (handled by the store)
-  setTimeout(() => {
-    scrollButton.value?.scrollToBottom();
-  }, 1100); // Wait slightly longer than the store's timeout
 };
 
 // Handle suggestion chip selection
@@ -107,7 +102,9 @@ onMounted(() => {
   if (!chatStore.conversations.length) {
     chatStore.createNewConversation();
   }
-  scrollButton.value?.scrollToBottom();
+  setTimeout(() => {
+    scrollButton.value?.scrollToBottom();
+  }, 100);
 });
 </script>
 
