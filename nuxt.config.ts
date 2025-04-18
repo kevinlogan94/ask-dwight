@@ -2,37 +2,22 @@
 export default defineNuxtConfig({
   app: {
     head: {
-      title: "Ask Dwight - Your Sales AI Assistant",
+      title: 'Ask Dwight - Conquer AI. Win Business. Fear Nothing.',
       meta: [
-        { charset: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
-        {
-          name: "description",
-          content:
-            "Ask Dwight is your AI-powered sales assistant, helping you close deals faster with intelligent insights and personalized recommendations.",
-        },
-        {
-          name: "keywords",
-          content: "AI sales assistant, sales automation, deal closing, AI for sales, sales optimization",
-        },
-        { name: "robots", content: "index, follow" },
-        { name: "author", content: "Ask Dwight" },
-        { property: "og:title", content: "Ask Dwight - Your Sales AI Assistant" },
-        {
-          property: "og:description",
-          content:
-            "Ask Dwight is your AI-powered sales assistant, helping you close deals faster with intelligent insights and personalized recommendations.",
-        },
-        { property: "og:type", content: "website" },
-        { property: "og:url", content: "https://ask-dwight.com" },
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'The Only Sales Tool That Can Outsell, Outwit, and Outweird the Competition.' },
+        { name: 'keywords', content: 'AI sales assistant, sales automation, deal closing, AI for sales, sales optimization' },
+        { name: 'robots', content: 'index, follow' },
+        { name: 'author', content: 'Ask Dwight' },
+        { property: 'og:title', content: 'Ask Dwight - Conquer AI. Win Business. Fear Nothing.' },
+        { property: 'og:description', content: 'The Only Sales Tool That Can Outsell, Outwit, and Outweird the Competition.' },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:url', content: 'https://ask-dwight.com' },
         // { property: 'og:image', content: '/og-image.png' },
         // { name: 'twitter:card', content: 'summary_large_image' },
-        { name: "twitter:title", content: "Ask Dwight - Your Sales AI Assistant" },
-        {
-          name: "twitter:description",
-          content:
-            "Ask Dwight is your AI-powered sales assistant, helping you close deals faster with intelligent insights and personalized recommendations.",
-        },
+        { name: 'twitter:title', content: 'Ask Dwight - Conquer AI. Win Business. Fear Nothing.' },
+        { name: 'twitter:description', content: 'The Only Sales Tool That Can Outsell, Outwit, and Outweird the Competition.' },
         // { name: 'twitter:image', content: '/og-image.png' }
       ],
       link: [
