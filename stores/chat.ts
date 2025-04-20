@@ -93,9 +93,9 @@ export const useChatStore = defineStore("chat", () => {
           htmlContent: htmlContent,
           sender: "assistant",
           suggestions: [
-            "I need to fix my follow-up. It is sloppy and costing me deals.",
-            "Outreach is decent, but replies are weak. Need stronger hooks.",
-            "Lead scoring feels like guessing. I want it to mean something.",
+            "Help me build a cold outreach strategy",
+            "Let's fix my lead scoring system",
+            "Let's build a list of business leads",
           ],
           status: "sent",
         });

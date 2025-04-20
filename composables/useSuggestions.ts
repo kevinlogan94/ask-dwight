@@ -21,7 +21,7 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
 
     messagesForApi.push({
       role: "user",
-      content: "Generate 3 concise, relevant follow-up questions or prompts that the user might ask next.",
+      content: "Generate 3 concise, relevant, unformatted(no quotes, no numbers, etc.) follow-up prompts for the user to use to send to the AI.",
     });
 
     const { getClientSideChatCompletion } = useOpenAIClient();

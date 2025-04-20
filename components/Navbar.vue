@@ -5,7 +5,7 @@
         <div class="flex items-center">
           <!-- Only show sidebar toggle on chat page -->
           <UButton
-            v-if="route.path.includes('/chat')"
+            v-if="route.path === '/'"
             @click="toggleSidebar"
             :icon="chatStore.sidebarOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'"
             color="neutral"
@@ -18,7 +18,7 @@
             <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="w-6 h-6 mr-2" />
             <h1 class="text-lg font-bold">Ask Dwight</h1>
             <span
-              v-if="route.path.includes('/chat') && chatStore.selectedConversation"
+              v-if="route.path === '/' && chatStore.selectedConversation"
               class="ml-2 text-gray-600 dark:text-gray-400 font-medium"
             >
               - {{ chatStore.selectedConversation.title }}

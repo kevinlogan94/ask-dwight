@@ -57,6 +57,9 @@ importers:
         specifier: ^4.5.0
         version: 4.5.0(vue@3.5.13(typescript@5.8.2))
     devDependencies:
+      '@iconify-json/heroicons':
+        specifier: ^1.2.2
+        version: 1.2.2
       '@tailwindcss/typography':
         specifier: ^0.5.16
         version: 0.5.16(tailwindcss@4.1.2)
@@ -419,6 +422,9 @@ packages:
 
   '@formkit/auto-animate@0.8.2':
     resolution: {integrity: sha512-SwPWfeRa5veb1hOIBMdzI+73te5puUBHmqqaF1Bu7FjvxlYSz/kJcZKSa9Cg60zL0uRNeJL2SbRxV6Jp6Q1nFQ==}
+
+  '@iconify-json/heroicons@1.2.2':
+    resolution: {integrity: sha512-qoW4pXr5kTTL6juEjgTs83OJIwpePu7q1tdtKVEdj+i0zyyVHgg/dd9grsXJQnpTpBt6/VwNjrXBvFjRsKPENg==}
 
   '@iconify/collections@1.0.534':
     resolution: {integrity: sha512-c50uAmXmiRSYEP6vXyfQG5uQtJVL0Vm6S2KFcbfw/7fByDM2SBnWQNH+/smXq/bZXVT0CdJr2Nsct+FDdqqKuA==}
@@ -4105,6 +4111,10 @@ snapshots:
       - vue
 
   '@formkit/auto-animate@0.8.2': {}
+
+  '@iconify-json/heroicons@1.2.2':
+    dependencies:
+      '@iconify/types': 2.0.0
 
   '@iconify/collections@1.0.534':
     dependencies:

@@ -6,10 +6,9 @@ ${DWIGHT_INSTRUCTIONS}
 
 ---
 
-Based on the previous message provided by you (Dwight), generate exactly 3 concise, relevant follow-up questions or prompts that the user might ask next. These suggestions should align with your persona as Dwight and encourage meaningful sales action.
+If your last message was a question, return 3 short, example answers the user might give—direct, natural, and realistic.
 
-Format your response ONLY as a list, like this. Don't use bullets or numbers:
-Suggestion 1
-Suggestion 2
-Suggestion 3
+If it wasn't a question, suggest 3 sharp next steps that drive progress, aligned with your sales persona.
+
+No bullets, no numbering, no explanations, no extra formatting. Just 3 clean lines.
 `;
