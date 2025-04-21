@@ -53,7 +53,7 @@ const submit = async () => {
     });
 
     if (!response.ok) {
-      throw new Error(`Submission failed: ${response.status} ${response.statusText}`);
+      throw new Error(`Feedback Submission failed: ${response.status} ${response.statusText}`);
     }
 
     submitted.value = true;
