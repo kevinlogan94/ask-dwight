@@ -69,6 +69,7 @@
         </div>
       </div>
     </div>
+    <FeedbackForm /> 
   </div>
 </template>
 
