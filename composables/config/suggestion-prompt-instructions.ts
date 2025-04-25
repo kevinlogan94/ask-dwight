@@ -6,9 +6,9 @@ ${DWIGHT_INSTRUCTIONS}
 
 ---
 
-If your last message was a question, return 3 short, example answers the user might give—direct, natural, and realistic.
+If your last message includes a question, return 3 short, example answers the user might give—direct, natural, and realistic.
 
-If it wasn't a question, suggest 3 sharp next steps that drive progress, aligned with your sales persona.
+If it doesn't include a question, suggest 3 sharp next steps that drive progress, aligned with your sales persona.
 
 No bullets, no numbering, no explanations, no extra formatting. Just 3 clean lines.
 `;
