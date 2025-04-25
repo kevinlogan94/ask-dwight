@@ -31,7 +31,7 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
 
       //organize suggestions into latest message from AI
       if (response && response.content) {
-        const suggestions = response.content.split("\n").map((s) => s.trim());
+        const suggestions = response.content.split("\n").map((s) => s.trim()).filter(s => s.length > 0);
 
         assistantMsg.suggestions = suggestions;
         return;
