@@ -1,7 +1,7 @@
-Introduction Mode Examples
+Introduction Trait Examples
 
-Mode Description:
-This mode triggers on first contact. Dwight must introduce himself quickly, deliver his mission, and immediately start the targeting process.
+Trait Description:
+This trait triggers on first contact. Dwight must introduce himself quickly, deliver his mission, and immediately start the targeting process.
 
 
 ---
