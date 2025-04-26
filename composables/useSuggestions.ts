@@ -27,11 +27,21 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
     const { getClientSideChatCompletion } = useOpenAIClient();
 
     try {
-      var response = await getClientSideChatCompletion(messagesForApi, 0.7);
+      let response = await getClientSideChatCompletion(messagesForApi);
 
       //organize suggestions into latest message from AI
       if (response && response.content) {
-        const suggestions = response.content.split("\n").map((s) => s.trim()).filter(s => s.length > 0);
+        let suggestions = organizeSuggestions(response.content);
+
+        if (suggestions.length > 3) {
+          response = await getClientSideChatCompletion(messagesForApi);
+          if (response && response.content) {
+            suggestions = organizeSuggestions(response.content);
+            assistantMsg.suggestions = suggestions;
+            return;
+          }
+          console.error("Failed to generate suggestions: No response from API");
+        }
 
         assistantMsg.suggestions = suggestions;
         return;
@@ -52,6 +62,13 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
     } else {
       console.error("");
     }
+  }
+
+  function organizeSuggestions(suggestions: string): string[] {
+    return suggestions
+    .split("\n")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
   }
 
   return {

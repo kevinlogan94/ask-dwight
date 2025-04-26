@@ -1,6 +1,6 @@
 import { OpenAI } from "openai";
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { DWIGHT_FULL_INSTRUCTIONS } from "./config/dwight-modes";
+import { DWIGHT_FULL_INSTRUCTIONS, DWIGHT_FULL_INSTRUCTIONS_35_turbo } from "./config/dwight-modes";
 
 // Keep the client instance in the module scope to act like a singleton
 let openai: OpenAI | null = null;
@@ -34,7 +34,6 @@ export const useOpenAIClient = () => {
 
   const getClientSideChatCompletion = async (
     messages: ChatCompletionMessageParam[],
-    temperature: number = 0.7,
   ): Promise<ChatCompletionMessage | null> => {
     if (!openai) {
       console.error("OpenAI client is not initialized. Check API key and initialization logs.");
@@ -42,16 +41,17 @@ export const useOpenAIClient = () => {
     }
 
     const chatMessages: ChatCompletionMessageParam[] = [
-      { role: "system", content: DWIGHT_FULL_INSTRUCTIONS },
+      { role: "system", content: DWIGHT_FULL_INSTRUCTIONS_35_turbo },
       ...messages,
     ];
 
     try {
       console.log("Sending completion request to OpenAI..."); // Log before sending
       const res = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-3.5-turbo",
         messages: chatMessages,
-        temperature: temperature,
+        temperature: 0.7,
+        max_completion_tokens: 1000,
       });
       console.log("Received response from OpenAI."); // Log after receiving
 
