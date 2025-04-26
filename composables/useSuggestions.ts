@@ -21,13 +21,13 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
 
     messagesForApi.push({
       role: "user",
-      content: "Generate 3 concise, relevant, unformatted(no quotes, no numbers, etc.) follow-up prompts for the user to use to send to the AI.",
+      content: "Generate 3 concise, relevant, unformatted(no quotes, no numbers, etc.) follow-up prompts for the user to use to response to the AI's last message.",
     });
 
     const { getClientSideChatCompletion } = useOpenAIClient();
 
     try {
-      var response = await getClientSideChatCompletion(messagesForApi, true);
+      var response = await getClientSideChatCompletion(messagesForApi, 0.7);
 
       //organize suggestions into latest message from AI
       if (response && response.content) {
@@ -39,6 +39,7 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
       console.error("Failed to generate suggestions: No response from API");
     } catch (error) {
       console.error("Failed to generate suggestions:", error);
+      assistantMsg.suggestions = [];
     }
   }
 

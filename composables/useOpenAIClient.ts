@@ -1,7 +1,6 @@
 import { OpenAI } from "openai";
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { DWIGHT_INSTRUCTIONS } from "~/composables/config/dwight-instructions";
-import { SUGGESTION_SYSTEM_PROMPT } from "./config/suggestion-prompt-instructions";
+import { DWIGHT_FULL_INSTRUCTIONS } from "./config/dwight-modes";
 
 // Keep the client instance in the module scope to act like a singleton
 let openai: OpenAI | null = null;
@@ -35,7 +34,7 @@ export const useOpenAIClient = () => {
 
   const getClientSideChatCompletion = async (
     messages: ChatCompletionMessageParam[],
-    useSuggestionsIntructions: boolean = false,
+    temperature: number = 0.7,
   ): Promise<ChatCompletionMessage | null> => {
     if (!openai) {
       console.error("OpenAI client is not initialized. Check API key and initialization logs.");
@@ -43,7 +42,7 @@ export const useOpenAIClient = () => {
     }
 
     const chatMessages: ChatCompletionMessageParam[] = [
-      { role: "system", content: useSuggestionsIntructions ? SUGGESTION_SYSTEM_PROMPT : DWIGHT_INSTRUCTIONS },
+      { role: "system", content: DWIGHT_FULL_INSTRUCTIONS },
       ...messages,
     ];
 
@@ -52,7 +51,7 @@ export const useOpenAIClient = () => {
       const res = await openai.chat.completions.create({
         model: "gpt-4",
         messages: chatMessages,
-        temperature: 0.7,
+        temperature: temperature,
       });
       console.log("Received response from OpenAI."); // Log after receiving
 
