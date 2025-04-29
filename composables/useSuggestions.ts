@@ -34,7 +34,7 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
       if (response && response.content) {
         let suggestions = organizeSuggestions(response.content);
 
-        if (suggestions.length > 3) {
+        if (suggestions.length !== 3) {
           response = await getClientSideChatCompletion(messagesForApi);
           if (response && response.content) {
             suggestions = organizeSuggestions(response.content);
