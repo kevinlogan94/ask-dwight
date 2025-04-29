@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography"; /* Todo: Use this instead: https://tailwindcss.nuxtjs.org/ */
-@import "@nuxt/ui";
+@import "@nuxt/ui-pro";
 
 button:not([disabled]) {
   cursor: pointer;

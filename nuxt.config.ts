@@ -27,7 +27,7 @@ export default defineNuxtConfig({
     },
   },
   css: ["~/assets/main.css"],
-  modules: ["@nuxt/ui", "@nuxt/icon", "@vueuse/motion/nuxt", "@formkit/auto-animate", "nuxt-gtag", "@pinia/nuxt"],
+  modules: ["@nuxt/ui-pro", "@nuxt/icon", "@vueuse/motion/nuxt", "@formkit/auto-animate", "nuxt-gtag", "@pinia/nuxt"],
   gtag: {
     id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_MEASUREMENT_ID,
   },
