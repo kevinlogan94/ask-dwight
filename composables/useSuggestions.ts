@@ -1,4 +1,5 @@
 import { useHelpers } from "./useHelpers";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 export function useSuggestions(conversation: Ref<Conversation | undefined>) {
   const { organizeMessagesForApi } = useHelpers();
@@ -17,7 +18,7 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
     const assistantMsg = conversation.value.messages[conversation.value.messages.length - 1];
     assistantMsg.suggestions = ["loading", "loading", "loading"];
 
-    var messagesForApi = organizeMessagesForApi(conversation.value.messages);
+    const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(conversation.value.messages);
 
     messagesForApi.push({
       role: "user",

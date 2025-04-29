@@ -5,6 +5,8 @@ import { useLocalStorage } from "@vueuse/core";
 import { useSuggestions } from "~/composables/useSuggestions";
 import { useHelpers } from "~/composables/useHelpers";
 import { useMarkdown } from "~/composables/useMarkdown";
+import { useSystemInteractionControls } from "~/composables/useSystemInteractionControls";
+import type { User } from "~/models/user";
 
 export interface Message {
   id: string;
@@ -36,6 +38,13 @@ export const useChatStore = defineStore("chat", () => {
   const selectedConversationId = ref<string | null>(null);
   const sidebarOpen = ref(false);
   const aiResponsePending = ref(false);
+  const user = ref<User>({
+    id: "",
+    name: "John Doe",
+    email: "",
+    subscription: { status: "active", tier: "free" },
+    createdAt: new Date(),
+  });
 
   // Getters
   const selectedConversation = computed<Conversation | undefined>(() => {
@@ -44,6 +53,10 @@ export const useChatStore = defineStore("chat", () => {
 
   const currentMessages = computed<Message[]>(() => {
     return selectedConversation.value?.messages || [];
+  });
+
+  const throttleConversation = computed(() => {
+    return (selectedConversation.value?.messages.length ?? 0) > 20 && user.value.subscription?.tier === "free";
   });
 
   // Actions
@@ -229,8 +242,24 @@ export const useChatStore = defineStore("chat", () => {
           status: "sent",
         });
 
-        // Generate suggestions after adding the assistant message
-        generateSuggestions();
+        if (throttleConversation.value) {
+          // Trigger conversation throttling and get the response
+          const throttlingResponse = await triggerThrottling();
+
+          if (throttlingResponse && throttlingResponse.content) {
+            const htmlContent = await parse(throttlingResponse.content);
+            // Add the throttling response message as if it came from the assistant
+            addMessage({
+              content: throttlingResponse.content,
+              htmlContent: htmlContent,
+              sender: "assistant",
+              status: "sent",
+            });
+          }
+        } else {
+          // For non-throttled conversations, generate suggestions as normal
+          await generateSuggestions();
+        }
       } else {
         // Add an error message if the API call failed or returned no content
         addMessage({
@@ -259,6 +288,7 @@ export const useChatStore = defineStore("chat", () => {
 
   const { organizeMessagesForApi } = useHelpers();
   const { generateSuggestions, clearSuggestions } = useSuggestions(selectedConversation);
+  const { triggerThrottling } = useSystemInteractionControls(selectedConversation);
 
   // Initialize with first conversation selected
   onMounted(() => {
@@ -279,6 +309,7 @@ export const useChatStore = defineStore("chat", () => {
     // Getters
     selectedConversation,
     currentMessages,
+    throttleConversation,
 
     // Actions
     createNewConversation,

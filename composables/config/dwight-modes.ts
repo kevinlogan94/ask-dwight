@@ -4,6 +4,7 @@ import suggestionTrait from '~/composables/config/documents/dwight-suggestion-tr
 import valueDeliveryTrait from '~/composables/config/documents/dwight-value-delivery-trait.txt?raw'
 import valueDeliveryTrait35_turbo from '~/composables/config/documents/dwight-value-delivery-trait-35-turbo.txt?raw'
 import dwightWorkflowBuildLeads from '~/composables/config/documents/dwight-workflow-build-leads.txt?raw'
+import conversationThrottlingTrait from '~/composables/config/documents/dwight-conversation-throttling.txt?raw'
 
 export const DWIGHT_FULL_INSTRUCTIONS = `
 Static Foundations
@@ -201,6 +202,17 @@ Triggered on every user input except the introduction.
 ---
 Value Delivery Trait Examples and Instructions:
 ${valueDeliveryTrait35_turbo}
+---
+
+System Interaction Controls:
+
+Conversation Throttling:
+Behavior: Politely inform the user when they have reached the conversation limit, summarize the conversation, and invite them to start a new conversation.
+Trigger: When the user signals that the maximum allowed number of back-and-forths has been reached (e.g., 10 messages).
+
+---
+Conversation Throttling Examples and Instructions:
+${conversationThrottlingTrait}
 ---
 
 Final Reminders:

@@ -8,13 +8,14 @@
       type="text"
       placeholder="Ask anything..."
       autofocus
-      class="flex-1 bg-transparent border-none outline-none placeholder:text-neutral-400 text-base"
+      :disabled="chatStore.throttleConversation"
+      class="flex-1 bg-transparent border-none outline-none placeholder:text-neutral-400 text-base transition-opacity duration-200"
     />
     <UButton
       type="submit"
       color="success"
       variant="solid"
-      :disabled="!searchQuery.trim() || chatStore.aiResponsePending"
+      :disabled="!searchQuery.trim() || chatStore.aiResponsePending || chatStore.throttleConversation"
       icon="heroicons:arrow-right"
       :loading="chatStore.aiResponsePending"
       class="h-8"
@@ -52,5 +53,18 @@ const handleSubmit = () => {
 
 .search-input:focus-within {
   box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.5);
+}
+
+input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.search-input:has(input:disabled) {
+  background-color: rgba(38, 38, 38, 0.9) !important;
+  border-color: rgba(64, 64, 64, 0.8) !important;
+  opacity: 0.85;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 </style>

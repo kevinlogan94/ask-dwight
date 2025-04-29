@@ -88,9 +88,6 @@ const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 // Handle sending a new message using the store
 const sendMessage = async (message: string) => {
   await chatStore.sendMessage(message);
-
-  // Scroll to bottom to show the new message
-  scrollButton.value?.scrollToBottom();
 };
 
 // Handle suggestion chip selection
@@ -103,9 +100,17 @@ onMounted(() => {
   if (!chatStore.conversations.length) {
     chatStore.createNewConversation();
   }
-  setTimeout(() => {
-    scrollButton.value?.scrollToBottom();
-  }, 100);
+});
+
+// Watch for changes in the messages array and scroll down when new messages are added
+watch(() => chatStore.currentMessages.length, (newLength, oldLength) => {
+  // Only scroll if a new message was added
+  if (newLength > oldLength) {
+    // Use nextTick to ensure DOM is updated before scrolling
+    nextTick(() => {
+      scrollButton.value?.scrollToBottom();
+    });
+  }
 });
 </script>
 
