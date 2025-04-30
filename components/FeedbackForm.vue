@@ -5,7 +5,7 @@
       size="xl"
       color="primary"
       variant="solid"
-      class="fixed bottom-9 right-7 z-50 rounded-full shadow-lg"
+      class="fixed bottom-30 sm:bottom-9 right-6 sm:right-7 z-50 rounded-full shadow-lg"
       aria-label="Open Feedback Form"
     />
     <template #body>
