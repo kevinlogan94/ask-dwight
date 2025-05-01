@@ -2,6 +2,7 @@
   <UDashboardNavbar 
     class="fixed w-full z-30"
     :toggle="false"
+    v-if="route.path !== '/auth/confirm'"
   >
     <template #left>
       <div class="flex items-center">

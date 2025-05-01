@@ -5,6 +5,7 @@
         :schema="schema"
         title="Login"
         icon="i-heroicons-user"
+        :providers="providers"
         :fields="fields"
         @submit="onSubmit"
       >
@@ -23,7 +24,8 @@
 import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui-pro";
 
-const toast = useToast();
+const supabase = useSupabaseClient();
+const baseUrl = useRuntimeConfig().public.baseUrl;
 
 const fields = [
   {
@@ -45,6 +47,19 @@ const fields = [
     type: "checkbox" as const,
   },
 ];
+
+const providers = [{
+  label: 'Continue with Google',
+  icon: 'i-simple-icons-google',
+  onClick: () => {
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${baseUrl}/auth/confirm`,
+      },
+    });
+  }
+}]
 
 const schema = z.object({
   email: z.string().email("Invalid email"),
