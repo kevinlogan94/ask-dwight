@@ -15,7 +15,7 @@
             aria-label="Toggle sidebar"
           />
 
-          <div class="flex items-center">
+          <div class="flex items-center cursor-pointer" @click="goToHome">
             <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="w-6 h-6 mr-2" />
             <h1 class="text-lg font-bold">Ask Dwight</h1>
             <span
@@ -44,10 +44,10 @@
         </UDropdownMenu>
       </div>
       <UButton
-        v-else
+        v-else-if="route.path !== '/auth/login'"
         variant="soft"
         color="primary"
-        @click="login"
+        @click="goToLogin"
       >
         Login
       </UButton>
@@ -109,5 +109,13 @@ const truncatedTitle = computed(() => {
 
 function toggleSidebar() {
   chatStore.toggleSidebar();
+}
+
+function goToLogin() {
+  navigateTo('/auth/login');
+}
+
+function goToHome() {
+  navigateTo('/');
 }
 </script>
