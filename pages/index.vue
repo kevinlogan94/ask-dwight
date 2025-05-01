@@ -30,7 +30,7 @@
                   <!-- Display AI response content -->
                   <div class="prose prose-invert max-w-none" v-html="message.htmlContent || message.content"></div>
                 </div>
-                <UButton class="mt-4 w-full" variant="soft" size="lg" v-if="message.isThrottleMessage" label="Start a new conversation" @click="chatStore.createNewConversation()" color="primary" />
+                <UButton class="mt-4 w-full" size="lg" v-if="message.isThrottleMessage" label="Start a new conversation" @click="chatStore.createNewConversation()" color="primary"/>
                 <!-- Show suggestion chips for assistant messages if available -->
                 <SuggestionChips
                   v-if="message.suggestions?.length"
