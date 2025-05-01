@@ -25,11 +25,12 @@
 
             <!-- Assistant Message (AI Response) -->
             <div v-else-if="message.sender === 'assistant'" class="flex items-start">
-              <div class="max-w-[80%]">
-                <div class="bg-gray-800 backdrop-blur-sm rounded-lg p-3 text-white">
+              <div class="max-w-[90%]">
+                <div :class="message.isThrottleMessage ? 'bg-gray-900 backdrop-blur-sm rounded-lg p-3 text-white' : 'bg-gray-800 backdrop-blur-sm rounded-lg p-3 text-white'">
                   <!-- Display AI response content -->
                   <div class="prose prose-invert max-w-none" v-html="message.htmlContent || message.content"></div>
                 </div>
+                <UButton class="mt-4 w-full" variant="soft" size="lg" v-if="message.isThrottleMessage" label="Start a new conversation" @click="chatStore.createNewConversation()" color="primary" />
                 <!-- Show suggestion chips for assistant messages if available -->
                 <SuggestionChips
                   v-if="message.suggestions?.length"

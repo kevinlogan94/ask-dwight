@@ -16,6 +16,7 @@ export interface Message {
   timestamp: Date;
   status?: "loading" | "sent";
   suggestions?: string[];
+  isThrottleMessage?: boolean;
 }
 
 export interface Conversation {
@@ -56,7 +57,8 @@ export const useChatStore = defineStore("chat", () => {
   });
 
   const throttleConversation = computed(() => {
-    return (selectedConversation.value?.messages.length ?? 0) > 20 && user.value.subscription?.tier === "free";
+    const userMessages = selectedConversation.value?.messages.filter(x => x.sender === 'user') ?? [];
+    return userMessages.length >= 10 && user.value.subscription?.tier === "free";
   });
 
   // Actions
@@ -254,6 +256,7 @@ export const useChatStore = defineStore("chat", () => {
               htmlContent: htmlContent,
               sender: "assistant",
               status: "sent",
+              isThrottleMessage: true,
             });
           }
         } else {
