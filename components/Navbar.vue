@@ -1,6 +1,6 @@
 <template>
   <UDashboardNavbar 
-    class="fixed w-full z-30"
+    class="fixed w-full z-50"
     :toggle="false"
     v-if="route.path !== '/auth/confirm'"
   >
@@ -30,16 +30,16 @@
     </template>
     
     <template #right>
-      <div v-if="isAuthenticated">
-        <UDropdownMenu :items="profileMenuItems">
+      <div v-if="user">
+        <UDropdownMenu :items="profileMenuItems" :content="{align: 'end'}" :prevent-scroll="false">
           <UButton color="neutral" variant="ghost" trailing-icon="heroicons:chevron-down">
             <div class="flex items-center gap-2">
               <UAvatar
-                :src="user?.avatar"
-                :alt="user?.name"
+                :src="user.user_metadata.avatar_url"
+                :alt="user.user_metadata.name"
                 size="sm"
               />
-              <span class="hidden sm:inline">{{ user?.name }}</span>
+              <span class="hidden sm:inline">{{ user.user_metadata.name }}</span>
             </div>
           </UButton>
         </UDropdownMenu>
@@ -58,43 +58,48 @@
 
 <script setup lang="ts">
 import { useChatStore } from "~/stores/chat";
-import { useAuth } from "~/composables/useAuth";
 import { useRoute } from 'vue-router';
 import { useBreakpoints, breakpointsTailwind } from '@vueuse/core';
 
 const route = useRoute();
 const chatStore = useChatStore();
-const { user, isAuthenticated, login, logout } = useAuth();
+const user = useSupabaseUser();
+const supabase = useSupabaseClient();
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const isMobile = breakpoints.smaller('sm'); // smaller than 640px
 
+onMounted(() => {
+  console.log(user.value);
+})
+
 const profileMenuItems = computed(() => [
   [
     {
-      label: user.value?.name,
+      label: user.value?.user_metadata.name,
       avatar: {
-        src: user.value?.avatar,
-        alt: user.value?.name
+        src: user.value?.user_metadata.avatar_url,
+        alt: user.value?.user_metadata.name
       },
       type: 'label',
       disabled: true
     },
     {
-      label: user.value?.email,
+      label: user.value?.user_metadata.email,
       type: 'label',
       disabled: true
     }
   ],
   [
     {
-      label: 'Settings',
-      icon: 'heroicons:cog-6-tooth'
+      label: 'Explore',
+      icon: 'heroicons:light-bulb',
+      onSelect: () => navigateTo('/explore')
     },
     {
       label: 'Logout',
       icon: 'heroicons:arrow-right-on-rectangle',
-      onSelect: () => logout()
+      onSelect: () => supabase.auth.signOut()
     }
   ]
 ]);

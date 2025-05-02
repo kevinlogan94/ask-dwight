@@ -25,7 +25,6 @@ import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui-pro";
 
 const supabase = useSupabaseClient();
-const baseUrl = useRuntimeConfig().public.baseUrl;
 
 const fields = [
   {
@@ -55,7 +54,7 @@ const providers = [{
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${baseUrl}/auth/confirm`,
+        redirectTo: `${window.location.origin}/auth/confirm`,
       },
     });
   }

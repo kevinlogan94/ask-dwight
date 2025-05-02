@@ -22,8 +22,6 @@ watch(user, () => {
           </p>
         </div>
         
-        <UDivider />
-        
         <UProgress class="w-full" animation="carousel" />
         
         <p class="text-sm text-gray-500 dark:text-gray-400">
