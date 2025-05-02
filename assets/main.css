@@ -5,3 +5,11 @@
 button:not([disabled]) {
   cursor: pointer;
 }
+
+/* Override Nuxt UI's body style when dropdown is open */
+body.overflow-hidden,
+body[style*="overflow: hidden"] {
+  overflow: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 0 !important;
+}

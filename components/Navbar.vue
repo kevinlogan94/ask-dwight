@@ -1,6 +1,6 @@
 <template>
   <UDashboardNavbar 
-    class="fixed w-full z-50"
+    class="fixed w-full z-50 bg-white dark:bg-gray-900 shadow-sm"
     :toggle="false"
     v-if="route.path !== '/auth/confirm'"
   >
@@ -31,7 +31,10 @@
     
     <template #right>
       <div v-if="user">
-        <UDropdownMenu :items="profileMenuItems" :content="{align: 'end'}" :prevent-scroll="false">
+        <UDropdownMenu 
+          :items="profileMenuItems" 
+          :content="{align: 'end'}" 
+        >
           <UButton color="neutral" variant="ghost" trailing-icon="heroicons:chevron-down">
             <div class="flex items-center gap-2">
               <UAvatar
@@ -76,15 +79,6 @@ onMounted(() => {
 const profileMenuItems = computed(() => [
   [
     {
-      label: user.value?.user_metadata.name,
-      avatar: {
-        src: user.value?.user_metadata.avatar_url,
-        alt: user.value?.user_metadata.name
-      },
-      type: 'label',
-      disabled: true
-    },
-    {
       label: user.value?.user_metadata.email,
       type: 'label',
       disabled: true
@@ -92,9 +86,9 @@ const profileMenuItems = computed(() => [
   ],
   [
     {
-      label: 'Explore',
-      icon: 'heroicons:light-bulb',
-      onSelect: () => navigateTo('/explore')
+      label: 'Pricing',
+      icon: 'heroicons:tag',
+      onSelect: () => navigateTo('/pricing')
     },
     {
       label: 'Logout',
