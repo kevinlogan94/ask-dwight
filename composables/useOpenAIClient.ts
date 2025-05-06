@@ -1,6 +1,6 @@
 import { OpenAI } from "openai";
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { DWIGHT_FULL_INSTRUCTIONS, DWIGHT_FULL_INSTRUCTIONS_35_turbo } from "./config/dwight-modes";
+import { DWIGHT_FULL_INSTRUCTIONS } from "./config/dwight-instructions";
 
 // Keep the client instance in the module scope to act like a singleton
 let openai: OpenAI | null = null;
@@ -41,14 +41,14 @@ export const useOpenAIClient = () => {
     }
 
     const chatMessages: ChatCompletionMessageParam[] = [
-      { role: "system", content: DWIGHT_FULL_INSTRUCTIONS_35_turbo },
+      { role: "system", content: DWIGHT_FULL_INSTRUCTIONS },
       ...messages,
     ];
 
     try {
       console.log("Sending completion request to OpenAI..."); // Log before sending
       const res = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4",
         messages: chatMessages,
         temperature: 0.7,
         max_completion_tokens: 1000,
