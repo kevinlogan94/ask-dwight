@@ -1,7 +1,15 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography"; /* Todo: Use this instead: https://tailwindcss.nuxtjs.org/ */
-@import "@nuxt/ui";
+@import "@nuxt/ui-pro";
 
 button:not([disabled]) {
   cursor: pointer;
+}
+
+/* Override Nuxt UI's body style when dropdown is open */
+body.overflow-hidden,
+body[style*="overflow: hidden"] {
+  overflow: auto !important;
+  overflow-x: hidden !important;
+  padding-right: 0 !important;
 }

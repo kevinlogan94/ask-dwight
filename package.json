@@ -13,7 +13,8 @@
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
     "@nuxt/icon": "1.11.0",
-    "@nuxt/ui": "3.0.2",
+    "@nuxt/ui-pro": "^3.1.0",
+    "@nuxtjs/supabase": "^1.5.0",
     "@pinia/nuxt": "^0.11.0",
     "@types/marked": "^6.0.0",
     "@vueuse/core": "^13.1.0",
@@ -36,6 +37,7 @@
     "prettier": "^3.5.3",
     "sass": "^1.86.2",
     "sass-loader": "^16.0.5",
-    "tailwindcss": "^4.1.2"
+    "tailwindcss": "^4.1.2",
+    "zod": "^3.24.3"
   }
 }

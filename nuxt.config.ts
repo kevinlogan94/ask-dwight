@@ -27,10 +27,15 @@ export default defineNuxtConfig({
     },
   },
   css: ["~/assets/main.css"],
-  modules: ["@nuxt/ui", "@nuxt/icon", "@vueuse/motion/nuxt", "@formkit/auto-animate", "nuxt-gtag", "@pinia/nuxt"],
+  modules: ["@nuxt/ui-pro", "@nuxt/icon", "@vueuse/motion/nuxt", "@formkit/auto-animate", "nuxt-gtag", "@pinia/nuxt", "@nuxtjs/supabase"],
   gtag: {
     id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_MEASUREMENT_ID,
   },
+  supabase: {
+    url: process.env.NUXT_PUBLIC_SUPABASE_URL,
+    key: process.env.NUXT_PUBLIC_SUPABASE_KEY,
+    redirect: false,
+    },
   runtimeConfig: {
     public: {
       chatgptApiKey: process.env.NUXT_PUBLIC_CHATGPT_API_KEY,
