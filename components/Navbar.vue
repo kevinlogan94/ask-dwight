@@ -91,8 +91,8 @@ const profileMenuItems = computed(() => [
 const truncatedTitle = computed(() => {
   const title = chatStore.selectedConversation?.title;
   if (!title) return ""; // Handle case where there is no title
-  if (isMobile.value && title.length > 10) {
-    return title.substring(0, 10) + "...";
+  if (isMobile.value && title.length > 7) {
+    return title.substring(0, 7) + "...";
   }
   return title; // Return full title on larger screens or if title is short
 });
