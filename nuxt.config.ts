@@ -45,7 +45,13 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/supabase",
     "@nuxt/image",
+    "@nuxtjs/google-fonts",
   ],
+  googleFonts: {
+    families: {
+      "Fredoka": true,
+    },
+  },
   gtag: {
     id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_MEASUREMENT_ID,
   },

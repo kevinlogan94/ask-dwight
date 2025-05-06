@@ -36,7 +36,7 @@
         <UButton
           v-for="conversation in chatStore.conversations"
           :key="conversation.id"
-          size="sm"
+          size="md"
           color="secondary"
           variant="ghost"
           class="w-full mb-2 text-left text-gray-700 dark:text-gray-300"
