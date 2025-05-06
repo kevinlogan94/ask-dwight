@@ -9,7 +9,7 @@
       placeholder="Ask anything..."
       autofocus
       :disabled="chatStore.throttleConversation"
-      class="flex-1 bg-transparent border-none outline-none placeholder:text-neutral-400 text-base transition-opacity duration-200"
+      class="flex-1 bg-transparent border-none outline-none placeholder:text-neutral-400 text-white text-base transition-opacity duration-200"
     />
     <UButton
       type="submit"
