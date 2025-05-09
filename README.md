@@ -19,7 +19,19 @@ For more on Nuxt, see the [Nuxt documentation](https://nuxt.com/docs/getting-sta
 
 ## Setup
 
-Install dependencies:
+1. Install Supabase CLI:
+
+```bash
+scoop install supabase
+```
+
+2. Login to Supabase:
+
+```bash
+supabase login
+```
+
+3. Install dependencies:
 
 ```bash
 pnpm install
@@ -33,9 +45,25 @@ Start the development server on `http://localhost:3000`:
 pnpm dev
 ```
 
-## Production
+## Deployment
 
-Build the application for production:
+### Netlify
+
+The application automatically deploys to Netlify when changes are pushed to any branch. Each branch gets its own preview deployment URL.
+
+### Supabase Functions
+
+Deploy edge functions to Supabase:
+
+```bash
+supabase functions deploy hello-world --project-ref <your-project-ref>
+```
+
+Note: Replace `<your-project-ref>` with your Supabase project reference ID. You can find this in your project settings or in your `.env` file.
+
+### Production Build
+
+To build the application locally:
 
 ```bash
 pnpm build
