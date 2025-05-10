@@ -1,4 +1,3 @@
-import conversationControlTrait from '~/composables/config/documents/dwight-conversation-control-trait.txt?raw'
 import introductionTrait from '~/composables/config/documents/dwight-introduction-trait.txt?raw'
 import suggestionTrait from '~/composables/config/documents/dwight-suggestion-trait.txt?raw'
 import valueDeliveryTrait from '~/composables/config/documents/dwight-value-delivery-trait.txt?raw'
