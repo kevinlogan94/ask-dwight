@@ -111,6 +111,7 @@ const handleSuggestionSelect = (suggestion: string) => {
 
 // Scroll to bottom on initial load
 onMounted(() => {
+  console.log("Mounted");
   if (!chatStore.conversations.length) {
     chatStore.createNewConversation();
   }
