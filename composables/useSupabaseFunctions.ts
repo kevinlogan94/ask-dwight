@@ -4,6 +4,7 @@ const SESSION_ID_KEY = "supabase_session_id";
 
 export enum SupabaseFunctions {
   STORE_LOGS = "store-application-logs",
+  HELLO_WORLD = "hello-world",
   // Add other function names here
 }
 

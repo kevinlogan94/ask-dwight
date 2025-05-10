@@ -4,10 +4,22 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import { createClient } from "jsr:@supabase/supabase-js@2"
+
+// CORS headers to allow requests from localhost and your production domain
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*', // Be more specific in production
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'apikey, Authorization, Content-Type, x-client-info',
+  'Access-Control-Max-Age': '86400', // Cache preflight response for 24 hours
+};
 
 Deno.serve(async (req) => {
-  if (req.method !== "POST") {
-    return new Response("Method Not Allowed", { status: 405 });
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', {
+      status: 200,
+      headers: {...corsHeaders},
+    });
   }
 
   const supabase = createClient(
@@ -18,7 +30,8 @@ Deno.serve(async (req) => {
   const { level, message, user_id, session_id } = await req.json()
 
   if (!level || !message) {
-    return new Response("Missing `level` or `message`", { status: 400 });
+    console.error("Missing `level` or `message`");
+    return new Response("Missing `level` or `message`", { status: 400, headers: {...corsHeaders}});
   }
 
   const { error } = await supabase.from("application_logs").insert([
@@ -26,20 +39,9 @@ Deno.serve(async (req) => {
   ])
 
   if (error) {
-    return new Response(JSON.stringify({ error }), { status: 500 });
+    console.error("Error storing log:", error);
+    return new Response(JSON.stringify({ error }), { status: 500, headers: {...corsHeaders}});
   }
 
-  return new Response("OK", { status: 200 });
+  return new Response("OK", { status: 200, headers: {...corsHeaders}});
 })
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/store-application-logs' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
