@@ -15,7 +15,6 @@ export const useOpenAIClient = () => {
 
     if (typeof apiKey === "string" && apiKey) {
       try {
-        console.log("Initializing OpenAI client (client-side)...");
         openai = new OpenAI({
           apiKey: apiKey,
           dangerouslyAllowBrowser: true, // Required for client-side usage
@@ -46,14 +45,12 @@ export const useOpenAIClient = () => {
     ];
 
     try {
-      console.log("Sending completion request to OpenAI..."); // Log before sending
       const res = await openai.chat.completions.create({
         model: "gpt-4",
         messages: chatMessages,
         temperature: 0.7,
         max_completion_tokens: 1000,
       });
-      console.log("Received response from OpenAI."); // Log after receiving
 
       if (res.choices?.length > 0 && res.choices[0].message) {
         console.log("Response from OpenAI:", res.choices[0].message.content);

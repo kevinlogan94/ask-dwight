@@ -5,7 +5,6 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
   const { organizeMessagesForApi } = useHelpers();
 
   async function generateSuggestions(): Promise<void> {
-    console.log("Generating suggestions...");
     if (
       !conversation.value ||
       conversation.value.messages[conversation.value.messages.length - 1].sender !== "assistant"

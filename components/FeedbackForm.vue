@@ -39,7 +39,6 @@ const feedbackMessage = ref("");
 const submitted = ref(false);
 
 const submit = async () => {
-  console.log("Submitting feedback...");
   submitted.value = false; // Reset submission status on new attempt
 
   try {
@@ -58,8 +57,6 @@ const submit = async () => {
 
     submitted.value = true;
     feedbackMessage.value = ""; // Clear the form
-
-    console.log("Feedback submitted successfully");
 
     // Close the modal after a short delay to show success message
     setTimeout(() => {
