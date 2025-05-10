@@ -1,6 +1,6 @@
 import { useSupabaseClient } from "#imports";
 
-const SESSION_ID_KEY = "supabase_session_id";
+const SESSION_ID_KEY = "supabase-session-id";
 
 export enum SupabaseFunctions {
   STORE_LOGS = "store-application-logs",
