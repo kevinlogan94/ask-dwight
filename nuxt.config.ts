@@ -49,7 +49,7 @@ export default defineNuxtConfig({
   ],
   googleFonts: {
     families: {
-      "Fredoka": true,
+      Fredoka: true,
     },
   },
   gtag: {

@@ -2,8 +2,10 @@
 <template>
   <div class="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center text-center px-4">
     <div class="flex flex-col items-center justify-center mb-8" v-motion-slide-bottom>
-      <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="h-36 w-36 mb-4" v-motion-slide-bottom/>
-      <span class="font-bold text-4xl text-gray-900 dark:text-white" v-motion-slide-bottom :delay="300">Ask Dwight</span>
+      <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="h-36 w-36 mb-4" v-motion-slide-bottom />
+      <span class="font-bold text-4xl text-gray-900 dark:text-white" v-motion-slide-bottom :delay="300"
+        >Ask Dwight</span
+      >
     </div>
     <h1 class="text-lg mb-6 dark:text-gray-400 text-gray-600" v-motion-slide-bottom :delay="500">
       Conquer AI. Win Business. Fear Nothing.

@@ -21,7 +21,8 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
 
     messagesForApi.push({
       role: "user",
-      content: "Generate 3 concise, relevant, unformatted(no quotes, no numbers, etc.) follow-up prompts for the user to use to response to the AI's last message.",
+      content:
+        "Generate 3 concise, relevant, unformatted(no quotes, no numbers, etc.) follow-up prompts for the user to use to response to the AI's last message.",
     });
 
     const { getClientSideChatCompletion } = useOpenAIClient();
@@ -66,9 +67,9 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
 
   function organizeSuggestions(suggestions: string): string[] {
     return suggestions
-    .split("\n")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
+      .split("\n")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
   }
 
   return {

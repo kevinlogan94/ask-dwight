@@ -15,14 +15,14 @@ export function useHelpers() {
    * @returns Promise<boolean> true if valid, false if not
    */
   async function validateImageUrl(url: string): Promise<boolean> {
-      if (!url) return false;
+    if (!url) return false;
 
-      return new Promise((resolve) => {
-        const img = new window.Image();
-        img.onload = () => resolve(true);
-        img.onerror = () => resolve(false);
-        img.src = url;
-      });
+    return new Promise((resolve) => {
+      const img = new window.Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
   }
 
   return {

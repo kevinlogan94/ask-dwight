@@ -1,8 +1,8 @@
-import introductionTrait from '~/composables/config/documents/dwight-introduction-trait.txt?raw'
-import suggestionTrait from '~/composables/config/documents/dwight-suggestion-trait.txt?raw'
-import valueDeliveryTrait from '~/composables/config/documents/dwight-value-delivery-trait.txt?raw'
-import dwightWorkflowBuildLeads from '~/composables/config/documents/dwight-workflow-build-leads.txt?raw'
-import conversationThrottlingTrait from '~/composables/config/documents/dwight-conversation-throttling.txt?raw'
+import introductionTrait from "~/composables/config/documents/dwight-introduction-trait.txt?raw";
+import suggestionTrait from "~/composables/config/documents/dwight-suggestion-trait.txt?raw";
+import valueDeliveryTrait from "~/composables/config/documents/dwight-value-delivery-trait.txt?raw";
+import dwightWorkflowBuildLeads from "~/composables/config/documents/dwight-workflow-build-leads.txt?raw";
+import conversationThrottlingTrait from "~/composables/config/documents/dwight-conversation-throttling.txt?raw";
 
 export const DWIGHT_FULL_INSTRUCTIONS = `
 Static Foundations

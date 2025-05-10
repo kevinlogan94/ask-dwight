@@ -57,7 +57,7 @@ export const useChatStore = defineStore("chat", () => {
   });
 
   const throttleConversation = computed(() => {
-    const userMessages = selectedConversation.value?.messages.filter(x => x.sender === 'user') ?? [];
+    const userMessages = selectedConversation.value?.messages.filter((x) => x.sender === "user") ?? [];
     return userMessages.length >= 10 && user.value.subscription?.tier === "free";
   });
 

@@ -1,33 +1,35 @@
 <script setup lang="ts">
-const user = useSupabaseUser()
+const user = useSupabaseUser();
 
-watch(user, () => {
-  if (user.value) {
+watch(
+  user,
+  () => {
+    if (user.value) {
       // Redirect to protected page
-      return navigateTo('/')
-  }
-}, { immediate: true })
+      return navigateTo("/");
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
-    <div class="flex flex-col items-center justify-center gap-4 p-4 min-h-screen">
+  <div class="flex flex-col items-center justify-center gap-4 p-4 min-h-screen">
     <UPageCard class="w-full max-w-md">
       <div class="flex flex-col items-center justify-center p-6 space-y-6 text-center">
         <UIcon name="i-heroicons-check-circle" class="text-primary w-16 h-16" />
-        
+
         <div class="space-y-2">
           <h1 class="text-2xl font-bold">Authentication in Progress</h1>
-          <p class="text-gray-500 dark:text-gray-400">
-            Please wait while we confirm your authentication...
-          </p>
+          <p class="text-gray-500 dark:text-gray-400">Please wait while we confirm your authentication...</p>
         </div>
-        
+
         <UProgress class="w-full" animation="carousel" />
-        
+
         <p class="text-sm text-gray-500 dark:text-gray-400">
           You'll be redirected automatically once the process is complete.
         </p>
       </div>
     </UPageCard>
-    </div>
+  </div>
 </template>

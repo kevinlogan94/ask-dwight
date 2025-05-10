@@ -23,7 +23,12 @@
           class="w-full"
         />
 
-        <UButton type="submit" :disabled="!feedbackMessage.trim()" label="Send Feedback" class="w-full justify-center" />
+        <UButton
+          type="submit"
+          :disabled="!feedbackMessage.trim()"
+          label="Send Feedback"
+          class="w-full justify-center"
+        />
 
         <p v-if="submitted" class="text-green-600 text-sm text-center pt-2" v-motion-pop>Thanks for your feedback!</p>
       </form>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const router = useRouter()
+const router = useRouter();
 
 onMounted(() => {
-  router.push('/auth/login')
-})
+  router.push("/auth/login");
+});
 </script>

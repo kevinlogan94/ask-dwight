@@ -9,18 +9,18 @@ export interface Subscription {
   // Stripe-specific identifiers
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
-  
+
   // Subscription details
-  status: 'active' | 'canceled' | 'past_due' | 'trialing' | 'incomplete';
-  tier: 'free' | 'premium' | 'enterprise';
-  
+  status: "active" | "canceled" | "past_due" | "trialing" | "incomplete";
+  tier: "free" | "premium" | "enterprise";
+
   // Billing cycle information
   currentPeriodStart?: Date;
   currentPeriodEnd?: Date;
   cancelAtPeriodEnd?: boolean;
-  
+
   // Payment information
-  priceId?: string;  // Stripe price/plan ID
+  priceId?: string; // Stripe price/plan ID
 }
 
 /**
