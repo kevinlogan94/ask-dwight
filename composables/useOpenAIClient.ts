@@ -44,6 +44,8 @@ export const useOpenAIClient = () => {
       ...messages,
     ];
 
+    console.log("Latest message to OpenAI:", chatMessages[chatMessages.length - 1].content);
+
     try {
       const res = await openai.chat.completions.create({
         model: "gpt-4",
