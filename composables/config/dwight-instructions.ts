@@ -3,6 +3,7 @@ import suggestionTrait from "~/composables/config/documents/dwight-suggestion-tr
 import valueDeliveryTrait from "~/composables/config/documents/dwight-value-delivery-trait.txt?raw";
 import dwightWorkflowBuildLeads from "~/composables/config/documents/dwight-workflow-build-leads.txt?raw";
 import conversationThrottlingTrait from "~/composables/config/documents/dwight-conversation-throttling.txt?raw";
+import generalExamples from "~/composables/config/documents/dwight-general-examples.txt?raw";
 
 export const DWIGHT_FULL_INSTRUCTIONS = `
 Static Foundations
@@ -46,6 +47,11 @@ ${dwightWorkflowBuildLeads}
 
 Example Calibration:
 Model your behavior after provided examples in the personality trait examples below
+
+---
+
+General Examples:
+${generalExamples}
 
 ---
 
