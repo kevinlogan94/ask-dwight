@@ -72,6 +72,7 @@ import ColorModeButton from "~/components/ColorModeButton.vue";
 
 // Use the chat store
 const chatStore = useChatStore();
+const { gtag } = useGtag();
 
 // Local state for component functionality
 const isOpen = computed({
@@ -85,6 +86,13 @@ const toggleSidebar = () => {
 
 const handleNewConversation = () => {
   chatStore.createNewConversation();
+
+  gtag("event", "sidebar_click_newConversation", {
+    event_category: "engagement",
+    event_label: "ask_dwight",
+    non_interaction: false,
+  });
+
   if (window.innerWidth < 1024) {
     // Auto-close sidebar on mobile after creating a new conversation
     isOpen.value = false;
@@ -97,6 +105,13 @@ const selectConversation = (conversation: Conversation) => {
     // Auto-close sidebar on mobile after selecting a conversation
     isOpen.value = false;
   }
+
+  gtag("event", "sidebar_click_selectConversation", {
+    event_category: "engagement",
+    event_label: "ask_dwight",
+    value: conversation.id,
+    non_interaction: false,
+  });
 };
 </script>
 

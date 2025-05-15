@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+const { gtag } = useGtag();
 const props = defineProps<{
   suggestions: string[];
 }>();
@@ -36,6 +37,13 @@ const emit = defineEmits<{
 
 function handleClick(suggestion: string) {
   emit("select", suggestion);
+
+  gtag("event","suggestionChips_click_select", {
+    event_category: "engagement",
+    event_label: "ask_dwight",
+    value: suggestion,
+    non_interaction: false,
+  });
 }
 </script>
 

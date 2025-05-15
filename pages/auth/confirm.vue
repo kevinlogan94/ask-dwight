@@ -1,10 +1,17 @@
 <script setup lang="ts">
 const user = useSupabaseUser();
+const { gtag } = useGtag();
 
 watch(
   user,
   () => {
     if (user.value) {
+      gtag("event","confirm_page_success", {
+        event_category: "conversion",
+        event_label: "authentication",
+        value: user.value?.user_metadata?.email,
+        non_interaction: true,
+      });
       // Redirect to protected page
       return navigateTo("/");
     }

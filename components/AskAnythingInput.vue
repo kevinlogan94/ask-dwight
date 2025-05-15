@@ -28,6 +28,7 @@
 import { useChatStore } from "~/stores/chat";
 
 const chatStore = useChatStore();
+const { gtag } = useGtag();
 
 const props = defineProps({
   onSubmit: {
@@ -42,6 +43,13 @@ const handleSubmit = () => {
   if (searchQuery.value.trim() && props.onSubmit) {
     props.onSubmit(searchQuery.value);
     searchQuery.value = "";
+
+    gtag("event","form_submit_question", {
+      event_category: "engagement",
+      event_label: "ask_dwight",
+      value: searchQuery.value.length, // Track length instead of content for privacy
+      non_interaction: false,
+    });
   }
 };
 </script>
