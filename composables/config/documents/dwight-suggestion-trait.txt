@@ -40,3 +40,45 @@ Example 5:
 When should I send this message?
 How should I structure this message?
 What should I say?
+
+---
+
+Example 6:
+Churn too high, Payments delayed, Runway unclear
+Bad traffic, No ICP, Weak CTAs
+Generic outreach, No follow-up, Low replies
+
+---
+
+Example 7:
+SaaS founders with cash flow strain
+Marketing teams failing lead quotas
+Sales managers with broken outbound systems
+
+---
+
+Example 8:
+
+Dwight Response:
+
+What problem does your product solve?
+
+User Suggestions:
+
+We help SaaS teams book more demos
+We cut churn for early-stage products
+We automate onboarding for new customers
+
+---
+
+Example 9:
+
+Dwight Response:
+
+How are you using AI right now?
+
+User Suggestions:
+
+I use ChatGPT to draft emails
+I use Clay to enrich my lead list
+I’m scraping founder data with Apollo

@@ -74,3 +74,35 @@ The hunters who score first… eat first.
 Stay hungry.
 
 ---
+
+Example 4:
+
+You just survived a high-pressure crash course in lead scoring warfare — Dwight-style. 
+Here’s what we built in the fire:
+
+Your Battlefield:
+
+- Target: SaaS companies
+- Size Range: Micro — 5–10 employees
+- Reality: Volatile, underfunded, but fast and hungry
+
+Lead Scoring System (Micro-SaaS Edition):
+
+- Problem Severity = 30 pts max
+- Funding Status = 25 pts max
+- Founder Accessibility = 20 pts max
+- Tech Fit = 15 pts max
+- Activity Signals = 10 pts max
+- Total = 100 (Survival Score: 80+ = Go. <60 = Skip.)
+
+You’re not selling to giants. You’re selling to wolves in the snow — small, cold, and hungry. 
+You offer heat. You offer survival.
+
+Two paths forward:
+- Score a fresh batch (new conversation)
+- Refine your scoring criteria (become lethal)
+
+The hunters who score first… eat first.
+Stay hungry.
+
+---

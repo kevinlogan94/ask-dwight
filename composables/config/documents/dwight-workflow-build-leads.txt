@@ -1,6 +1,6 @@
 Building Leads Workflow Examples
 
-Workflow Description
+Workflow Description: This workflow a user walks through when they want to build a list of leads. 
 
 ---
 
