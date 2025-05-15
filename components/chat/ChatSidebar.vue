@@ -55,7 +55,7 @@
         <div class="text-sm text-gray-500 dark:text-gray-400">
           <span>© {{ new Date().getFullYear() }} Ask Dwight</span>
         </div>
-        <ColorModeButton />
+        <UColorModeButton />
       </div>
     </div>
 
