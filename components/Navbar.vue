@@ -54,7 +54,6 @@ const route = useRoute();
 const chatStore = useChatStore();
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
-const { gtag } = useGtag();
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const isMobile = breakpoints.smaller("sm"); // smaller than 640px
@@ -86,7 +85,7 @@ const profileMenuItems = computed(() => [
       icon: "heroicons:arrow-right-on-rectangle",
       onSelect: () => {
         supabase.auth.signOut();
-        gtag("event","navbar_click_logout", {
+        useTrackEvent("navbar_click_logout", {
           event_category: "conversion",
           event_label: "authentication",
           non_interaction: false,
@@ -108,7 +107,7 @@ const truncatedTitle = computed(() => {
 function toggleSidebar() {
   chatStore.toggleSidebar();
 
-  gtag("event","navbar_click_toggleSidebar", {
+  useTrackEvent("navbar_click_toggleSidebar", {
     event_category: "engagement",
     event_label: "ui_interaction",
     non_interaction: false,

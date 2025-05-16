@@ -12,14 +12,13 @@
 
 <script setup lang="ts">
 const supabase = useSupabaseClient();
-const { gtag } = useGtag();
 
 const providers = [
   {
     label: "Continue with Google",
     icon: "i-simple-icons-google",
     onClick: () => {
-      gtag("event","login_page_submit", {
+      useTrackEvent("login_page_submit", {
         event_category: "conversion",
         event_label: "authentication",
         non_interaction: true,

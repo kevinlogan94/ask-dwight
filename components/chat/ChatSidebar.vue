@@ -68,11 +68,9 @@
 
 <script setup lang="ts">
 import { useChatStore, type Conversation } from "~/stores/chat";
-import ColorModeButton from "~/components/ColorModeButton.vue";
 
 // Use the chat store
 const chatStore = useChatStore();
-const { gtag } = useGtag();
 
 // Local state for component functionality
 const isOpen = computed({
@@ -87,7 +85,7 @@ const toggleSidebar = () => {
 const handleNewConversation = () => {
   chatStore.createNewConversation();
 
-  gtag("event", "sidebar_click_newConversation", {
+  useTrackEvent("sidebar_click_newConversation", {
     event_category: "engagement",
     event_label: "ask_dwight",
     non_interaction: false,
@@ -106,7 +104,7 @@ const selectConversation = (conversation: Conversation) => {
     isOpen.value = false;
   }
 
-  gtag("event", "sidebar_click_selectConversation", {
+  useTrackEvent("sidebar_click_selectConversation", {
     event_category: "engagement",
     event_label: "ask_dwight",
     value: conversation.id,

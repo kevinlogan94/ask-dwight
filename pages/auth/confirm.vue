@@ -1,12 +1,11 @@
 <script setup lang="ts">
 const user = useSupabaseUser();
-const { gtag } = useGtag();
 
 watch(
   user,
   () => {
     if (user.value) {
-      gtag("event","confirm_page_success", {
+      useTrackEvent("confirm_page_success", {
         event_category: "conversion",
         event_label: "authentication",
         value: user.value?.user_metadata?.email,
