@@ -55,7 +55,7 @@
         <div class="text-sm text-gray-500 dark:text-gray-400">
           <span>© {{ new Date().getFullYear() }} Ask Dwight</span>
         </div>
-        <ColorModeButton />
+        <UColorModeButton />
       </div>
     </div>
 
@@ -68,7 +68,6 @@
 
 <script setup lang="ts">
 import { useChatStore, type Conversation } from "~/stores/chat";
-import ColorModeButton from "~/components/ColorModeButton.vue";
 
 // Use the chat store
 const chatStore = useChatStore();
@@ -85,6 +84,13 @@ const toggleSidebar = () => {
 
 const handleNewConversation = () => {
   chatStore.createNewConversation();
+
+  useTrackEvent("sidebar_click_newConversation", {
+    event_category: "engagement",
+    event_label: "ask_dwight",
+    non_interaction: false,
+  });
+
   if (window.innerWidth < 1024) {
     // Auto-close sidebar on mobile after creating a new conversation
     isOpen.value = false;
@@ -97,6 +103,13 @@ const selectConversation = (conversation: Conversation) => {
     // Auto-close sidebar on mobile after selecting a conversation
     isOpen.value = false;
   }
+
+  useTrackEvent("sidebar_click_selectConversation", {
+    event_category: "engagement",
+    event_label: "ask_dwight",
+    value: conversation.id,
+    non_interaction: false,
+  });
 };
 </script>
 

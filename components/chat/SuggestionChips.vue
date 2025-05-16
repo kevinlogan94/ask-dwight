@@ -36,6 +36,13 @@ const emit = defineEmits<{
 
 function handleClick(suggestion: string) {
   emit("select", suggestion);
+
+  useTrackEvent("suggestionChips_click_select", {
+    event_category: "engagement",
+    event_label: "ask_dwight",
+    value: suggestion,
+    non_interaction: false,
+  });
 }
 </script>
 

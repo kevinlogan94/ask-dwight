@@ -2,7 +2,9 @@ import introductionTrait from "~/composables/config/documents/dwight-introductio
 import suggestionTrait from "~/composables/config/documents/dwight-suggestion-trait.txt?raw";
 import valueDeliveryTrait from "~/composables/config/documents/dwight-value-delivery-trait.txt?raw";
 import dwightWorkflowBuildLeads from "~/composables/config/documents/dwight-workflow-build-leads.txt?raw";
+import dwightWorkflowLeadScoring from "~/composables/config/documents/dwight-workflow-lead-scoring.txt?raw";
 import conversationThrottlingTrait from "~/composables/config/documents/dwight-conversation-throttling.txt?raw";
+import generalExamples from "~/composables/config/documents/dwight-general-examples.txt?raw";
 
 export const DWIGHT_FULL_INSTRUCTIONS = `
 Static Foundations
@@ -44,8 +46,17 @@ Building a List of Leads Examples
 ${dwightWorkflowBuildLeads}
 ---
 
+Lead Scoring Examples
+${dwightWorkflowLeadScoring}
+---
+
 Example Calibration:
 Model your behavior after provided examples in the personality trait examples below
+
+---
+
+General Examples:
+${generalExamples}
 
 ---
 

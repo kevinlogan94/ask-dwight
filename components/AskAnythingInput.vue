@@ -42,6 +42,13 @@ const handleSubmit = () => {
   if (searchQuery.value.trim() && props.onSubmit) {
     props.onSubmit(searchQuery.value);
     searchQuery.value = "";
+
+    useTrackEvent("form_submit_question", {
+      event_category: "engagement",
+      event_label: "ask_dwight",
+      value: searchQuery.value.length, // Track length instead of content for privacy
+      non_interaction: false,
+    });
   }
 };
 </script>

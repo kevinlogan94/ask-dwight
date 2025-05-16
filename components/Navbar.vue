@@ -83,7 +83,14 @@ const profileMenuItems = computed(() => [
     {
       label: "Logout",
       icon: "heroicons:arrow-right-on-rectangle",
-      onSelect: () => supabase.auth.signOut(),
+      onSelect: () => {
+        supabase.auth.signOut();
+        useTrackEvent("navbar_click_logout", {
+          event_category: "conversion",
+          event_label: "authentication",
+          non_interaction: false,
+        });
+      },
     },
   ],
 ]);
@@ -99,6 +106,12 @@ const truncatedTitle = computed(() => {
 
 function toggleSidebar() {
   chatStore.toggleSidebar();
+
+  useTrackEvent("navbar_click_toggleSidebar", {
+    event_category: "engagement",
+    event_label: "ui_interaction",
+    non_interaction: false,
+  });
 }
 
 function goToLogin() {
