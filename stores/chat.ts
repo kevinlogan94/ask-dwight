@@ -5,26 +5,9 @@ import { useLocalStorage } from "@vueuse/core";
 import { useMessages } from "~/composables/useMessages"; // Import the useMessages composable
 import type { User } from "~/models/user";
 import { DEFAULT_ERROR_MESSAGE } from "~/composables/useMessages";
-import { getOrCreateSessionId, parseMarkdown } from "~/utils/helpers";
+import { parseMarkdown } from "~/utils/helpers";
+import type { Message, Conversation } from "~/models/chat";
 
-export interface Message {
-  id: string;
-  content: string;
-  htmlContent?: string;
-  sender: "user" | "assistant" | "system";
-  timestamp: Date;
-  status?: "loading" | "sent";
-  suggestions?: string[];
-  isThrottleMessage?: boolean;
-}
-
-export interface Conversation {
-  id: string;
-  title: string;
-  messages: Message[];
-  unread?: boolean;
-  createdAt: Date;
-}
 
 export const useChatStore = defineStore("chat", () => {
   // State

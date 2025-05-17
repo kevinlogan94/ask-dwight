@@ -1,6 +1,6 @@
 import { marked } from "marked";
 import DOMPurify from "isomorphic-dompurify";
-import type { Message } from "~/stores/chat";
+import type { Message } from "~/models/chat";
 
 // Session utilities
 const SESSION_ID_KEY = "supabase-session-id";

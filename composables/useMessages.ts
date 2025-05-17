@@ -1,4 +1,4 @@
-import type { Message } from "~/stores/chat";
+import type { Message } from "~/models/chat";
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { useOpenAIClient } from "~/composables/useOpenAIClient";
 import { organizeMessagesForApi, parseMarkdown } from "~/utils/helpers";
