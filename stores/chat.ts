@@ -4,7 +4,6 @@ import { useOpenAIClient } from "~/composables/useOpenAIClient";
 import { useLocalStorage } from "@vueuse/core";
 import { useSuggestions } from "~/composables/useSuggestions";
 import { useHelpers } from "~/composables/useHelpers";
-import { useMarkdown } from "~/composables/useMarkdown";
 import { useSystemInteractionControls } from "~/composables/useSystemInteractionControls";
 import type { User } from "~/models/user";
 
@@ -100,7 +99,7 @@ export const useChatStore = defineStore("chat", () => {
       removeMessage(loadingMessageId);
 
       if (responseMessage?.content) {
-        const { parse } = useMarkdown();
+        const { parse } = useHelpers();
         const htmlContent = await parse(responseMessage.content);
 
         addMessage({
@@ -233,7 +232,7 @@ export const useChatStore = defineStore("chat", () => {
       removeMessage(loadingMessageId);
 
       if (responseMessage && responseMessage.content) {
-        const { parse } = useMarkdown();
+        const { parse } = useHelpers();
         const htmlContent = await parse(responseMessage.content);
 
         // Add the actual AI response with parsed HTML
