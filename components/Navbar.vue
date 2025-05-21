@@ -48,7 +48,7 @@
 import { useChatStore } from "~/stores/chat";
 import { useRoute } from "vue-router";
 import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
-import { useHelpers } from "~/composables/useHelpers";
+import { validateImageUrl } from "~/utils/helpers";
 
 const route = useRoute();
 const chatStore = useChatStore();
@@ -61,7 +61,7 @@ const isMobile = breakpoints.smaller("sm"); // smaller than 640px
 const avatarUrl = ref("");
 
 onMounted(async () => {
-  avatarUrl.value = (await useHelpers().validateImageUrl(user.value?.user_metadata?.avatar_url))
+  avatarUrl.value = (await validateImageUrl(user.value?.user_metadata?.avatar_url))
     ? user.value?.user_metadata?.avatar_url
     : "";
 });
