@@ -1,6 +1,11 @@
 import type { Conversation } from "~/models/chat";
 import { SalesActivityCategory, CATEGORY_DETAILS } from "~/utils/gamification/salesActivityCategories";
 
+// Define our milestones in minutes
+export const milestones = {
+  timeSaved: [10, 30, 60, 120, 240, 480],
+};
+
 export function organizePromptInfo(prompt: string): { category: SalesActivityCategory; timeSaved: number } {
   let categories: SalesActivityCategory[] = [];
 
