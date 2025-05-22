@@ -93,7 +93,7 @@ import SuggestionChips from "~/components/chat/SuggestionChips.vue";
 import TypingAnimation from "~/components/chat/TypingAnimation.vue";
 import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
 import ChatSidebar from "~/components/chat/ChatSidebar.vue";
-import { useChatStore, type Message } from "~/stores/chat";
+import { useChatStore } from "~/stores/chat";
 
 // Use the chat store
 const chatStore = useChatStore();
