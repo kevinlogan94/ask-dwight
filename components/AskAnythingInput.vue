@@ -1,5 +1,9 @@
 <template>
-  <form
+  <div class="relative w-full">
+    <div class="flex justify-end mb-2 mr-1">
+      <DojoMeter />
+    </div>
+    <form
     class="search-input bg-neutral-800/70 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2 border border-neutral-700 shadow-lg"
     @submit.prevent="handleSubmit"
   >
@@ -22,10 +26,12 @@
     />
   </form>
   <p class="text-xs text-neutral-400 mt-1 text-center">Dwight can make mistakes. Double-check his work.</p>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useChatStore } from "~/stores/chat";
+import DojoMeter from "./chat/DojoMeter.vue";
 
 const chatStore = useChatStore();
 
