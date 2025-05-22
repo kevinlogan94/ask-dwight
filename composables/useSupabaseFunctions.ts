@@ -45,6 +45,9 @@ export const useSupabaseFunctions = () => {
     const sessionId = getOrCreateSessionId();
     const user = useSupabaseUser();
 
+    // Only store logs in production
+    if (process.env.NODE_ENV !== "production") return;
+
     return invoke<{ success: boolean }>(SupabaseFunctions.STORE_LOGS, {
       ...log,
       session_id: sessionId,
