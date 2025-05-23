@@ -4,15 +4,15 @@
     <UTooltip
       :text="tooltipText"
       :content="{ side: 'top' }"
-      :open="showViaMilestone || showViaEvent"
+      :open="showTooltipViaMilestone || showTooltipViaEvent"
       :delayDuration="50"
       :ui="{ text: 'text-lg' }"
     >
       <div
         class="relative flex items-center justify-center w-11 h-11 bg-neutral-800/70 hover:bg-neutral-900 backdrop-blur-sm rounded-full shadow-lg"
-        @mouseenter="showViaEvent = true"
-        @mouseleave="showViaEvent = false"
-        @click="showViaEvent = !showViaEvent"
+        @mouseenter="showTooltipViaEvent = true"
+        @mouseleave="showTooltipViaEvent = false"
+        @click="showTooltipViaEvent = !showTooltipViaEvent"
       >
         <!-- Circular progress bar -->
         <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36" overflow="visible">
@@ -49,7 +49,7 @@
         </div>
 
         <!-- Lightning effect (only visible when milestone reached) -->
-        <template v-if="showExplosion">
+        <template v-if="showShockwave">
           <!-- Lightning bolts that shoot outward -->
           <svg
             v-for="n in 6"
@@ -68,17 +68,22 @@
               :style="{ animationDelay: `${n * 0.2}s` }"
             />
           </svg>
-
-          <!-- Particles for additional effect -->
-          <div
-            v-for="n in 8"
-            :key="`particle-${n}`"
-            class="absolute w-2.5 h-2.5 rounded-full animate-particle"
-            :style="getExplosionParticleStyle(n)"
-          ></div>
         </template>
       </div>
     </UTooltip>
+
+    <UModal v-model:open="isModalOpen" title="Milestone Dominated. Belt Earned.">
+      <template #body>
+        <p class="text-center">You executed a clean strike and saved 10 minutes.</p>
+        <p class="text-center">Form: acceptable. Focus: unwavering.</p>
+
+        <p class="text-center text-sm text-neutral-500 mt-5">
+          <ULink to="/auth/login" class="text-success">Log in</ULink> to preserve your time crushed across conversations..
+        </p>
+
+        <UButton label="Back to battle!" class="w-full justify-center mt-5" @click="isModalOpen = false" />
+      </template>
+    </UModal>
   </div>
 </template>
 
@@ -100,10 +105,13 @@ const lastMilestoneReached = useLocalStorage("last-milestone", {
 });
 
 // States for animations and feedback
-const showExplosion = ref(false);
-const showViaMilestone = ref(false);
-const showViaEvent = ref(false);
+const showShockwave = ref(false);
+const showTooltipViaMilestone = ref(false);
+const showTooltipViaEvent = ref(false);
 const reachedMilestone = ref(0);
+
+// Modal state
+const isModalOpen = ref(false);
 
 //----------------------------------------------
 // COMPUTED PROPERTIES
@@ -137,7 +145,7 @@ const isComplete = computed(() => progressPercentage.value >= 100);
 // UI elements
 const tooltipText = computed(() => {
   if (isComplete.value) {
-    return "Milestone reached!";
+    return "Milestone Crushed. Belt Earned.";
   }
   return `${totalSavedTime.value} min saved — ${minutesToNextMilestone.value} to next milestone`;
 });
@@ -149,38 +157,8 @@ const dashOffset = computed(() => {
 });
 
 //----------------------------------------------
-// ANIMATIONS
-//----------------------------------------------
-
-// Particle animation
-const explosionAnimation = {
-  initial: { opacity: 0, scale: 0 },
-  enter: {
-    opacity: [0, 1, 0.5, 0, 0.5, 0],
-    scale: [0, 1.5, 1, 0.8, 1.2, 0],
-    transition: {
-      duration: 5,
-      repeat: 1,
-      ease: "easeInOut",
-    },
-  },
-};
-
-//----------------------------------------------
 // HELPER FUNCTIONS
 //----------------------------------------------
-
-// Particles positioning
-function getExplosionParticleStyle(index: number) {
-  const angle = (index / 8) * 2 * Math.PI;
-  const distance = 12 + Math.random() * 8;
-
-  return {
-    left: `calc(50% + ${Math.cos(angle) * distance}px)`,
-    top: `calc(50% + ${Math.sin(angle) * distance}px)`,
-    animationDelay: `${Math.random() * 0.2}s`,
-  };
-}
 
 // Lightning bolt styling
 function getLightningStyle(index: number) {
@@ -217,25 +195,24 @@ function getLightningPath(index: number) {
 watch(
   totalSavedTime,
   (newValue) => {
-    if (isComplete.value && !showExplosion.value) {
+    if (isComplete.value && !showShockwave.value) {
       // Capture milestone for display
       reachedMilestone.value = nextMilestone.value;
 
       // Show celebration effects
-      showExplosion.value = true;
-      showViaMilestone.value = true;
+      showShockwave.value = true;
+      showTooltipViaMilestone.value = true;
 
       // Handle cleanup timing
       setTimeout(() => {
+        // Show modal
+        showTooltipViaMilestone.value = false;
+        isModalOpen.value = true;
+
         // Update saved milestone
         lastMilestoneReached.value.timeSaved = nextMilestone.value;
-        showExplosion.value = false;
-
-        // Keep tooltip visible a bit longer
-        setTimeout(() => {
-          showViaMilestone.value = false;
-        }, 2000);
-      }, 5500);
+        showShockwave.value = false;
+      }, 3000);
     }
   },
   { immediate: true },
