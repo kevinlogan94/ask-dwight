@@ -203,6 +203,13 @@ watch(
       showShockwave.value = true;
       showTooltipViaMilestone.value = true;
 
+      useTrackEvent("dojoMeter_milestone_reached", {
+        event_category: "gamification",
+        event_label: "milestone_reached",
+        value: { reachedMilestone: reachedMilestone.value },
+        non_interaction: false,
+      });
+
       // Handle cleanup timing
       setTimeout(() => {
         // Show modal
