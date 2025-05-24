@@ -1,5 +1,5 @@
 <template>
-  <UDashboardNavbar
+  <UHeader
     class="fixed w-full z-50 bg-white dark:bg-gray-900 shadow-sm"
     :toggle="false"
     v-if="route.path !== '/auth/confirm'"
@@ -41,7 +41,7 @@
         Login
       </UButton>
     </template>
-  </UDashboardNavbar>
+  </UHeader>
 </template>
 
 <script setup lang="ts">
