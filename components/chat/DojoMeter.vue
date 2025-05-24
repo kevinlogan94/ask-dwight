@@ -74,7 +74,7 @@
 
     <UModal v-model:open="isModalOpen" title="Milestone Dominated. Belt Earned.">
       <template #body>
-        <p class="text-center">You executed a clean strike and saved 10 minutes.</p>
+        <p class="text-center">You executed a clean strike and saved {{ totalSavedTime }} minutes.</p>
         <p class="text-center">Form: acceptable. Focus: unwavering.</p>
 
         <p v-if="!user" class="text-center text-sm text-neutral-500 mt-5">
@@ -101,10 +101,7 @@ import { useLocalStorage } from "@vueuse/core";
 const { totalSavedTime } = useGamification();
 const user = useSupabaseUser();
 
-// Persistent storage
-const lastMilestoneReached = useLocalStorage("last-milestone", {
-  timeSaved: 0,
-});
+const milestoneTutorialModalDisplayed = useLocalStorage("milestone-tutorial-modal-displayed", false);
 
 // States
 const showShockwave = ref(false);
@@ -120,10 +117,7 @@ const isModalOpen = ref(false);
 
 // Progress calculations
 const nextMilestone = computed(() => {
-  return (
-    milestones.timeSaved.find((milestone) => milestone > lastMilestoneReached.value.timeSaved) ||
-    lastMilestoneReached.value.timeSaved
-  );
+  return milestones.timeSaved.find((milestone) => milestone > totalSavedTime.value) || milestones.timeSaved[milestones.timeSaved.length - 1];
 });
 
 const minutesToNextMilestone = computed(() => {
@@ -131,12 +125,12 @@ const minutesToNextMilestone = computed(() => {
 });
 
 const progressPercentage = computed(() => {
-  if (lastMilestoneReached.value.timeSaved >= nextMilestone.value) {
+  if (totalSavedTime.value >= nextMilestone.value) {
     return 100;
   }
 
-  const currentProgress = totalSavedTime.value - lastMilestoneReached.value.timeSaved;
-  const targetProgress = nextMilestone.value - lastMilestoneReached.value.timeSaved;
+  const currentProgress = totalSavedTime.value;
+  const targetProgress = nextMilestone.value;
 
   return Math.min(100, Math.max(0, (currentProgress / targetProgress) * 100));
 });
@@ -219,10 +213,13 @@ watch(
       setTimeout(() => {
         // Show modal
         showTooltipViaMilestone.value = false;
-        isModalOpen.value = true;
 
-        // Update saved milestone
-        lastMilestoneReached.value.timeSaved = nextMilestone.value;
+        //Only trigger this on the first milestone that the user hits.
+        if (!milestoneTutorialModalDisplayed.value) {
+          isModalOpen.value = true;
+          milestoneTutorialModalDisplayed.value = true;
+        }
+
         showShockwave.value = false;
       }, 3000);
     }
