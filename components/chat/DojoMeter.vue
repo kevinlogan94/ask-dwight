@@ -77,7 +77,7 @@
         <p class="text-center">You executed a clean strike and saved 10 minutes.</p>
         <p class="text-center">Form: acceptable. Focus: unwavering.</p>
 
-        <p class="text-center text-sm text-neutral-500 mt-5">
+        <p v-if="!user" class="text-center text-sm text-neutral-500 mt-5">
           <ULink to="/auth/login" class="text-success">Log in</ULink> to preserve your time crushed across conversations..
         </p>
 
@@ -98,21 +98,20 @@ import { useLocalStorage } from "@vueuse/core";
 
 // Service connection
 const { totalSavedTime } = useGamification();
+const user = useSupabaseUser();
 
 // Persistent storage
 const lastMilestoneReached = useLocalStorage("last-milestone", {
   timeSaved: 0,
 });
 
-// States for animations and feedback
+// States
 const showShockwave = ref(false);
 const showTooltipViaMilestone = ref(false);
 const showTooltipViaEvent = ref(false);
 const reachedMilestone = ref(0);
 const maxMilestoneReached = ref(false);
-
-// Modal state
-const isModalOpen = ref(false);
+const isModalOpen = ref(true);
 
 //----------------------------------------------
 // COMPUTED PROPERTIES
