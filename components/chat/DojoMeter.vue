@@ -78,7 +78,7 @@
         <p class="text-center">Form: acceptable. Focus: unwavering.</p>
 
         <p v-if="!user" class="text-center text-sm text-neutral-500 mt-5">
-          <ULink to="/auth/login" class="text-success">Log in</ULink> to preserve your time crushed across
+          <ULink to="/auth/login" class="text-success">Log in</ULink> to preserve your time domination across
           conversations..
         </p>
 
