@@ -55,7 +55,10 @@
         <div class="text-sm text-gray-500 dark:text-gray-400">
           <span>© {{ new Date().getFullYear() }} Ask Dwight</span>
         </div>
-        <UColorModeButton />
+        <div class="flex items-center space-x-2">
+          <FeedbackButton />
+          <UColorModeButton />
+        </div>
       </div>
     </div>
 
@@ -67,7 +70,9 @@
 </template>
 
 <script setup lang="ts">
-import { useChatStore, type Conversation } from "~/stores/chat";
+import { useChatStore } from "~/stores/chat";
+import type { Conversation } from '~/models/chat';
+import FeedbackButton from "~/components/chat/FeedbackButton.vue";
 
 // Use the chat store
 const chatStore = useChatStore();

@@ -83,7 +83,6 @@
         </div>
       </div>
     </div>
-    <FeedbackForm />
   </div>
 </template>
 
@@ -92,7 +91,7 @@ import type { ScrollToBottomButtonInstance } from "~/components/chat/ScrollToBot
 import SuggestionChips from "~/components/chat/SuggestionChips.vue";
 import TypingAnimation from "~/components/chat/TypingAnimation.vue";
 import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
-import ChatSidebar from "~/components/chat/ChatSidebar.vue";
+import ChatSidebar from "~/components/ChatSidebar.vue";
 import { useChatStore } from "~/stores/chat";
 
 // Use the chat store

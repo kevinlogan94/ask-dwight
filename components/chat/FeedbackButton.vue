@@ -2,10 +2,8 @@
   <UModal v-model:open="isOpen" title="Provide Feedback">
     <UButton
       icon="i-heroicons-chat-bubble-left-ellipsis"
-      size="xl"
-      color="primary"
-      variant="solid"
-      class="fixed bottom-30 sm:bottom-9 right-6 sm:right-7 z-50 rounded-full shadow-lg"
+      color="neutral"
+      variant="ghost"
       aria-label="Open Feedback Form"
     />
     <template #body>
