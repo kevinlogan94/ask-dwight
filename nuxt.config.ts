@@ -54,7 +54,7 @@ export default defineNuxtConfig({
   },
   gtag: {
     id: process.env.NUXT_PUBLIC_GOOGLE_ANALYTICS_MEASUREMENT_ID,
-    enabled: process.env.NODE_ENV === "production"
+    enabled: process.env.NODE_ENV === "production",
   },
   supabase: {
     url: process.env.NUXT_PUBLIC_SUPABASE_URL,

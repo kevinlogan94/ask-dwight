@@ -3,18 +3,16 @@ import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/r
 import { useOpenAIClient } from "~/composables/useOpenAIClient";
 import { organizeMessagesForApi, parseMarkdown } from "~/utils/helpers";
 
-
 export const DEFAULT_ERROR_MESSAGE =
-    "Your sales coach is temporarily off the grid—probably closing a deal or wrestling an API. Don't worry. We're rerouting. Try again in a few.";
+  "Your sales coach is temporarily off the grid—probably closing a deal or wrestling an API. Don't worry. We're rerouting. Try again in a few.";
 
 export function useMessages() {
-
   // Get the chat store
   const chatStore = useChatStore();
-  
+
   // Get utilities and services
   const { getClientSideChatCompletion } = useOpenAIClient();
-  
+
   /**
    * Add a new message to the current conversation
    */
@@ -24,9 +22,7 @@ export function useMessages() {
       chatStore.createNewConversation();
     }
 
-    const conversation = chatStore.conversations.find(
-      (c) => c.id === chatStore.selectedConversationId
-    );
+    const conversation = chatStore.conversations.find((c) => c.id === chatStore.selectedConversationId);
 
     if (!conversation) {
       console.error("No conversation selected to add message");

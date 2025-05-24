@@ -8,7 +8,6 @@ import { DEFAULT_ERROR_MESSAGE } from "~/composables/useMessages";
 import { parseMarkdown } from "~/utils/helpers";
 import type { Message, Conversation } from "~/models/chat";
 
-
 export const useChatStore = defineStore("chat", () => {
   // State
 

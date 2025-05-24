@@ -1,8 +1,8 @@
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { organizeMessagesForApi } from "~/utils/helpers";
+import type { Conversation } from "~/models/chat";
 
 export function useSuggestions(conversation: Ref<Conversation | undefined>) {
-
   async function generateSuggestions(): Promise<void> {
     if (
       !conversation.value ||

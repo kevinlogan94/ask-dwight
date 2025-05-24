@@ -1,5 +1,6 @@
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { organizeMessagesForApi } from "~/utils/helpers";
+import type { Conversation } from "~/models/chat";
 
 /**
  * Composable for system-level interaction controls via Dwight.

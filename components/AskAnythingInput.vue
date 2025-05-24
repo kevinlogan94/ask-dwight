@@ -4,28 +4,28 @@
       <DojoMeter />
     </div>
     <form
-    class="search-input bg-neutral-800/70 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2 border border-neutral-700 shadow-lg"
-    @submit.prevent="handleSubmit"
-  >
-    <input
-      v-model="searchQuery"
-      type="text"
-      placeholder="Ask anything..."
-      autofocus
-      :disabled="chatStore.throttleConversation"
-      class="flex-1 bg-transparent border-none outline-none placeholder:text-neutral-400 text-white text-base transition-opacity duration-200"
-    />
-    <UButton
-      type="submit"
-      color="success"
-      variant="solid"
-      :disabled="!searchQuery.trim() || chatStore.aiResponsePending || chatStore.throttleConversation"
-      icon="heroicons:arrow-right"
-      :loading="chatStore.aiResponsePending"
-      class="h-8"
-    />
-  </form>
-  <p class="text-xs text-neutral-400 mt-1 text-center">Dwight can make mistakes. Double-check his work.</p>
+      class="search-input bg-neutral-800/70 backdrop-blur-sm rounded-xl p-3 flex items-center gap-2 border border-neutral-700 shadow-lg"
+      @submit.prevent="handleSubmit"
+    >
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Ask anything..."
+        autofocus
+        :disabled="chatStore.throttleConversation"
+        class="flex-1 bg-transparent border-none outline-none placeholder:text-neutral-400 text-white text-base transition-opacity duration-200"
+      />
+      <UButton
+        type="submit"
+        color="success"
+        variant="solid"
+        :disabled="!searchQuery.trim() || chatStore.aiResponsePending || chatStore.throttleConversation"
+        icon="heroicons:arrow-right"
+        :loading="chatStore.aiResponsePending"
+        class="h-8"
+      />
+    </form>
+    <p class="text-xs text-neutral-400 mt-1 text-center">Dwight can make mistakes. Double-check his work.</p>
   </div>
 </template>
 

@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { useChatStore } from "~/stores/chat";
-import type { Conversation } from '~/models/chat';
+import type { Conversation } from "~/models/chat";
 import FeedbackButton from "~/components/chat/FeedbackButton.vue";
 
 // Use the chat store

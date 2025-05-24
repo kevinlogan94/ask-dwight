@@ -40,7 +40,7 @@ export function organizeMessagesForApi(messages: Message[]) {
  */
 export async function validateImageUrl(url: string): Promise<boolean> {
   if (!url) return false;
-  
+
   // Skip validation on server
   if (process.server) return true;
 

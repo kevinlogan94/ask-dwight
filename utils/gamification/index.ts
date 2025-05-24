@@ -24,7 +24,10 @@ export function organizePromptInfo(prompt: string): { category: SalesActivityCat
 
   if (matchedCategories.length === 0) {
     // If no specific category matched, default to OTHER
-    return { category: SalesActivityCategory.OTHER, timeSaved: CATEGORY_DETAILS[SalesActivityCategory.OTHER].timeSaved };
+    return {
+      category: SalesActivityCategory.OTHER,
+      timeSaved: CATEGORY_DETAILS[SalesActivityCategory.OTHER].timeSaved,
+    };
   }
 
   // Sort by timeSaved in descending order to easily pick the best match
