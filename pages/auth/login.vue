@@ -4,8 +4,8 @@
       <UAuthForm title="Login" description="Login to your account" icon="i-heroicons-user" :providers="providers">
         <template #footer>
           By signing in, you agree to our
-          <ULink to="/terms-of-service" class="text-primary font-medium">Terms of Service</ULink> and
-          <ULink to="/privacy" class="text-primary font-medium">Privacy Policy</ULink>.
+          <ULink to="https://ask-dwight.com/terms" target="_blank" class="text-primary font-medium">Terms of Service</ULink> and
+          <ULink to="https://ask-dwight.com/privacy" target="_blank" class="text-primary font-medium">Privacy Policy</ULink>.
         </template>
       </UAuthForm>
     </UPageCard>
