@@ -7,38 +7,31 @@ export const milestones = {
 };
 
 export function organizePromptInfo(prompt: string): { category: SalesActivityCategory; timeSaved: number } {
-  let categories: SalesActivityCategory[] = [];
-
-  // Default time saved (3 minutes) if no category matches
-  let timeSaved = CATEGORY_DETAILS[SalesActivityCategory.OTHER].timeSaved;
-
-  // Convert prompt to lowercase for case-insensitive matching
   const lowercasePrompt = prompt.toLowerCase();
+  let matchedCategories: { category: SalesActivityCategory; timeSaved: number }[] = [];
 
-  // Check each pattern and collect all matching categories
-  Object.entries(CATEGORY_DETAILS).forEach(([category, details]) => {
-    // Skip the OTHER category as it matches everything
-    if (category !== SalesActivityCategory.OTHER && details.pattern.test(lowercasePrompt)) {
-      categories.push(category as SalesActivityCategory);
-      timeSaved += details.timeSaved;
+  Object.entries(CATEGORY_DETAILS).forEach(([categoryKey, details]) => {
+    // Skip the OTHER category in this initial matching phase
+    // It will be used as a fallback if no other categories match.
+    if (categoryKey === SalesActivityCategory.OTHER) {
+      return;
+    }
+
+    if (details.pattern.test(lowercasePrompt)) {
+      matchedCategories.push({ category: categoryKey as SalesActivityCategory, timeSaved: details.timeSaved });
     }
   });
-  
-  // If no categories match, set to "other" with default time saved
-  if (categories.length === 0) {
-    categories.push(SalesActivityCategory.OTHER);
-    // Default time saved is already set (3 minutes)
-  } else {
-    // Subtract the default time we added initially
-    timeSaved -= CATEGORY_DETAILS[SalesActivityCategory.OTHER].timeSaved;
+
+  if (matchedCategories.length === 0) {
+    // If no specific category matched, default to OTHER
+    return { category: SalesActivityCategory.OTHER, timeSaved: CATEGORY_DETAILS[SalesActivityCategory.OTHER].timeSaved };
   }
-  
-  // Cap the time saved at 30 minutes
-  timeSaved = Math.min(timeSaved, 30);
-  
-  // For now, just return the first category if multiple match
-  // We could also join them with a delimiter if needed
-  return { category: categories[0], timeSaved };
+
+  // Sort by timeSaved in descending order to easily pick the best match
+  matchedCategories.sort((a, b) => b.timeSaved - a.timeSaved);
+
+  // The first element is the one with the highest timeSaved
+  return matchedCategories[0];
 }
 
 export function getTotalTimeSaved(conversations: Conversation[]): number {
