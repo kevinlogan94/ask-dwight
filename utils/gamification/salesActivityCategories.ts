@@ -25,10 +25,10 @@ export interface CategoryDetails {
  */
 export const CATEGORY_DETAILS: Record<SalesActivityCategory, CategoryDetails> = {
   // Finding leads, qualifying buyers, or identifying target accounts.
-  // Matches: 'find leads', 'qualify prospects', 'lead list', 'lead scoring', 'target accounts'.
+  // Matches: 'find leads', 'qualify prospects', 'lead list', 'list of business leads', 'lead scoring'.
   [SalesActivityCategory.PROSPECTING]: {
     pattern:
-      /(?:\b(?:find|generate|identify|build|qualify|vet|assess|fix)\s+(?:(?:new|target|my)\s+)?(?:leads?|prospects?|buyers?|accounts?|lead\s+scoring(?:\s+system)?)|\b(?:lead\s+(?:list|discovery|qualification|generation|scoring)|target\s+accounts?|ICP|ideal\s+customer\s+profile|account\s+discovery|prospect\s+research))\b/i,
+      /(?:\b(?:find|generate|identify|build|qualify|vet|assess|fix)\s+(?:(?:new|target|my|a)\s+)?(?:leads?|prospects?|buyers?|accounts?|lead\s+scoring(?:\s+system)?|list\s+of\s+(?:business\s+)?(?:leads?|prospects?|buyers?|accounts?))|\b(?:lead\s+(?:list|discovery|qualification|generation|scoring)|list\s+of\s+(?:business\s+)?(?:leads?|prospects?)|target\s+accounts?|ICP|ideal\s+customer\s+profile|account\s+discovery|prospect\s+research))\b/i,
     timeSaved: 20,
   },
 
