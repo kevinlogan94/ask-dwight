@@ -109,6 +109,7 @@ const showShockwave = ref(false);
 const showTooltipViaMilestone = ref(false);
 const showTooltipViaEvent = ref(false);
 const reachedMilestone = ref(0);
+const maxMilestoneReached = ref(false);
 
 // Modal state
 const isModalOpen = ref(false);
@@ -195,9 +196,13 @@ function getLightningPath(index: number) {
 watch(
   totalSavedTime,
   (newValue) => {
-    if (isComplete.value && !showShockwave.value) {
+    if (isComplete.value && !showShockwave.value && !maxMilestoneReached.value) {
       // Capture milestone for display
       reachedMilestone.value = nextMilestone.value;
+
+      if (reachedMilestone.value >= milestones.timeSaved[milestones.timeSaved.length - 1]) {
+        maxMilestoneReached.value = true;
+      }
 
       // Show celebration effects
       showShockwave.value = true;
