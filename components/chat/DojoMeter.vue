@@ -74,7 +74,7 @@
 
     <UModal v-model:open="isModalOpen" title="Milestone Dominated. Belt Earned.">
       <template #body>
-        <p class="text-center">You executed a clean strike and saved {{ totalSavedTime }} minutes.</p>
+        <p class="text-center">You executed a clean strike and saved {{ formatTimeSaved(totalSavedTime, true) }}.</p>
         <p class="text-center">Form: acceptable. Focus: unwavering.</p>
 
         <p v-if="!user" class="text-center text-sm text-neutral-500 mt-5">
@@ -140,9 +140,9 @@ const isComplete = computed(() => progressPercentage.value >= 100);
 // UI elements
 const tooltipText = computed(() => {
   if (isComplete.value) {
-    return "Milestone Crushed. Belt Earned.";
+    return "Milestone Dominated. Belt Earned.";
   }
-  return `${totalSavedTime.value} min saved — ${minutesToNextMilestone.value} to next milestone`;
+  return `${formatTimeSaved(totalSavedTime.value)} saved — ${formatTimeSaved(minutesToNextMilestone.value)} to go`;
 });
 
 // Circular progress bar
