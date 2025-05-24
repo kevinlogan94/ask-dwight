@@ -112,7 +112,7 @@ const showTooltipViaMilestone = ref(false);
 const showTooltipViaEvent = ref(false);
 const reachedMilestone = ref(0);
 const maxMilestoneReached = ref(false);
-const isModalOpen = ref(true);
+const isModalOpen = ref(false);
 
 //----------------------------------------------
 // COMPUTED PROPERTIES
