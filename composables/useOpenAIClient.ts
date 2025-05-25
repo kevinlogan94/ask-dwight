@@ -46,7 +46,7 @@ export const useOpenAIClient = () => {
 
     try {
       const res = await openai.chat.completions.create({
-        model: "gpt-4.1",
+        model: "gpt-4.1-mini",
         messages: chatMessages,
         temperature: 0.7,
         max_completion_tokens: 2000,
