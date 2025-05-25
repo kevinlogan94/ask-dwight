@@ -43,7 +43,7 @@
         <!-- Bolt icon in the center -->
         <div
           class="absolute inset-0 flex items-center justify-center"
-          :class="{ 'text-gray-200 dark:text-gray-500': !isComplete, 'text-green-500': isComplete }"
+          :class="{ 'text-gray-200 dark:text-gray-500': !showMilestoneReachedVisuals, 'text-green-500': showMilestoneReachedVisuals }"
         >
           <UIcon name="i-heroicons-bolt" class="w-6 h-6" />
         </div>
@@ -100,6 +100,7 @@ import { useLocalStorage } from "@vueuse/core";
 // Service connection
 const { totalSavedTime } = useGamification();
 const user = useSupabaseUser();
+const chatStore = useChatStore();
 
 const milestoneTutorialModalDisplayed = useLocalStorage("milestone-tutorial-modal-displayed", false);
 
@@ -108,6 +109,7 @@ const showTooltipViaEvent = ref(false);
 const isModalOpen = ref(false);
 
 const showMilestoneReachedVisuals = ref(false);
+const lastConversationId = ref<string | null>(null);
 
 //----------------------------------------------
 // COMPUTED PROPERTIES
@@ -133,8 +135,6 @@ const progressPercentage = computed(() => {
 
   return Math.min(100, Math.max(0, (currentProgress / targetProgress) * 100));
 });
-
-const isComplete = computed(() => progressPercentage.value >= 100);
 
 // UI elements
 const tooltipText = computed(() => {
@@ -189,35 +189,51 @@ function getLightningPath(index: number) {
 watch(
   totalSavedTime,
   (newValue, oldValue) => {
-    // Find the first milestone that's between old and new values
-    // Handle the case where oldValue is undefined (first run)
+    // --- 1. Track conversation changes ---
+    const isNewConversation = (chatStore.selectedConversation?.messages.length ?? 0) <= 2;
+    const isChangedConversation = chatStore.selectedConversation?.id !== lastConversationId.value;
+    
+    // Update conversation tracking for new conversations
+    if (isNewConversation) {
+      lastConversationId.value = chatStore.selectedConversation?.id ?? null;
+    }
+
+    // Skip milestone checks if we switched to a different existing conversation
+    if (isChangedConversation && !isNewConversation) {
+      lastConversationId.value = chatStore.selectedConversation?.id ?? null;
+      return;
+    }
+    
+    // --- 2. Check for milestone crossing ---
     const prevValue = oldValue ?? 0;
-    const currentMilestoneReached = milestones.timeSaved.find(
+    const crossedMilestone = milestones.timeSaved.find(
       (milestone) => prevValue < milestone && newValue >= milestone
     );
     
-    //if a new milestone is reached and 
-    if (!!currentMilestoneReached) {
-      showMilestoneReachedVisuals.value = true;
-
-      useTrackEvent("dojoMeter_milestone_reached", {
-        event_category: "gamification",
-        event_label: "milestone_reached",
-        value: { reachedMilestone: currentMilestoneReached },
-        non_interaction: false,
-      });
-
-      // Handle cleanup timing
-      setTimeout(() => {
-        //Only trigger this on the first milestone that the user hits.
-        if (!milestoneTutorialModalDisplayed.value) {
-          isModalOpen.value = true;
-          milestoneTutorialModalDisplayed.value = true;
-        }
-
-        showMilestoneReachedVisuals.value = false;
-      }, 3000);
-    }
+    // Skip if no milestone was crossed
+    if (!crossedMilestone) return;
+    
+    // --- 3. Handle milestone celebration ---
+    showMilestoneReachedVisuals.value = true;
+    
+    // Track the event
+    useTrackEvent("dojoMeter_milestone_reached", {
+      event_category: "gamification",
+      event_label: "milestone_reached",
+      value: { reachedMilestone: crossedMilestone },
+      non_interaction: false,
+    });
+    
+    // Auto-hide celebration after delay
+    setTimeout(() => {
+      // Show tutorial modal if this is the first milestone
+      if (!milestoneTutorialModalDisplayed.value) {
+        isModalOpen.value = true;
+        milestoneTutorialModalDisplayed.value = true;
+      }
+      
+      showMilestoneReachedVisuals.value = false;
+    }, 3000);
   },
   { immediate: true },
 );
