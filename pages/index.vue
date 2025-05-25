@@ -92,6 +92,7 @@ import SuggestionChips from "~/components/chat/SuggestionChips.vue";
 import TypingAnimation from "~/components/chat/TypingAnimation.vue";
 import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
 import ChatSidebar from "~/components/ChatSidebar.vue";
+import AskAnythingInput from "~/components/chat/input/AskAnythingInput.vue";
 import { useChatStore } from "~/stores/chat";
 
 // Use the chat store
