@@ -4,7 +4,7 @@
     <UTooltip
       :text="tooltipText"
       :content="{ side: 'top' }"
-      :open="showTooltipViaMilestone || showTooltipViaEvent"
+      :open="showMilestoneReachedVisuals || showTooltipViaEvent"
       :delayDuration="50"
       :ui="{ text: 'text-lg' }"
     >
@@ -49,7 +49,7 @@
         </div>
 
         <!-- Lightning effect (only visible when milestone reached) -->
-        <template v-if="showShockwave">
+        <template v-if="showMilestoneReachedVisuals">
           <!-- Lightning bolts that shoot outward -->
           <svg
             v-for="n in 6"
@@ -104,12 +104,10 @@ const user = useSupabaseUser();
 const milestoneTutorialModalDisplayed = useLocalStorage("milestone-tutorial-modal-displayed", false);
 
 // States
-const showShockwave = ref(false);
-const showTooltipViaMilestone = ref(false);
 const showTooltipViaEvent = ref(false);
-const reachedMilestone = ref(0);
-const maxMilestoneReached = ref(false);
 const isModalOpen = ref(false);
+
+const showMilestoneReachedVisuals = ref(false);
 
 //----------------------------------------------
 // COMPUTED PROPERTIES
@@ -117,6 +115,7 @@ const isModalOpen = ref(false);
 
 // Progress calculations
 const nextMilestone = computed(() => {
+  //return the first milestone that is larger than the total saved time
   return milestones.timeSaved.find((milestone) => milestone > totalSavedTime.value) || milestones.timeSaved[milestones.timeSaved.length - 1];
 });
 
@@ -125,7 +124,7 @@ const minutesToNextMilestone = computed(() => {
 });
 
 const progressPercentage = computed(() => {
-  if (totalSavedTime.value >= nextMilestone.value) {
+  if (showMilestoneReachedVisuals.value || totalSavedTime.value >= nextMilestone.value) {
     return 100;
   }
 
@@ -139,7 +138,7 @@ const isComplete = computed(() => progressPercentage.value >= 100);
 
 // UI elements
 const tooltipText = computed(() => {
-  if (isComplete.value) {
+  if (showMilestoneReachedVisuals.value) {
     return "Milestone Dominated. Belt Earned.";
   }
   return `${formatTimeSaved(totalSavedTime.value)} saved — ${formatTimeSaved(minutesToNextMilestone.value)} to go`;
@@ -189,38 +188,34 @@ function getLightningPath(index: number) {
 // Monitor milestone completion
 watch(
   totalSavedTime,
-  (newValue) => {
-    if (isComplete.value && !showShockwave.value && !maxMilestoneReached.value) {
-      // Capture milestone for display
-      reachedMilestone.value = nextMilestone.value;
-
-      if (reachedMilestone.value >= milestones.timeSaved[milestones.timeSaved.length - 1]) {
-        maxMilestoneReached.value = true;
-      }
-
-      // Show celebration effects
-      showShockwave.value = true;
-      showTooltipViaMilestone.value = true;
+  (newValue, oldValue) => {
+    // Find the first milestone that's between old and new values
+    // Handle the case where oldValue is undefined (first run)
+    const prevValue = oldValue ?? 0;
+    const currentMilestoneReached = milestones.timeSaved.find(
+      (milestone) => prevValue < milestone && newValue >= milestone
+    );
+    
+    //if a new milestone is reached and 
+    if (!!currentMilestoneReached) {
+      showMilestoneReachedVisuals.value = true;
 
       useTrackEvent("dojoMeter_milestone_reached", {
         event_category: "gamification",
         event_label: "milestone_reached",
-        value: { reachedMilestone: reachedMilestone.value },
+        value: { reachedMilestone: currentMilestoneReached },
         non_interaction: false,
       });
 
       // Handle cleanup timing
       setTimeout(() => {
-        // Show modal
-        showTooltipViaMilestone.value = false;
-
         //Only trigger this on the first milestone that the user hits.
         if (!milestoneTutorialModalDisplayed.value) {
           isModalOpen.value = true;
           milestoneTutorialModalDisplayed.value = true;
         }
 
-        showShockwave.value = false;
+        showMilestoneReachedVisuals.value = false;
       }, 3000);
     }
   },
