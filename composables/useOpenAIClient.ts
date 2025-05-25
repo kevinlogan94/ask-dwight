@@ -46,10 +46,10 @@ export const useOpenAIClient = () => {
 
     try {
       const res = await openai.chat.completions.create({
-        model: "gpt-4.1-mini",
+        model: process.env.NODE_ENV === "development" ? "gpt-4.1-nano" : "gpt-4.1-mini",
         messages: chatMessages,
         temperature: 0.7,
-        max_completion_tokens: 2000,
+        max_completion_tokens: 10000,
       });
 
       if (res.choices?.length > 0 && res.choices[0].message) {
