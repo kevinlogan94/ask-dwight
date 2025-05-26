@@ -21,7 +21,7 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
     messagesForApi.push({
       role: "user",
       content:
-        "Generate 3 concise, relevant, unformatted(no quotes, no numbers, etc.) follow-up prompts for the user to use to response to the AI's last message.",
+        "Trigger the suggestion trait to create 3 suggestions that I could say back to you.",
     });
 
     const { getClientSideChatCompletion } = useOpenAIClient();
