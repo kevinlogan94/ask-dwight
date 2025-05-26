@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex justify-end mb-2 mr-1">
+    <div class="flex justify-end mb-2 mr-1" v-if="!chatStore.showNewConversationScreen">
       <DojoMeter />
     </div>
 
@@ -22,7 +22,7 @@
         icon="heroicons:arrow-up"
       />
     </UChatPrompt>
-    <p class="text-xs text-neutral-400 mt-1 text-center">Dwight can make mistakes. Double-check his work.</p>
+    <p v-if="!chatStore.showNewConversationScreen" class="text-xs text-neutral-400 mt-1 text-center">Dwight can make mistakes. Double-check his work.</p>
   </div>
 </template>
 
@@ -31,19 +31,11 @@ import { useChatStore } from "~/stores/chat";
 import DojoMeter from "~/components/chat/DojoMeter.vue";
 
 const chatStore = useChatStore();
-
-const props = defineProps({
-  onSubmit: {
-    type: Function,
-    default: undefined,
-  },
-});
-
 const searchQuery = ref("");
 
 const handleSubmit = () => {
-  if (searchQuery.value.trim() && props.onSubmit && !chatStore.aiResponsePending && !chatStore.throttleConversation) {
-    props.onSubmit(searchQuery.value);
+  if (searchQuery.value.trim() && !chatStore.aiResponsePending && !chatStore.throttleConversation) {
+    chatStore.sendMessage(searchQuery.value);
     searchQuery.value = "";
 
     useTrackEvent("form_submit_question", {

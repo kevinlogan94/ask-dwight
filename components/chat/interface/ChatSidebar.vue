@@ -45,7 +45,6 @@
         >
           <div class="flex items-center justify-between w-full">
             <div class="truncate">{{ conversation.title || "Untitled Conversation" }}</div>
-            <UBadge v-if="conversation.unread" color="primary" size="xs">New</UBadge>
           </div>
         </UButton>
       </div>
@@ -88,18 +87,19 @@ const toggleSidebar = () => {
 };
 
 const handleNewConversation = () => {
-  chatStore.createNewConversation();
+  // Select null to display the new conversation screen
+  chatStore.selectConversation(null);
+
+  if (window.innerWidth < 1024) {
+    // Auto-close sidebar on mobile after creating a new conversation
+    isOpen.value = false;
+  }
 
   useTrackEvent("sidebar_click_newConversation", {
     event_category: "engagement",
     event_label: "ask_dwight",
     non_interaction: false,
   });
-
-  if (window.innerWidth < 1024) {
-    // Auto-close sidebar on mobile after creating a new conversation
-    isOpen.value = false;
-  }
 };
 
 const selectConversation = (conversation: Conversation) => {

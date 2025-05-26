@@ -1,13 +1,13 @@
 <template>
   <UHeader
-    class="fixed w-full z-50 bg-white dark:bg-gray-900 shadow-sm"
+    class="z-50 bg-white dark:bg-gray-900 shadow-sm"
     :toggle="false"
     v-if="route.path !== '/auth/confirm'"
   >
-    <template #left>
+    <template #title>
       <div class="flex items-center">
         <UButton
-          v-if="route.path === '/'"
+          v-if="route.path === '/' && chatStore.conversations.length"
           @click="toggleSidebar"
           :icon="chatStore.sidebarOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'"
           color="neutral"
@@ -19,7 +19,7 @@
         <div class="flex items-center cursor-pointer" @click="goToHome">
           <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="w-6 h-6 mr-2" />
           <h1 class="text-lg font-bold">Ask Dwight</h1>
-          <span v-if="route.path === '/'" class="ml-2 text-gray-600 dark:text-gray-400 font-medium truncate">
+          <span v-if="route.path === '/' && chatStore.selectedConversation" class="ml-2 text-gray-600 dark:text-gray-400 font-medium truncate">
             - {{ truncatedTitle }}
           </span>
         </div>

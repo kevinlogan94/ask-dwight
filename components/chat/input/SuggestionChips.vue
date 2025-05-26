@@ -1,9 +1,9 @@
 <template>
-  <div class="suggestion-chips-container mb-4 mt-2">
+  <div class="mb-4 mt-2">
     <!-- Suggestions static header with icon -->
-    <div class="text-lg dark:text-gray-300 mb-2 flex items-center gap-1">
+    <div class="text-md dark:text-gray-300 mb-2 flex items-center gap-1">
       <Icon name="heroicons:light-bulb" class="w-3.5 h-3.5 dark:text-gray-400" />
-      <span class="font-medium">Continue with:</span>
+      <span>Continue with:</span>
     </div>
 
     <!-- Suggestion buttons -->
@@ -12,10 +12,10 @@
         <USkeleton v-if="suggestion === 'loading'" class="h-8 w-full rounded dark:bg-success-800/10 bg-success-100" />
         <UButton
           v-else
-          size="lg"
+          size="md"
           color="success"
           variant="soft"
-          class="suggestion-chip bg-success-100 hover:bg-success-200 dark:bg-success-800/10 dark:hover:bg-success-800/20 text-success-800 dark:text-success-300 text-start"
+          class="bg-success-100 hover:bg-success-200 dark:bg-success-800/10 dark:hover:bg-success-800/20 text-success-800 dark:text-success-300 text-start"
           @click="handleClick(suggestion)"
         >
           {{ suggestion }}
@@ -26,16 +26,15 @@
 </template>
 
 <script setup lang="ts">
+import { useChatStore } from "~/stores/chat";
+
+const chatStore = useChatStore();
 const props = defineProps<{
   suggestions: string[];
 }>();
 
-const emit = defineEmits<{
-  select: [suggestion: string];
-}>();
-
 function handleClick(suggestion: string) {
-  emit("select", suggestion);
+  chatStore.sendMessage(suggestion);
 
   useTrackEvent("suggestionChips_click_select", {
     event_category: "engagement",
