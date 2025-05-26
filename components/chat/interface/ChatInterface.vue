@@ -43,7 +43,7 @@
                 color="primary"
               />
               <!-- Show suggestion chips for assistant messages if available -->
-              <SuggestionChips v-if="message.suggestions?.length" :suggestions="message.suggestions" class="mt-3" />
+              <SuggestionChips v-if="message.suggestions?.length" :suggestions="message.suggestions" class="mt-3 mb-4" />
             </div>
           </div>
 
