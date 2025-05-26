@@ -1,6 +1,6 @@
 <template>
   <UHeader
-    class="z-50 bg-white dark:bg-gray-900 shadow-sm"
+    class="fixed w-full z-50 bg-white dark:bg-gray-900 shadow-sm"
     :toggle="false"
     v-if="route.path !== '/auth/confirm'"
   >
