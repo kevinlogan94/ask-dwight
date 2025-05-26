@@ -60,7 +60,7 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
     if (message) {
       message.suggestions = [];
     } else {
-      console.error("");
+      console.error("Failed to clear suggestions: No message found");
     }
   }
 
