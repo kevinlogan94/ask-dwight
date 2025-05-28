@@ -12,6 +12,7 @@ export interface ApplicationLog {
   level: "info" | "warn" | "error";
 }
 
+//todo Delete me
 export const useSupabaseFunctions = () => {
   const supabase = useSupabaseClient();
 
@@ -40,6 +41,7 @@ export const useSupabaseFunctions = () => {
 
   /**
    * Store application logs in Supabase
+   * todo: move to plugins
    */
   const storeLogs = async (log: ApplicationLog) => {
     const sessionId = getOrCreateSessionId();
