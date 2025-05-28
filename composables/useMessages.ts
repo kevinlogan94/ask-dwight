@@ -12,6 +12,7 @@ export function useMessages() {
 
   // Get utilities and services
   const { getClientSideChatCompletion } = useOpenAIClient();
+  const { clearSuggestions } = useSuggestions(computed(() => chatStore.selectedConversation));
 
   /**
    * Add a new message to the current conversation
@@ -71,6 +72,8 @@ export function useMessages() {
         return false;
       }
     }
+
+    clearSuggestions();
 
     chatStore.aiResponsePending = true;
 

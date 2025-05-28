@@ -1,11 +1,6 @@
 import { defineStore } from "pinia";
-import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { useOpenAIClient } from "~/composables/useOpenAIClient";
 import { useLocalStorage } from "@vueuse/core";
-import { useMessages } from "~/composables/useMessages"; // Import the useMessages composable
 import type { User } from "~/models/user";
-import { DEFAULT_ERROR_MESSAGE } from "~/composables/useMessages";
-import { parseMarkdown } from "~/utils/helpers";
 import type { Message, Conversation } from "~/models/chat";
 
 export const useChatStore = defineStore("chat", () => {
@@ -16,6 +11,9 @@ export const useChatStore = defineStore("chat", () => {
   const selectedConversationId = ref<string | null>(null);
   const sidebarOpen = ref(false);
   const aiResponsePending = ref(false);
+
+  // todo: integrate supabase user
+  // this is currently just a placeholder
   const user = ref<User>({
     id: "",
     name: "John Doe",
@@ -38,18 +36,12 @@ export const useChatStore = defineStore("chat", () => {
     return userMessages.length >= 10 && user.value.subscription?.tier === "free";
   });
 
+  const showNewConversationScreen = computed(() => {
+    return !conversations.value.length || !selectedConversation.value?.messages.length;
+  });
+
   // Actions
   async function createNewConversation() {
-    aiResponsePending.value = true;
-    const { getClientSideChatCompletion } = useOpenAIClient();
-
-    var messageforApi: ChatCompletionMessageParam[] = [
-      {
-        content: "Hey",
-        role: "user",
-      },
-    ];
-
     const conversationNumber = conversations.value.length + 1;
 
     // Create new conversation
@@ -62,63 +54,11 @@ export const useChatStore = defineStore("chat", () => {
     conversations.value.push(newConversation);
     selectedConversationId.value = newConversation.id;
 
-    // Add loading message and get its ID
-    const loadingMessage = addMessage({
-      content: "",
-      sender: "system",
-      status: "loading",
-    });
-    const loadingMessageId = loadingMessage.id;
-
-    try {
-      const responseMessage: ChatCompletionMessage | null = await getClientSideChatCompletion(messageforApi);
-
-      // Remove loading message regardless of success or failure
-      removeMessage(loadingMessageId);
-
-      if (responseMessage?.content) {
-        const htmlContent = await parseMarkdown(responseMessage.content);
-
-        addMessage({
-          content: responseMessage.content,
-          htmlContent: htmlContent,
-          sender: "assistant",
-          suggestions: [
-            "Help me build a cold outreach strategy",
-            "Let's fix my lead scoring system",
-            "Design a follow-up cadence for my leads",
-          ],
-          status: "sent",
-        });
-      } else {
-        addMessage({
-          content: DEFAULT_ERROR_MESSAGE,
-          sender: "system",
-          status: "sent",
-        });
-      }
-    } catch (error) {
-      console.error("Error creating new conversation:", error);
-      removeMessage(loadingMessageId);
-      addMessage({
-        content: DEFAULT_ERROR_MESSAGE,
-        sender: "system",
-        status: "sent",
-      });
-    }
-
-    aiResponsePending.value = false;
     return newConversation;
   }
 
-  function selectConversation(conversationId: string) {
+  function selectConversation(conversationId: string | null) {
     selectedConversationId.value = conversationId;
-
-    // Mark conversation as read when selected
-    const conversation = conversations.value.find((c) => c.id === conversationId);
-    if (conversation?.unread) {
-      conversation.unread = false;
-    }
   }
 
   function toggleSidebar(isOpen?: boolean) {
@@ -129,7 +69,7 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
-  const { sendMessage, addMessage, removeMessage } = useMessages();
+  const { sendMessage } = useMessages();
 
   // Initialize with first conversation selected
   onMounted(() => {
@@ -151,6 +91,7 @@ export const useChatStore = defineStore("chat", () => {
     selectedConversation,
     currentMessages,
     throttleConversation,
+    showNewConversationScreen,
 
     // Actions
     createNewConversation,
