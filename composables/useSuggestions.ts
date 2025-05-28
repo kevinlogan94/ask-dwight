@@ -1,9 +1,8 @@
-import { useHelpers } from "./useHelpers";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { organizeMessagesForApi } from "~/utils/helpers";
+import type { Conversation } from "~/models/chat";
 
 export function useSuggestions(conversation: Ref<Conversation | undefined>) {
-  const { organizeMessagesForApi } = useHelpers();
-
   async function generateSuggestions(): Promise<void> {
     if (
       !conversation.value ||
@@ -22,7 +21,7 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
     messagesForApi.push({
       role: "user",
       content:
-        "Generate 3 concise, relevant, unformatted(no quotes, no numbers, etc.) follow-up prompts for the user to use to response to the AI's last message.",
+        "Trigger the suggestion trait to create 3 suggestions that I could say back to you.",
     });
 
     const { getClientSideChatCompletion } = useOpenAIClient();
@@ -61,7 +60,7 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
     if (message) {
       message.suggestions = [];
     } else {
-      console.error("");
+      console.error("Failed to clear suggestions: No message found");
     }
   }
 

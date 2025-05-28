@@ -7,7 +7,7 @@ let openai: OpenAI | null = null;
 let isInitialized = false;
 
 export const useOpenAIClient = () => {
-  // Initialize only once
+  // Initialize only once. This will eventually be moved to a server-side implementation
   if (!isInitialized) {
     // Call useRuntimeConfig safely inside the composable
     const config = useRuntimeConfig();
@@ -48,10 +48,10 @@ export const useOpenAIClient = () => {
 
     try {
       const res = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: process.env.NODE_ENV === "development" ? "gpt-4.1-nano" : "gpt-4.1-mini",
         messages: chatMessages,
         temperature: 0.7,
-        max_completion_tokens: 1000,
+        max_completion_tokens: 10000,
       });
 
       if (res.choices?.length > 0 && res.choices[0].message) {
@@ -65,6 +65,14 @@ export const useOpenAIClient = () => {
       console.error("Error fetching chat completion from OpenAI:", error);
       return null;
     }
+  };
+
+  const uploadDwightResponse = async (message: ChatCompletionMessage) => {
+    //supabase query to upload message to dwight_response database
+  };
+
+  const uploadUserPrompt = async (message: ChatCompletionMessage) => {
+    //supabase query to upload message to user_prompt database
   };
 
   // Return the function to be used by the caller

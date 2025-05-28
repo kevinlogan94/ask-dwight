@@ -1,6 +1,5 @@
 import { useSupabaseClient } from "#imports";
-
-const SESSION_ID_KEY = "supabase-session-id";
+import { getOrCreateSessionId } from "~/utils/helpers";
 
 export enum SupabaseFunctions {
   STORE_LOGS = "store-application-logs",
@@ -15,7 +14,6 @@ export interface ApplicationLog {
 
 export const useSupabaseFunctions = () => {
   const supabase = useSupabaseClient();
-  const config = useRuntimeConfig();
 
   /**
    * Invoke a Supabase Edge Function
@@ -26,7 +24,7 @@ export const useSupabaseFunctions = () => {
     options: {
       headers?: Record<string, string>;
     } = {},
-  ): Promise<T> => {
+  ): Promise<T | null> => {
     const { data, error } = await supabase.functions.invoke<T>(functionName, {
       body: payload,
       headers: options.headers,
@@ -41,25 +39,14 @@ export const useSupabaseFunctions = () => {
   };
 
   /**
-   * Get or create a session ID
-   */
-  const getOrCreateSessionId = (): string => {
-    if (process.server) return ""; // Don't use localStorage on server
-
-    let sessionId = localStorage.getItem(SESSION_ID_KEY);
-    if (!sessionId) {
-      sessionId = crypto.randomUUID();
-      localStorage.setItem(SESSION_ID_KEY, sessionId);
-    }
-    return sessionId;
-  };
-
-  /**
    * Store application logs in Supabase
    */
   const storeLogs = async (log: ApplicationLog) => {
     const sessionId = getOrCreateSessionId();
     const user = useSupabaseUser();
+
+    // Only store logs in production
+    if (process.env.NODE_ENV !== "production") return;
 
     return invoke<{ success: boolean }>(SupabaseFunctions.STORE_LOGS, {
       ...log,

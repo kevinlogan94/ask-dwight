@@ -1,5 +1,6 @@
-import { useHelpers } from "./useHelpers";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { organizeMessagesForApi } from "~/utils/helpers";
+import type { Conversation } from "~/models/chat";
 
 /**
  * Composable for system-level interaction controls via Dwight.
@@ -7,7 +8,6 @@ import type { ChatCompletionMessageParam } from "openai/resources/chat/completio
  */
 export function useSystemInteractionControls(conversation: Ref<Conversation | undefined>) {
   const { getClientSideChatCompletion } = useOpenAIClient();
-  const { organizeMessagesForApi } = useHelpers();
 
   /**
    * Triggers conversation throttling by sending a special message to the AI.

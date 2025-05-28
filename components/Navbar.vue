@@ -1,13 +1,13 @@
 <template>
-  <UDashboardNavbar
+  <UHeader
     class="fixed w-full z-50 bg-white dark:bg-gray-900 shadow-sm"
     :toggle="false"
     v-if="route.path !== '/auth/confirm'"
   >
-    <template #left>
+    <template #title>
       <div class="flex items-center">
         <UButton
-          v-if="route.path === '/'"
+          v-if="route.path === '/' && chatStore.conversations.length"
           @click="toggleSidebar"
           :icon="chatStore.sidebarOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'"
           color="neutral"
@@ -19,7 +19,7 @@
         <div class="flex items-center cursor-pointer" @click="goToHome">
           <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="w-6 h-6 mr-2" />
           <h1 class="text-lg font-bold">Ask Dwight</h1>
-          <span v-if="route.path === '/'" class="ml-2 text-gray-600 dark:text-gray-400 font-medium truncate">
+          <span v-if="route.path === '/' && chatStore.selectedConversation" class="ml-2 text-gray-600 dark:text-gray-400 font-medium truncate">
             - {{ truncatedTitle }}
           </span>
         </div>
@@ -41,14 +41,14 @@
         Login
       </UButton>
     </template>
-  </UDashboardNavbar>
+  </UHeader>
 </template>
 
 <script setup lang="ts">
 import { useChatStore } from "~/stores/chat";
 import { useRoute } from "vue-router";
 import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
-import { useHelpers } from "~/composables/useHelpers";
+import { validateImageUrl } from "~/utils/helpers";
 
 const route = useRoute();
 const chatStore = useChatStore();
@@ -61,7 +61,7 @@ const isMobile = breakpoints.smaller("sm"); // smaller than 640px
 const avatarUrl = ref("");
 
 onMounted(async () => {
-  avatarUrl.value = (await useHelpers().validateImageUrl(user.value?.user_metadata?.avatar_url))
+  avatarUrl.value = (await validateImageUrl(user.value?.user_metadata?.avatar_url))
     ? user.value?.user_metadata?.avatar_url
     : "";
 });
