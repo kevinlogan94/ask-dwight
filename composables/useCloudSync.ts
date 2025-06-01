@@ -172,6 +172,44 @@ export function useCloudSync() {
     }
   }
 
+  /**
+   * Creates a new conversation directly in Supabase
+   * @param title The title of the conversation
+   * @returns The ID of the newly created conversation
+   */
+  async function createConversationInSupabase(title: string): Promise<string> {
+    try {
+      const sessionId = getOrCreateSessionId();
+      const currentUserId = user.value?.id;
+      
+      // Create the conversation in Supabase
+      const { data: newConversation, error } = await supabase
+        .from('conversations')
+        //@ts-ignore
+        .insert({
+          title,
+          user_id: currentUserId || null,
+          session_id: sessionId, 
+        })
+        .select('id')
+        .single();
+      
+      if (error) {
+        console.error('createConversationInSupabase: Error creating conversation:', error.message);
+        throw error;
+      }
+      
+      if (!newConversation) {
+        throw new Error('createConversationInSupabase: No conversation data returned');
+      }
+      
+      return (newConversation as { id: string }).id;
+    } catch (err: any) {
+      console.error('createConversationInSupabase: Exception during creation:', err.message);
+      throw err;
+    }
+  }
+
   // Placeholder for the new function
   async function fetchConversationsFromSupabase(): Promise<Conversation[]> {
     type RawCloudConversation = {
@@ -297,5 +335,6 @@ export function useCloudSync() {
     syncConversationsToSupabase,
     fetchConversationsFromSupabase,
     associateConversationsWithUser,
+    createConversationInSupabase,
   };
 }

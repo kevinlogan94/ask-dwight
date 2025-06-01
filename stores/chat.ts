@@ -44,18 +44,29 @@ export const useChatStore = defineStore("chat", () => {
   // Actions
   async function createNewConversation() {
     const conversationNumber = conversations.value.length + 1;
-
-    // Create new conversation
-    const newConversation: Conversation = {
-      id: crypto.randomUUID(),
-      title: `Conversation ${conversationNumber}`,
-      messages: [],
-      createdAt: new Date(),
-    };
-    conversations.value.push(newConversation);
-    selectedConversationId.value = newConversation.id;
-
-    return newConversation;
+    const title = `Conversation ${conversationNumber}`;
+    
+    try {
+      const conversationId = await createConversationInSupabase(title);
+      
+      // Create new conversation with the ID from Supabase
+      const newConversation: Conversation = {
+        id: conversationId,
+        title,
+        messages: [],
+        createdAt: new Date(),
+      };
+      
+      // Add to local state
+      conversations.value.push(newConversation);
+      selectedConversationId.value = conversationId;
+      
+      return newConversation;
+    } catch (error) {
+      console.error('Failed to create conversation in Supabase:', error);
+      throw error;
+      //todo - show technical toast message on error.
+    }
   }
 
   function selectConversation(conversationId: string | null) {
@@ -71,7 +82,7 @@ export const useChatStore = defineStore("chat", () => {
   }
 
   const { sendMessage } = useMessages();
-  const { syncConversationsToSupabase, fetchConversationsFromSupabase } = useCloudSync();
+  const { syncConversationsToSupabase, fetchConversationsFromSupabase, createConversationInSupabase } = useCloudSync();
 
   onMounted(async () => {
     await syncConversationsToSupabase();
