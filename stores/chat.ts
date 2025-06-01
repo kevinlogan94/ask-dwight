@@ -1,12 +1,13 @@
 import { defineStore } from "pinia";
-import { useLocalStorage } from "@vueuse/core";
 import type { User } from "~/models/user";
 import type { Message, Conversation } from "~/models/chat";
+import { useCloudSync } from '~/composables/useCloudSync';
+import { throttleConversation } from "~/utils/helpers";
 
 export const useChatStore = defineStore("chat", () => {
   // State
 
-  // Set up local storage for conversations. Set the default value to an empty array. This is set if there is nothing in local storage.
+  // Set up local storage for conversations. Set the default value to an empty array.
   let conversations = ref<Conversation[]>([]);
   const selectedConversationId = ref<string | null>(null);
   const sidebarOpen = ref(false);
@@ -31,9 +32,9 @@ export const useChatStore = defineStore("chat", () => {
     return selectedConversation.value?.messages || [];
   });
 
-  const throttleConversation = computed(() => {
-    const userMessages = selectedConversation.value?.messages.filter((x) => x.sender === "user") ?? [];
-    return userMessages.length >= 10 && user.value.subscription?.tier === "free";
+  const throttleSelectedConversation = computed(() => {
+    if (!selectedConversation.value) return false;
+    return throttleConversation(selectedConversation.value);
   });
 
   const showNewConversationScreen = computed(() => {
@@ -70,10 +71,11 @@ export const useChatStore = defineStore("chat", () => {
   }
 
   const { sendMessage } = useMessages();
+  const { syncConversationsToSupabase, fetchConversationsFromSupabase } = useCloudSync();
 
-  // Initialize with first conversation selected
-  onMounted(() => {
-    conversations.value = useLocalStorage<Conversation[]>("chat-conversations", []).value;
+  onMounted(async () => {
+    await syncConversationsToSupabase();
+    conversations.value = await fetchConversationsFromSupabase();
 
     if (conversations.value.length > 0 && !selectedConversationId.value) {
       selectedConversationId.value = conversations.value[0].id;
@@ -90,7 +92,7 @@ export const useChatStore = defineStore("chat", () => {
     // Getters
     selectedConversation,
     currentMessages,
-    throttleConversation,
+    throttleSelectedConversation,
     showNewConversationScreen,
 
     // Actions

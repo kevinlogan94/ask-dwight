@@ -6,7 +6,7 @@
 
     <UChatPrompt
       variant="outline"
-      :disabled="chatStore.throttleConversation"
+      :disabled="chatStore.throttleSelectedConversation"
       placeholder="Ask anything..."
       :loading="chatStore.aiResponsePending"
       v-model="searchQuery"
@@ -18,7 +18,7 @@
         v-if="!chatStore.aiResponsePending"
         color="success"
         variant="solid"
-        :disabled="chatStore.throttleConversation"
+        :disabled="chatStore.throttleSelectedConversation"
         icon="heroicons:arrow-up"
       />
     </UChatPrompt>
@@ -34,7 +34,7 @@ const chatStore = useChatStore();
 const searchQuery = ref("");
 
 const handleSubmit = () => {
-  if (searchQuery.value.trim() && !chatStore.aiResponsePending && !chatStore.throttleConversation) {
+  if (searchQuery.value.trim() && !chatStore.aiResponsePending && !chatStore.throttleSelectedConversation) {
     chatStore.sendMessage(searchQuery.value);
     searchQuery.value = "";
 

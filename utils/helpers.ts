@@ -1,6 +1,6 @@
 import { marked } from "marked";
 import DOMPurify from "isomorphic-dompurify";
-import type { Message } from "~/models/chat";
+import type { Conversation, Message } from "~/models/chat";
 
 // Session utilities
 const SESSION_ID_KEY = "supabase-session-id";
@@ -17,7 +17,7 @@ export const getOrCreateSessionId = (): string => {
     sessionId = crypto.randomUUID();
     localStorage.setItem(SESSION_ID_KEY, sessionId);
   }
-  return sessionId;
+  return sessionId.trim();
 };
 
 /**
@@ -99,4 +99,10 @@ export const formatTimeSaved = (minutes: number, longForm: boolean = false): str
   }
   
   return `${hours} ${hourUnit} ${remainingMinutes} ${minuteUnit}`;
+};
+
+//todo add subscription check
+export const throttleConversation = (conversation: Conversation) => {
+  const userMessages = conversation.messages.filter((x) => x.sender === "user") ?? [];
+  return userMessages.length >= 10;
 };

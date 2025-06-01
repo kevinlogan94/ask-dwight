@@ -113,7 +113,7 @@ export function useMessages() {
           status: "sent",
         });
 
-        if (chatStore.throttleConversation) {
+        if (chatStore.throttleSelectedConversation) {
           // Trigger conversation throttling and get the response
           const { triggerThrottling } = useSystemInteractionControls(computed(() => chatStore.selectedConversation));
           const throttlingResponse = await triggerThrottling();

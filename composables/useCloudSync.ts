@@ -1,0 +1,254 @@
+import { getOrCreateSessionId, throttleConversation } from '~/utils/helpers';
+import { organizePromptInfo } from '~/utils/gamification';
+import type { Conversation, Message } from '~/models/chat';
+import { parseMarkdown } from '~/utils/helpers';
+
+export function useCloudSync() {
+  const supabase = useSupabaseClient();
+
+  // supabase.from("conversations").headers = {
+  //   'x-session-id': getOrCreateSessionId(),
+  // };
+  const user = useSupabaseUser();
+
+  async function syncConversationsToSupabase() {
+    const ConversationsRaw = localStorage.getItem('chat-conversations');
+    if (!ConversationsRaw) {
+      console.log('syncConversationsToSupabase: No local chat conversations to sync.');
+      return;
+    }
+
+    const currentUserId = user.value?.id;
+
+    try {
+      const Conversations: Conversation[] = JSON.parse(ConversationsRaw);
+      if (!Conversations || Conversations.length === 0) {
+        console.log('syncConversationsToSupabase: Local chat conversations empty or invalid format.');
+        localStorage.removeItem('chat-conversations'); // Clean up if empty/invalid
+        return;
+      }
+
+      const sessionId = getOrCreateSessionId();
+      console.log(`syncConversationsToSupabase: Starting sync for session ID: ${sessionId}, User ID: ${currentUserId || 'N/A'}`);
+
+      for (const conversation of Conversations) {
+        console.log(`syncConversationsToSupabase: Processing conversation ID: ${conversation.id}`);
+        const { error: convError } = await supabase.from('conversations').insert({
+          id: conversation.id,
+          created_at: conversation.createdAt,
+          user_id: currentUserId, // This can be null if user is not logged in
+          session_id: sessionId,
+          title: conversation.title,
+        } as any);
+
+        if (convError) {
+          console.error('syncConversationsToSupabase: Error inserting conversation:', convError.message, 'Conversation ID:', conversation.id);
+          continue;
+        }
+
+        let lastUserPromptIdInConversation: string | null = null;
+
+        for (const message of conversation.messages) {
+          if (message.sender === 'user') {
+            const { category, timeSaved } = organizePromptInfo(message.content);
+            const { error: promptError } = await supabase.from('user_prompts').insert({
+              id: message.id,
+              conversation_id: conversation.id,
+              message: message.content,
+              category: category.toString(),
+              time_saved: timeSaved,
+              created_at: message.timestamp,
+            } as any);
+
+            if (promptError) {
+              console.error('syncConversationsToSupabase: Error inserting user prompt:', promptError.message, 'Prompt ID:', message.id);
+              continue; 
+            }
+            lastUserPromptIdInConversation = message.id;
+          } else if (message.sender === 'assistant') {
+            if (lastUserPromptIdInConversation) {
+              const { error: responseError } = await supabase.from('dwight_responses').insert({
+                id: message.id,
+                conversation_id: conversation.id,
+                message: message.content,
+                created_at: message.timestamp,
+                prompt_id: lastUserPromptIdInConversation,
+              } as any);
+              if (responseError) {
+                console.error('syncConversationsToSupabase: Error inserting dwight response:', responseError.message, 'Response ID:', message.id);
+                continue;
+              }
+
+              if (message.suggestions && message.suggestions.length > 0) {
+                const suggestionsToInsert = message.suggestions.map(suggestionText => ({
+                  dwight_response_id: message.id,
+                  suggestion_text: suggestionText,
+                }));
+                const { error: suggestionsError } = await supabase
+                  .from('user_prompt_suggestions')
+                  .insert(suggestionsToInsert as any);
+                if (suggestionsError) {
+                  console.error(
+                    'syncConversationsToSupabase: Error inserting suggestions for response ID:',
+                    message.id,
+                    suggestionsError.message
+                  );
+                }
+              }
+            } else {
+              console.warn('syncConversationsToSupabase: Assistant message without a preceding user prompt. Skipping response ID:', message.id, 'Conversation ID:', conversation.id);
+            }
+          } else if (message.sender === 'system') {
+            // Ignored
+          }
+        }
+        console.log(`syncConversationsToSupabase: Finished processing messages for conversation ID: ${conversation.id}`);
+      }
+
+      localStorage.removeItem('chat-conversations');
+      console.log(`syncConversationsToSupabase: Sync complete. Local chat conversations removed for session ID: ${sessionId}, User ID: ${currentUserId || 'N/A'}`);
+
+    } catch (error: any) {
+      console.error('syncConversationsToSupabase: Failed to parse or process local chat conversations:', error.message);
+    }
+  }
+
+  // Placeholder for the new function
+  async function fetchConversationsFromSupabase(): Promise<Conversation[]> {
+    // Define types for the data as it comes from Supabase to help with transformation.
+    // These should ideally match the structure returned by your Supabase query.
+    type RawUserPrompt = {
+      id: string;
+      message: string;
+      created_at: string; // Timestamp for the message
+      // category and time_saved are not directly part of Message but exist in the user_prompts table
+    };
+
+    type RawDwightResponseSuggestion = {
+      suggestion_text: string;
+      // id and created_at for suggestions are managed by the table, not directly mapped here unless needed
+    };
+
+    type RawDwightResponse = {
+      id: string;
+      message: string;
+      created_at: string; // Timestamp for the message
+      user_prompt_suggestions: RawDwightResponseSuggestion[];
+      // prompt_id is not directly part of Message but exists in the dwight_responses table
+    };
+
+    type RawCloudConversation = {
+      id: string;
+      title: string;
+      created_at: string; // Timestamp for the conversation itself
+      user_prompts: RawUserPrompt[];
+      dwight_responses: RawDwightResponse[];
+    };
+
+    const sessionId = getOrCreateSessionId();
+    console.log('fetchConversationsFromSupabase: Using session ID:', sessionId);
+    
+    try {
+      // Set headers directly on the query builder
+      const query = supabase.from('conversations');
+      query.headers = {
+        'supabase-session-id': sessionId,
+      };
+      
+      const { data: fetchedCloudConversations, error } = await query
+        .select(`
+          id,
+          title,
+          created_at,
+          user_prompts (
+            id,
+            message,
+            created_at,
+            time_saved
+          ),
+          dwight_responses (
+            id,
+            message,
+            created_at,
+            user_prompt_suggestions (
+              suggestion_text
+            )
+          )
+        `)
+        .order('created_at', { ascending: true });
+
+      console.log('fetchConversationsFromSupabase: Fetched conversations:', fetchedCloudConversations);
+
+      if (error) {
+        console.error('fetchConversationsFromSupabase: Error fetching conversations:', error.message);
+        return [];
+      }
+
+      if (!fetchedCloudConversations) {
+        console.log('fetchConversationsFromSupabase: No conversation data returned from cloud.');
+        return [];
+      }
+      
+      // Cast the fetched data to our expected raw type for type safety during transformation
+      const rawConversations = fetchedCloudConversations as RawCloudConversation[];
+
+      const organizedConversations: Conversation[] = rawConversations.map(rawConv => {
+        const messages: Message[] = [];
+
+        // Process user prompts
+        (rawConv.user_prompts || []).forEach(prompt => {
+          messages.push({
+            id: prompt.id,
+            content: prompt.message,
+            sender: 'user',
+            timestamp: new Date(prompt.created_at),
+            status: 'sent',
+          });
+        });
+
+        // Process Dwight responses
+        (rawConv.dwight_responses || []).forEach(async response => {
+          messages.push({
+            id: response.id,
+            content: response.message,
+            sender: 'assistant',
+            timestamp: new Date(response.created_at),
+            status: 'sent',
+            suggestions: response.user_prompt_suggestions?.map(s => s.suggestion_text) || [],
+            isThrottleMessage: false,
+            htmlContent: await parseMarkdown(response.message),
+          });
+        });
+
+        // Sort all messages by timestamp chronologically
+        messages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+        const conversation: Conversation = {
+          id: rawConv.id,
+          title: rawConv.title,
+          createdAt: new Date(rawConv.created_at),
+          messages: messages,
+        };
+
+        if (conversation.messages.length > 0) {
+          //define throttling
+          conversation.messages[conversation.messages.length - 1].isThrottleMessage = throttleConversation(conversation);
+        }
+
+        return conversation;
+      });
+
+      console.log(`fetchConversationsFromSupabase: Successfully fetched and organized ${organizedConversations.length} conversations.`);
+      return organizedConversations;
+
+    } catch (err: any) {
+      console.error('fetchConversationsFromSupabase: Exception during fetch or data transformation:', err.message);
+      return [];
+    }
+  }
+
+  return {
+    syncConversationsToSupabase,
+    fetchConversationsFromSupabase,
+  };
+}
