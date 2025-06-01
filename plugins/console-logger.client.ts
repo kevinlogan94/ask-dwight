@@ -1,13 +1,45 @@
 // plugins/console-logger.client.ts
 import { defineNuxtPlugin } from "#app";
-import { useSupabaseFunctions } from "~/composables/useSupabaseFunctions";
+import { getOrCreateSessionId } from "~/utils/helpers";
+import { SupabaseFunctions } from "~/models/generic";
 
 export default defineNuxtPlugin(() => {
-  // Only run on client side
-  if (process.server) return;
+  const supabase = useSupabaseClient();
+  const user = useSupabaseUser();
+  const isDev = (process.env.NODE_ENV !== "production");
 
-  const { storeLogs } = useSupabaseFunctions();
-  const isDev = process.env.NODE_ENV === "development";
+  /**
+   * Store application logs in Supabase
+   */
+  const storeLogs = async (log: { message: string; level: "info" | "warn" | "error" }) => {
+    // Only store logs in production
+    if (isDev) return;
+
+    const sessionId = getOrCreateSessionId();
+    
+    try {
+      const { data, error } = await supabase.functions.invoke<{ success: boolean }>(
+        SupabaseFunctions.STORE_LOGS, 
+        {
+          body: {
+            ...log,
+            session_id: sessionId,
+            user_id: user.value?.id,
+          }
+        }
+      );
+
+      if (error) {
+        originalError(`Error storing logs:`, error);
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      originalError("Failed to log to Supabase:", err);
+      return null;
+    }
+  };
 
   // Store original console methods
   const originalLog = console.log;
@@ -23,26 +55,20 @@ export default defineNuxtPlugin(() => {
     if (isDev) {
       originalLog(...args);
     }
-    storeLogs({ level: "info", message: formatMessage(args) }).catch((err) =>
-      originalError("Failed to log to Supabase:", err),
-    );
+    storeLogs({ level: "info", message: formatMessage(args) });
   };
 
   console.warn = (...args) => {
     if (isDev) {
       originalWarn(...args);
     }
-    storeLogs({ level: "warn", message: formatMessage(args) }).catch((err) =>
-      originalError("Failed to log to Supabase:", err),
-    );
+    storeLogs({ level: "warn", message: formatMessage(args) });
   };
 
   console.error = (...args) => {
     if (isDev) {
       originalError(...args);
     }
-    storeLogs({ level: "error", message: formatMessage(args) }).catch((err) =>
-      originalError("Failed to log to Supabase:", err),
-    );
+    storeLogs({ level: "error", message: formatMessage(args) });
   };
 });
