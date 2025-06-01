@@ -1,4 +1,3 @@
-import { useSupabaseClient } from "#imports";
 import { getOrCreateSessionId } from "~/utils/helpers";
 
 export enum SupabaseFunctions {
