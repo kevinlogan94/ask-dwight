@@ -1,22 +1,24 @@
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { organizeMessagesForApi } from "~/utils/helpers";
-import type { Conversation } from "~/models/chat";
+import { useChatStore } from "~/stores/chat";
 
-export function useSuggestions(conversation: Ref<Conversation | undefined>) {
+export function useSuggestionService() {
+ const chatStore = useChatStore();
+
   async function generateSuggestions(): Promise<void> {
     if (
-      !conversation.value ||
-      conversation.value.messages[conversation.value.messages.length - 1].sender !== "assistant"
+      !chatStore.selectedConversation ||
+      chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1].sender !== "assistant"
     ) {
       console.error("Failed to generate suggestions: No assistant message found");
       return;
     }
 
     // Set placeholder suggestions while loading
-    const assistantMsg = conversation.value.messages[conversation.value.messages.length - 1];
+    const assistantMsg = chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1];
     assistantMsg.suggestions = ["loading", "loading", "loading"];
 
-    const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(conversation.value.messages);
+    const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(chatStore.selectedConversation.messages);
 
     messagesForApi.push({
       role: "user",
@@ -54,9 +56,9 @@ export function useSuggestions(conversation: Ref<Conversation | undefined>) {
   }
 
   function clearSuggestions(): void {
-    if (!conversation.value) return;
+    if (!chatStore.selectedConversation) return;
 
-    const message = conversation.value.messages[conversation.value.messages.length - 1];
+    const message = chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1];
     if (message) {
       message.suggestions = [];
     } else {

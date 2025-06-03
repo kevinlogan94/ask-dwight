@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import { useChatStore } from '~/stores/chat';
+
 const user = useSupabaseUser();
-const { associateConversationsWithUser } = useCloudSync();
+const chatStore = useChatStore();
 
 watch(
   user,
   () => {
     if (user.value) {
-      associateConversationsWithUser();
+      chatStore.associateConversationsWithUser();
       useTrackEvent("confirm_page_success", {
         event_category: "conversion",
         event_label: "authentication",

@@ -3,7 +3,7 @@ import { organizePromptInfo } from "~/utils/gamification";
 import type { Conversation, Message } from "~/models/chat";
 import { parseMarkdown } from "~/utils/helpers";
 
-export function useCloudSync() {
+export function useConversationRepository() {
   const supabase = useSupabaseClient();
   const user = useSupabaseUser();
 

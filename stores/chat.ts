@@ -1,8 +1,10 @@
 import { defineStore } from "pinia";
 import type { User } from "~/models/user";
 import type { Message, Conversation } from "~/models/chat";
-import { useCloudSync } from '~/composables/useCloudSync';
 import { throttleConversation } from "~/utils/helpers";
+import { useMessageService } from "~/composables/services/useMessageService";
+import { useConversationService } from "~/composables/services/useConversationService";
+import { useConversationRepository } from "~/composables/repositories/useConversationRepository";
 
 export const useChatStore = defineStore("chat", () => {
   // State
@@ -42,37 +44,6 @@ export const useChatStore = defineStore("chat", () => {
   });
 
   // Actions
-  async function createNewConversation() {
-    const conversationNumber = conversations.value.length + 1;
-    const title = `Conversation ${conversationNumber}`;
-    
-    try {
-      const conversationId = await createConversationInSupabase(title);
-      
-      // Create new conversation with the ID from Supabase
-      const newConversation: Conversation = {
-        id: conversationId,
-        title,
-        messages: [],
-        createdAt: new Date(),
-      };
-      
-      // Add to local state
-      conversations.value.push(newConversation);
-      selectedConversationId.value = conversationId;
-      
-      return newConversation;
-    } catch (error) {
-      console.error('Failed to create conversation in Supabase:', error);
-      throw error;
-      //todo - show technical toast message on error.
-    }
-  }
-
-  function selectConversation(conversationId: string | null) {
-    selectedConversationId.value = conversationId;
-  }
-
   function toggleSidebar(isOpen?: boolean) {
     if (typeof isOpen === "boolean") {
       sidebarOpen.value = isOpen;
@@ -81,8 +52,9 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
-  const { sendMessage } = useMessages();
-  const { syncConversationsToSupabase, fetchConversationsFromSupabase, createConversationInSupabase } = useCloudSync();
+  const { sendMessage } = useMessageService();
+  const { createNewConversation, selectConversation } = useConversationService();
+  const { syncConversationsToSupabase, fetchConversationsFromSupabase, associateConversationsWithUser } = useConversationRepository();
 
   onMounted(async () => {
     await syncConversationsToSupabase();
@@ -107,9 +79,10 @@ export const useChatStore = defineStore("chat", () => {
     showNewConversationScreen,
 
     // Actions
+    toggleSidebar,
     createNewConversation,
     selectConversation,
-    toggleSidebar,
-    sendMessage, // Re-exported from useMessages
+    sendMessage,
+    associateConversationsWithUser
   };
 });
