@@ -7,6 +7,7 @@ export function useConversationRepository() {
   const supabase = useSupabaseClient();
   const user = useSupabaseUser();
 
+  // to be removed after August 2025
   async function syncConversationsToSupabase() {
     const ConversationsRaw = localStorage.getItem("chat-conversations");
     if (!ConversationsRaw) {
