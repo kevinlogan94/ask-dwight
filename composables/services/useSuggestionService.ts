@@ -1,9 +1,11 @@
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { organizeMessagesForApi } from "~/utils/helpers";
 import { useChatStore } from "~/stores/chat";
+import { useSuggestionRepository } from "~/composables/repositories/useSuggestionRepository";
 
 export function useSuggestionService() {
  const chatStore = useChatStore();
+ const { saveSuggestionsToSupabase } = useSuggestionRepository();
 
   async function generateSuggestions(): Promise<void> {
     if (
@@ -40,12 +42,14 @@ export function useSuggestionService() {
           if (response && response.content) {
             suggestions = organizeSuggestions(response.content);
             assistantMsg.suggestions = suggestions;
+            await saveSuggestionsToSupabase(assistantMsg.id, suggestions);
             return;
           }
           console.error("Failed to generate suggestions: No response from API");
         }
 
         assistantMsg.suggestions = suggestions;
+        await saveSuggestionsToSupabase(assistantMsg.id, suggestions);
         return;
       }
       console.error("Failed to generate suggestions: No response from API");
