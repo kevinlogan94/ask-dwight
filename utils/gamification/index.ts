@@ -46,14 +46,8 @@ export function getTotalTimeSaved(conversations: Conversation[]): number {
     const userMessages = conversation.messages.filter((msg) => msg.sender === "user");
 
     for (const message of userMessages) {
-      const { timeSaved, category } = organizePromptInfo(message.content);
+      const { timeSaved } = organizePromptInfo(message.content);
       totalTimeSaved += timeSaved;
-
-      // mainly worried about prompts not matching and falling into the OTHER category.
-      // todo: Remove this later
-      if (category === SalesActivityCategory.OTHER && totalTimeSaved < 20) {
-        console.log("category", category, message.content);
-      }
     }
   }
 
