@@ -1,19 +1,17 @@
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 export const useOpenAIClient = () => {
+  
   const getClientSideChatCompletion = async (
     messages: ChatCompletionMessageParam[],
   ): Promise<ChatCompletionMessage | null> => {
     try {
       // Get Supabase client using the built-in composable
       const supabase = useSupabaseClient();
-      const user = useSupabaseUser();
-      const chat = useChatStore();
 
-      const sessionId = getOrCreateSessionId();
       // Call the Supabase edge function
       const { data, error } = await supabase.functions.invoke("chat-conversations", {
-        body: { messages, session_id: sessionId, user_id: user.value?.id, conversation_id: chat.selectedConversationId },
+        body: { messages },
       });
 
       if (error) {
