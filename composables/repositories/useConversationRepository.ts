@@ -1,4 +1,4 @@
-import { getOrCreateSessionId, throttleConversation } from "~/utils/helpers";
+import { getOrCreateSessionId, throttleConversation, throttlePerMessages } from "~/utils/helpers";
 import { organizePromptInfo } from "~/utils/gamification";
 import type { Conversation, Message } from "~/models/chat";
 import { parseMarkdown } from "~/utils/helpers";
@@ -147,7 +147,6 @@ export function useConversationRepository() {
     }
 
     const sessionId = getOrCreateSessionId();
-    console.log(`associateConversationsWithUser: Updating conversations for session ID: ${sessionId} to user ID: ${user.value.id}`);
     
     try {
       // Update all conversations in Supabase that match the current session ID
@@ -164,12 +163,12 @@ export function useConversationRepository() {
       
       if (error) {
         console.error("associateConversationsWithUser: Error updating conversations:", error.message);
-        return;
+        throw error;
       }
       
-      console.log(`associateConversationsWithUser: Successfully associated conversations with user ${user.value.id}`);
     } catch (err: any) {
       console.error("associateConversationsWithUser: Exception during update:", err.message);
+      throw err;
     }
   }
 
@@ -260,15 +259,12 @@ export function useConversationRepository() {
         )
         .order("created_at", { ascending: true });
 
-      console.log("fetchConversationsFromSupabase: Fetched conversations:", fetchedCloudConversations);
-
       if (error) {
         console.error("fetchConversationsFromSupabase: Error fetching conversations:", error.message);
-        return [];
+        throw error;
       }
 
       if (!fetchedCloudConversations) {
-        console.log("fetchConversationsFromSupabase: No conversation data returned from cloud.");
         return [];
       }
 
@@ -290,7 +286,10 @@ export function useConversationRepository() {
         });
 
         // Process Dwight responses
-        (rawConv.dwight_responses || []).forEach(async (response) => {
+        (rawConv.dwight_responses || []).forEach((response, index) => {
+          
+          const isLastResponse = index === rawConv.dwight_responses?.length - 1;
+
           messages.push({
             id: response.id,
             content: response.message,
@@ -298,8 +297,7 @@ export function useConversationRepository() {
             timestamp: new Date(response.created_at),
             status: "sent",
             suggestions: response.user_prompt_suggestions?.map(s => s.suggestion_text) || [],
-            isThrottleMessage: false,
-            htmlContent: await parseMarkdown(response.message),
+            isThrottleMessage: isLastResponse && throttlePerMessages(messages),
           });
         });
 
@@ -322,13 +320,23 @@ export function useConversationRepository() {
         return conversation;
       });
 
+
+      // apply markdown parsing
+      await Promise.all(organizedConversations.map(async (conversation) => {
+        conversation.messages.forEach(async (message) => {
+          if (message.sender === "assistant") {
+            message.htmlContent = await parseMarkdown(message.content);
+          }
+        });
+      }));
+
       console.log(
         `fetchConversationsFromSupabase: Successfully fetched and organized ${organizedConversations.length} conversations.`,
       );
       return organizedConversations;
     } catch (err: any) {
       console.error("fetchConversationsFromSupabase: Exception during fetch or data transformation:", err.message);
-      return [];
+      throw err;
     }
   }
 
