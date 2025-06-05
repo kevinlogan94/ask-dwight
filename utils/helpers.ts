@@ -103,6 +103,12 @@ export const formatTimeSaved = (minutes: number, longForm: boolean = false): str
 
 //todo add subscription check
 export const throttleConversation = (conversation: Conversation) => {
-  const userMessages = conversation.messages.filter((x) => x.sender === "user") ?? [];
-  return userMessages.length >= 10;
+  return throttlePerMessages(conversation.messages);
 };
+
+export const throttlePerMessages = (messages: Message[]) => {
+  const userMessages = messages.filter((x) => x.sender === "user") ?? [];
+  return userMessages.length >= 10;
+}
+
+

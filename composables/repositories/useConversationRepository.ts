@@ -1,4 +1,4 @@
-import { getOrCreateSessionId, throttleConversation, throttlePerMessages } from "~/utils/helpers";
+import { getOrCreateSessionId, throttlePerMessages } from "~/utils/helpers";
 import { organizePromptInfo } from "~/utils/gamification";
 import type { Conversation, Message } from "~/models/chat";
 import { parseMarkdown } from "~/utils/helpers";
