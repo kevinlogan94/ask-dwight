@@ -5,7 +5,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { OpenAI } from 'https://esm.sh/openai@4.35.0'
-import { DWIGHT_FULL_INSTRUCTIONS } from "./configs/dwight-instructions"
+import { DWIGHT_FULL_INSTRUCTIONS } from "./configs/dwight-instructions.ts"
 
 // CORS headers to allow requests from localhost and your production domain
 const corsHeaders = {
@@ -47,6 +47,8 @@ Deno.serve(async (req) => {
         headers: { 'Content-Type': 'application/json' }
       })
     }
+
+    console.log("Dwight Full Instructions: ", DWIGHT_FULL_INSTRUCTIONS);
 
     // Prepare chat messages with system prompt
     const chatMessages = [

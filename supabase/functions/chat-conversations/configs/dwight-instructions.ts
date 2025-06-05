@@ -1,10 +1,10 @@
-import introductionTrait from "~/composables/config/documents/dwight-introduction-trait.txt?raw";
-import suggestionTrait from "~/composables/config/documents/dwight-suggestion-trait.txt?raw";
-import valueDeliveryTrait from "~/composables/config/documents/dwight-value-delivery-trait.txt?raw";
-import dwightWorkflowBuildLeads from "~/composables/config/documents/dwight-workflow-build-leads.txt?raw";
-import dwightWorkflowLeadScoring from "~/composables/config/documents/dwight-workflow-lead-scoring.txt?raw";
-import conversationThrottlingTrait from "~/composables/config/documents/dwight-conversation-throttling.txt?raw";
-import generalExamples from "~/composables/config/documents/dwight-general-examples.txt?raw";
+import introductionTrait from "./documents/dwight-introduction-trait.ts";
+import suggestionTrait from "./documents/dwight-suggestion-trait.ts";
+import valueDeliveryTrait from "./documents/dwight-value-delivery-trait.ts";
+import dwightWorkflowBuildLeads from "./documents/dwight-workflow-build-leads.ts";
+import dwightWorkflowLeadScoring from "./documents/dwight-workflow-lead-scoring.ts";
+import conversationThrottlingTrait from "./documents/dwight-conversation-throttling.ts";
+import generalExamples from "./documents/dwight-general-examples.ts";
 
 export const DWIGHT_FULL_INSTRUCTIONS = `
 Static Foundations
@@ -81,7 +81,7 @@ ${valueDeliveryTrait}
 --- 
 
 Suggestion:
-Trait: Proactively offer 2–3 suggested user replies or next steps when appropriate.
+Trait: Proactively offer 2-3 suggested user replies or next steps when appropriate.
 Trigger: When backend instruction signals or when user uncertainty is detected.
 
 ---
