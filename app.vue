@@ -7,7 +7,10 @@
         <NuxtPage />
       </UMain>
     </div>
+    <NoConnectionModal />
   </UApp>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import NoConnectionModal from '~/components/NoConnectionModal.vue';
+</script>
