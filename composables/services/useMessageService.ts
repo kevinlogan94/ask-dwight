@@ -183,7 +183,7 @@ export function useMessageService() {
         const htmlContent = await parseMarkdown(responseMessage.content);
 
         // Add the actual AI response with parsed HTML
-        addAssistantMessage(responseMessage.content, htmlContent);
+        await addAssistantMessage(responseMessage.content, htmlContent);
 
         if (chatStore.throttleSelectedConversation) {
           // Trigger conversation throttling and get the response
@@ -191,7 +191,7 @@ export function useMessageService() {
           if (throttlingResponse && throttlingResponse.content) {
             const throttleHtmlContent = await parseMarkdown(throttlingResponse.content);
             // Add the throttling response message as if it came from the assistant
-            addAssistantMessage(
+            await addAssistantMessage(
               throttlingResponse.content,
               throttleHtmlContent,
               true
