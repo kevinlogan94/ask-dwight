@@ -48,8 +48,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    console.log("Dwight Full Instructions: ", DWIGHT_FULL_INSTRUCTIONS);
-
     // Prepare chat messages with system prompt
     const chatMessages = [
       { role: "system", content: DWIGHT_FULL_INSTRUCTIONS },
@@ -73,6 +71,7 @@ Deno.serve(async (req) => {
         { headers: { 'Content-Type': 'application/json', ...corsHeaders } },
       )
     } else {
+      console.error("Invalid response structure from OpenAI: ", response);
       return new Response(
         JSON.stringify({ error: 'Invalid response structure from OpenAI' }),
         { status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders } },
