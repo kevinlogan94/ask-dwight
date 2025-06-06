@@ -7,11 +7,28 @@ export function useConversationRepository() {
   const supabase = useSupabaseClient();
   const user = useSupabaseUser();
 
+  const conversationsQuery = supabase.from("conversations");
+  const userPromptsQuery = supabase.from("user_prompts");
+  const dwightResponsesQuery = supabase.from("dwight_responses");
+  const userPromptSuggestionsQuery = supabase.from("user_prompt_suggestions");
+
+  userPromptsQuery.headers = {
+    "supabase-session-id": getOrCreateSessionId(),
+  };
+  dwightResponsesQuery.headers = {
+    "supabase-session-id": getOrCreateSessionId(),
+  };
+  userPromptSuggestionsQuery.headers = {
+    "supabase-session-id": getOrCreateSessionId(),
+  };
+  conversationsQuery.headers = {
+    "supabase-session-id": getOrCreateSessionId(),
+  };
+
   // to be removed after August 2025
   async function syncConversationsToSupabase() {
     const ConversationsRaw = localStorage.getItem("chat-conversations");
     if (!ConversationsRaw) {
-      console.log("syncConversationsToSupabase: No local chat conversations to sync.");
       return;
     }
 
@@ -32,7 +49,7 @@ export function useConversationRepository() {
 
       for (const conversation of Conversations) {
         console.log(`syncConversationsToSupabase: Processing conversation ID: ${conversation.id}`);
-        const { error: convError } = await supabase.from("conversations").insert({
+        const { error: convError } = await conversationsQuery.insert({
           id: conversation.id,
           created_at: conversation.createdAt,
           user_id: currentUserId, // This can be null if user is not logged in
@@ -55,7 +72,7 @@ export function useConversationRepository() {
         for (const message of conversation.messages) {
           if (message.sender === "user") {
             const { category, timeSaved } = organizePromptInfo(message.content);
-            const { error: promptError } = await supabase.from("user_prompts").insert({
+            const { error: promptError } = await userPromptsQuery.insert({
               id: message.id,
               conversation_id: conversation.id,
               message: message.content,
@@ -76,7 +93,7 @@ export function useConversationRepository() {
             lastUserPromptIdInConversation = message.id;
           } else if (message.sender === "assistant") {
             if (lastUserPromptIdInConversation) {
-              const { error: responseError } = await supabase.from("dwight_responses").insert({
+              const { error: responseError } = await dwightResponsesQuery.insert({
                 id: message.id,
                 conversation_id: conversation.id,
                 message: message.content,
@@ -98,9 +115,7 @@ export function useConversationRepository() {
                   dwight_response_id: message.id,
                   suggestion_text: suggestionText,
                 }));
-                const { error: suggestionsError } = await supabase
-                  .from("user_prompt_suggestions")
-                  .insert(suggestionsToInsert as any);
+                const { error: suggestionsError } = await userPromptSuggestionsQuery.insert(suggestionsToInsert as any);
                 if (suggestionsError) {
                   console.error(
                     "syncConversationsToSupabase: Error inserting suggestions for response ID:",
@@ -147,25 +162,19 @@ export function useConversationRepository() {
     }
 
     const sessionId = getOrCreateSessionId();
-    
+
     try {
       // Update all conversations in Supabase that match the current session ID
-      const query = supabase.from("conversations");
-      query.headers = {
-        "supabase-session-id": sessionId,
-      };
-      
-      const { error } = await query
-      //@ts-ignore
+      const { error } = await conversationsQuery
+        //@ts-ignore
         .update({ user_id: user.value?.id }) //typescript doesn't like this.
-        .eq('session_id', sessionId)
-        .is('user_id', null); // Only update records where user_id is null
-      
+        .eq("session_id", sessionId)
+        .is("user_id", null); // Only update records where user_id is null
+
       if (error) {
         console.error("associateConversationsWithUser: Error updating conversations:", error.message);
         throw error;
       }
-      
     } catch (err: any) {
       console.error("associateConversationsWithUser: Exception during update:", err.message);
       throw err;
@@ -181,31 +190,30 @@ export function useConversationRepository() {
     try {
       const sessionId = getOrCreateSessionId();
       const currentUserId = user.value?.id;
-      
+
       // Create the conversation in Supabase
-      const { data: newConversation, error } = await supabase
-        .from('conversations')
+      const { data: newConversation, error } = await conversationsQuery
         //@ts-ignore
         .insert({
           title,
           user_id: currentUserId || null,
-          session_id: sessionId, 
+          session_id: sessionId,
         })
-        .select('id')
+        .select("id")
         .single();
-      
+
       if (error) {
-        console.error('createConversationInSupabase: Error creating conversation:', error.message);
+        console.error("createConversationInSupabase: Error creating conversation:", error.message);
         throw error;
       }
-      
+
       if (!newConversation) {
-        throw new Error('createConversationInSupabase: No conversation data returned');
+        throw new Error("createConversationInSupabase: No conversation data returned");
       }
-      
+
       return (newConversation as { id: string }).id;
     } catch (err: any) {
-      console.error('createConversationInSupabase: Exception during creation:', err.message);
+      console.error("createConversationInSupabase: Exception during creation:", err.message);
       throw err;
     }
   }
@@ -226,16 +234,15 @@ export function useConversationRepository() {
     };
 
     const sessionId = getOrCreateSessionId();
-    console.log("fetchConversationsFromSupabase: Using session ID:", sessionId);
+    if (user.value?.id) {
+      console.log("fetchConversationsFromSupabase: Using user ID:", user.value.id);
+    } else {
+      console.log("fetchConversationsFromSupabase: Using session ID:", sessionId);
+    }
 
     try {
       // Set headers directly on the query builder
-      const query = supabase.from("conversations");
-      query.headers = {
-        "supabase-session-id": sessionId,
-      };
-
-      const { data: fetchedCloudConversations, error } = await query
+      const { data: fetchedCloudConversations, error } = await conversationsQuery
         .select(
           `
           id,
@@ -287,7 +294,6 @@ export function useConversationRepository() {
 
         // Process Dwight responses
         (rawConv.dwight_responses || []).forEach((response, index) => {
-          
           const isLastResponse = index === rawConv.dwight_responses?.length - 1;
 
           messages.push({
@@ -296,7 +302,7 @@ export function useConversationRepository() {
             sender: "assistant",
             timestamp: new Date(response.created_at),
             status: "sent",
-            suggestions: response.user_prompt_suggestions?.map(s => s.suggestion_text) || [],
+            suggestions: response.user_prompt_suggestions?.map((s) => s.suggestion_text) || [],
             isThrottleMessage: isLastResponse && throttlePerMessages(messages),
           });
         });
@@ -320,19 +326,17 @@ export function useConversationRepository() {
         return conversation;
       });
 
-
       // apply markdown parsing
-      await Promise.all(organizedConversations.map(async (conversation) => {
-        conversation.messages.forEach(async (message) => {
-          if (message.sender === "assistant") {
-            message.htmlContent = await parseMarkdown(message.content);
-          }
-        });
-      }));
-
-      console.log(
-        `fetchConversationsFromSupabase: Successfully fetched and organized ${organizedConversations.length} conversations.`,
+      await Promise.all(
+        organizedConversations.map(async (conversation) => {
+          conversation.messages.forEach(async (message) => {
+            if (message.sender === "assistant") {
+              message.htmlContent = await parseMarkdown(message.content);
+            }
+          });
+        }),
       );
+
       return organizedConversations;
     } catch (err: any) {
       console.error("fetchConversationsFromSupabase: Exception during fetch or data transformation:", err.message);

@@ -12,7 +12,9 @@ export function useSuggestionService() {
       !chatStore.selectedConversation ||
       chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1].sender !== "assistant"
     ) {
-      console.error("Failed to generate suggestions: No assistant message found");
+      if ((chatStore.selectedConversation?.messages?.length ?? 0) > 2) {
+        console.error("Failed to generate suggestions: No assistant message found");
+      }
       return;
     }
 
