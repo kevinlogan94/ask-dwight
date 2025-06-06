@@ -1,7 +1,7 @@
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 export const useOpenAIClient = () => {
-  
+
   const getClientSideChatCompletion = async (
     messages: ChatCompletionMessageParam[],
   ): Promise<ChatCompletionMessage | null> => {
@@ -16,19 +16,18 @@ export const useOpenAIClient = () => {
 
       if (error) {
         console.error("Error from Supabase Function:", error);
-        return null;
+        throw error;
       }
 
       if (data?.message) {
-        console.log("Response from edge function:", data.message.content);
         return data.message;
       } else {
         console.error("Invalid response structure from edge function:", data);
-        return null;
+        throw new Error("Invalid response structure from edge function");
       }
     } catch (error) {
       console.error("Error fetching chat completion from edge function:", error);
-      return null;
+      throw error;
     }
   };
 
