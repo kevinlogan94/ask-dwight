@@ -4,45 +4,44 @@
     :dismissible="false"
     title="No Internet Connection"
   >
-    <UCard>
       <template #body>
         <p class="text-center">
           It looks like you're not connected to the internet. Please check your connection and try again.
         </p>
 
-        <UButton label="Retry Connection" class="w-full justify-center mt-5" @click="checkConnection()" />
+        <UButton label="Retry" class="w-full justify-center mt-5" @click="checkConnection()" />
       </template>
-    </UCard>
   </UModal>
 </template>
 
 <script setup lang="ts">
 
+const supabase = useSupabaseClient();
+
 const isModalOpen = ref(false);
 
-const changeModalStatePerOnlineStatus = () => {
-  if (typeof navigator !== 'undefined') {
-   isModalOpen.value = !navigator.onLine;
-  }
+const changeModalStatePerOnlineStatus = async () => {
+    if (navigator.onLine) {
+      const { error } = await supabase.from("user_prompts").select("*").limit(1);
+      isModalOpen.value = !!error;
+      return;
+    }
+    isModalOpen.value = true;
 };
 
 const checkConnection = () => {
-  changeModalStatePerOnlineStatus();
+  window.location.reload();
 };
 
-onMounted(() => {
-  changeModalStatePerOnlineStatus();
+onMounted(async () => {
+  await changeModalStatePerOnlineStatus();
 
-  if (typeof window !== 'undefined') {
-    window.addEventListener('online', changeModalStatePerOnlineStatus);
-    window.addEventListener('offline', changeModalStatePerOnlineStatus);
-  }
+  window.addEventListener('online', changeModalStatePerOnlineStatus);
+  window.addEventListener('offline', changeModalStatePerOnlineStatus);
 });
 
 onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('online', changeModalStatePerOnlineStatus);
-    window.removeEventListener('offline', changeModalStatePerOnlineStatus);
-  }
+  window.removeEventListener('online', changeModalStatePerOnlineStatus);
+  window.removeEventListener('offline', changeModalStatePerOnlineStatus);
 });
 </script>
