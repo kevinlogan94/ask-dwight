@@ -48,7 +48,6 @@ export function useConversationRepository() {
       );
 
       for (const conversation of Conversations) {
-        console.log(`syncConversationsToSupabase: Processing conversation ID: ${conversation.id}`);
         const { error: convError } = await conversationsQuery.insert({
           id: conversation.id,
           created_at: conversation.createdAt,
@@ -136,15 +135,9 @@ export function useConversationRepository() {
             // Ignored
           }
         }
-        console.log(
-          `syncConversationsToSupabase: Finished processing messages for conversation ID: ${conversation.id}`,
-        );
       }
 
       localStorage.removeItem("chat-conversations");
-      console.log(
-        `syncConversationsToSupabase: Sync complete. Local chat conversations removed for session ID: ${sessionId}, User ID: ${currentUserId || "N/A"}`,
-      );
     } catch (error: any) {
       console.error("syncConversationsToSupabase: Failed to parse or process local chat conversations:", error.message);
     }
@@ -157,7 +150,7 @@ export function useConversationRepository() {
   async function associateConversationsWithUser(): Promise<void> {
     // Only proceed if we have a logged-in user
     if (!user.value?.id) {
-      console.log("associateConversationsWithUser: No user is logged in, skipping.");
+      console.warn("associateConversationsWithUser: No user is logged in, skipping.");
       return;
     }
 
