@@ -43,7 +43,10 @@
         <!-- Bolt icon in the center -->
         <div
           class="absolute inset-0 flex items-center justify-center"
-          :class="{ 'text-gray-200 dark:text-gray-500': !showMilestoneReachedVisuals, 'text-green-500': showMilestoneReachedVisuals }"
+          :class="{
+            'text-gray-200 dark:text-gray-500': !showMilestoneReachedVisuals,
+            'text-green-500': showMilestoneReachedVisuals,
+          }"
         >
           <UIcon name="i-heroicons-bolt" class="w-6 h-6" />
         </div>
@@ -118,7 +121,10 @@ const lastConversationId = ref<string | null>(null);
 // Progress calculations
 const nextMilestone = computed(() => {
   //return the first milestone that is larger than the total saved time
-  return milestones.timeSaved.find((milestone) => milestone > totalSavedTime.value) || milestones.timeSaved[milestones.timeSaved.length - 1];
+  return (
+    milestones.timeSaved.find((milestone) => milestone > totalSavedTime.value) ||
+    milestones.timeSaved[milestones.timeSaved.length - 1]
+  );
 });
 
 const minutesToNextMilestone = computed(() => {
@@ -195,7 +201,7 @@ watch(
 
     // skip milestone checks if we just opened the app
     if (!chatStore.anyMessagesSentForCurrentSession) return;
-    
+
     // Update conversation tracking for new conversations
     if (isNewConversation) {
       lastConversationId.value = chatStore.selectedConversation?.id ?? null;
@@ -206,19 +212,17 @@ watch(
       lastConversationId.value = chatStore.selectedConversation?.id ?? null;
       return;
     }
-    
+
     // --- 2. Check for milestone crossing ---
     const prevValue = oldValue ?? 0;
-    const crossedMilestone = milestones.timeSaved.find(
-      (milestone) => prevValue < milestone && newValue >= milestone
-    );
-    
+    const crossedMilestone = milestones.timeSaved.find((milestone) => prevValue < milestone && newValue >= milestone);
+
     // Skip if no milestone was crossed
     if (!crossedMilestone) return;
-    
+
     // --- 3. Handle milestone celebration ---
     showMilestoneReachedVisuals.value = true;
-    
+
     // Track the event
     useTrackEvent("dojoMeter_milestone_reached", {
       event_category: "gamification",
@@ -226,7 +230,7 @@ watch(
       value: { reachedMilestone: crossedMilestone },
       non_interaction: false,
     });
-    
+
     // Auto-hide celebration after delay
     setTimeout(() => {
       // Show tutorial modal if this is the first milestone
@@ -234,7 +238,7 @@ watch(
         isModalOpen.value = true;
         milestoneTutorialModalDisplayed.value = true;
       }
-      
+
       showMilestoneReachedVisuals.value = false;
     }, 3000);
   },

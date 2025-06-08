@@ -10,14 +10,7 @@
     <div class="flex gap-2 flex-col md:flex-row justify-between">
       <template v-for="(suggestion, index) in suggestions" :key="index">
         <USkeleton v-if="suggestion === 'loading'" class="h-8 w-full rounded dark:bg-gray-900" />
-        <UButton
-          v-else
-          size="md"
-          color="neutral"
-          variant="outline"
-          class="ring-0"
-          @click="handleClick(suggestion)"
-        >
+        <UButton v-else size="md" color="neutral" variant="outline" class="ring-0" @click="handleClick(suggestion)">
           {{ suggestion }}
         </UButton>
       </template>

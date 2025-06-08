@@ -4,8 +4,8 @@ import { useChatStore } from "~/stores/chat";
 import { useSuggestionRepository } from "~/composables/repositories/useSuggestionRepository";
 
 export function useSuggestionService() {
- const chatStore = useChatStore();
- const { saveSuggestionsToSupabase } = useSuggestionRepository();
+  const chatStore = useChatStore();
+  const { saveSuggestionsToSupabase } = useSuggestionRepository();
 
   async function generateSuggestions(): Promise<void> {
     if (
@@ -22,12 +22,13 @@ export function useSuggestionService() {
     const assistantMsg = chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1];
     assistantMsg.suggestions = ["loading", "loading", "loading"];
 
-    const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(chatStore.selectedConversation.messages);
+    const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(
+      chatStore.selectedConversation.messages,
+    );
 
     messagesForApi.push({
       role: "user",
-      content:
-        "Trigger the suggestion trait to create 3 suggestions that I could say back to you.",
+      content: "Trigger the suggestion trait to create 3 suggestions that I could say back to you.",
     });
 
     const { getClientSideChatCompletion } = useOpenAIClient();

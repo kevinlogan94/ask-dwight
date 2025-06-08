@@ -6,7 +6,7 @@ import { SupabaseFunctions } from "~/models/generic";
 export default defineNuxtPlugin(() => {
   const supabase = useSupabaseClient();
   const user = useSupabaseUser();
-  const isDev = (process.env.NODE_ENV !== "production");
+  const isDev = process.env.NODE_ENV !== "production";
 
   /**
    * Store application logs in Supabase
@@ -16,18 +16,15 @@ export default defineNuxtPlugin(() => {
     if (isDev) return;
 
     const sessionId = getOrCreateSessionId();
-    
+
     try {
-      const { data, error } = await supabase.functions.invoke<{ success: boolean }>(
-        SupabaseFunctions.STORE_LOGS, 
-        {
-          body: {
-            ...log,
-            session_id: sessionId,
-            user_id: user.value?.id,
-          }
-        }
-      );
+      const { data, error } = await supabase.functions.invoke<{ success: boolean }>(SupabaseFunctions.STORE_LOGS, {
+        body: {
+          ...log,
+          session_id: sessionId,
+          user_id: user.value?.id,
+        },
+      });
 
       if (error) {
         originalError(`Error storing logs:`, error);

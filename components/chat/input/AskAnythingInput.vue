@@ -22,7 +22,9 @@
         icon="heroicons:arrow-up"
       />
     </UChatPrompt>
-    <p v-if="!chatStore.showNewConversationScreen" class="text-xs text-neutral-400 mt-1 text-center">Dwight can make mistakes. Double-check his work.</p>
+    <p v-if="!chatStore.showNewConversationScreen" class="text-xs text-neutral-400 mt-1 text-center">
+      Dwight can make mistakes. Double-check his work.
+    </p>
   </div>
 </template>
 

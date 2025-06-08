@@ -1,7 +1,6 @@
 import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 export const useOpenAIClient = () => {
-
   const getClientSideChatCompletion = async (
     messages: ChatCompletionMessageParam[],
   ): Promise<ChatCompletionMessage | null> => {

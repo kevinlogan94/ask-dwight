@@ -55,7 +55,8 @@ export const useChatStore = defineStore("chat", () => {
 
   const { sendMessage } = useMessageService();
   const { createNewConversation, selectConversation } = useConversationService();
-  const { syncConversationsToSupabase, fetchConversationsFromSupabase, associateConversationsWithUser } = useConversationRepository();
+  const { syncConversationsToSupabase, fetchConversationsFromSupabase, associateConversationsWithUser } =
+    useConversationRepository();
 
   onMounted(async () => {
     await syncConversationsToSupabase();
@@ -85,6 +86,6 @@ export const useChatStore = defineStore("chat", () => {
     createNewConversation,
     selectConversation,
     sendMessage,
-    associateConversationsWithUser
+    associateConversationsWithUser,
   };
 });

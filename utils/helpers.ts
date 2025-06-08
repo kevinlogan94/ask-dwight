@@ -70,11 +70,11 @@ export const parseMarkdown = async (markdownString: string | null | undefined): 
     console.error("Error parsing markdown:", error);
     return markdownString || "";
   }
-}
+};
 
 /**
  * Formats a number of minutes into a human-readable time string.
- * Examples: 
+ * Examples:
  * - formatTimeSaved(20) -> "20 min"
  * - formatTimeSaved(62) -> "1 hr 2 min"
  * - formatTimeSaved(60) -> "1 hr"
@@ -84,20 +84,20 @@ export const parseMarkdown = async (markdownString: string | null | undefined): 
  * @returns Formatted time string.
  */
 export const formatTimeSaved = (minutes: number, longForm: boolean = false): string => {
-  const hourUnit = longForm ? (Math.floor(minutes / 60) === 1 ? 'hour' : 'hours') : 'hr';
-  const minuteUnit = longForm ? (minutes % 60 === 1 ? 'minute' : 'minutes') : 'min';
-  
+  const hourUnit = longForm ? (Math.floor(minutes / 60) === 1 ? "hour" : "hours") : "hr";
+  const minuteUnit = longForm ? (minutes % 60 === 1 ? "minute" : "minutes") : "min";
+
   if (minutes < 60) {
     return `${minutes} ${minuteUnit}`;
   }
-  
+
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
-  
+
   if (remainingMinutes === 0) {
     return `${hours} ${hourUnit}`;
   }
-  
+
   return `${hours} ${hourUnit} ${remainingMinutes} ${minuteUnit}`;
 };
 
@@ -109,6 +109,4 @@ export const throttleConversation = (conversation: Conversation) => {
 export const throttlePerMessages = (messages: Message[]) => {
   const userMessages = messages.filter((x) => x.sender === "user") ?? [];
   return userMessages.length >= 10;
-}
-
-
+};

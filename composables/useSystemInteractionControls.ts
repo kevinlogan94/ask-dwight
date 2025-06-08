@@ -20,7 +20,9 @@ export function useSystemInteractionControls() {
       return null;
     }
 
-    const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(chatStore.selectedConversation.messages);
+    const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(
+      chatStore.selectedConversation.messages,
+    );
     messagesForApi.push({
       role: "user",
       content: "trigger conversation throttling",

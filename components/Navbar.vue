@@ -19,7 +19,10 @@
         <div class="flex items-center cursor-pointer" @click="goToHome">
           <img src="/favicons/favicon.svg" alt="Ask Dwight Logo" class="w-6 h-6 mr-2" />
           <h1 class="text-lg font-bold">Ask Dwight</h1>
-          <span v-if="route.path === '/' && chatStore.selectedConversation" class="ml-2 text-gray-600 dark:text-gray-400 font-medium truncate">
+          <span
+            v-if="route.path === '/' && chatStore.selectedConversation"
+            class="ml-2 text-gray-600 dark:text-gray-400 font-medium truncate"
+          >
             - {{ truncatedTitle }}
           </span>
         </div>

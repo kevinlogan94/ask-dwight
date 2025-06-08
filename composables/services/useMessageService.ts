@@ -38,11 +38,8 @@ export function useMessageService() {
 
     try {
       // Save user message to Supabase
-      const savedId = await saveUserPromptToSupabase(
-        chatStore.selectedConversationId,
-        content
-      );
-      
+      const savedId = await saveUserPromptToSupabase(chatStore.selectedConversationId, content);
+
       messageId = savedId;
     } catch (error) {
       console.error("Error saving user message to Supabase:", error);
@@ -66,7 +63,11 @@ export function useMessageService() {
   /**
    * Add an assistant message to the current conversation
    */
-  async function addAssistantMessage(content: string, htmlContent: string, throttleMessage: boolean = false): Promise<Message> {
+  async function addAssistantMessage(
+    content: string,
+    htmlContent: string,
+    throttleMessage: boolean = false,
+  ): Promise<Message> {
     if (!chatStore.selectedConversation || !chatStore.selectedConversationId) {
       console.error("No conversation selected to add message");
       throw new Error("No conversation selected");
@@ -88,7 +89,7 @@ export function useMessageService() {
       const savedId = await saveAssistantResponseToSupabase(
         chatStore.selectedConversationId,
         content,
-        lastUserMessageId
+        lastUserMessageId,
       );
 
       messageId = savedId;
@@ -124,7 +125,7 @@ export function useMessageService() {
       content: messageType === "loading" ? "" : DEFAULT_ERROR_MESSAGE,
       sender: "system",
       status: messageType === "loading" ? "loading" : "sent",
-      timestamp: new Date()
+      timestamp: new Date(),
     };
     chatStore.selectedConversation.messages.push(newMessage);
     return newMessage;
@@ -192,11 +193,7 @@ export function useMessageService() {
           if (throttlingResponse && throttlingResponse.content) {
             const throttleHtmlContent = await parseMarkdown(throttlingResponse.content);
             // Add the throttling response message as if it came from the assistant
-            await addAssistantMessage(
-              throttlingResponse.content,
-              throttleHtmlContent,
-              true
-            );
+            await addAssistantMessage(throttlingResponse.content, throttleHtmlContent, true);
           }
         } else {
           // For non-throttled conversations, generate suggestions as normal

@@ -1,9 +1,9 @@
-import { useSupabaseClient } from '#imports'
-import { organizePromptInfo } from "~/utils/gamification"
-import { getOrCreateSessionId } from "~/utils/helpers"
+import { useSupabaseClient } from "#imports";
+import { organizePromptInfo } from "~/utils/gamification";
+import { getOrCreateSessionId } from "~/utils/helpers";
 
 export function useMessageRepository() {
-  const supabase = useSupabaseClient()
+  const supabase = useSupabaseClient();
   const userPromptsQuery = supabase.from("user_prompts");
   const dwightResponsesQuery = supabase.from("dwight_responses");
 
@@ -23,13 +23,14 @@ export function useMessageRepository() {
   async function saveUserPromptToSupabase(conversationId: string, content: string): Promise<string> {
     try {
       const { category, timeSaved } = organizePromptInfo(content);
-      const { data, error } = await userPromptsQuery.insert({
+      const { data, error } = await userPromptsQuery
+        .insert({
           conversation_id: conversationId,
           message: content,
           category: category.toString(),
           time_saved: timeSaved,
         } as any)
-        .select('id')
+        .select("id")
         .single();
 
       if (error) {
@@ -52,18 +53,19 @@ export function useMessageRepository() {
    * @returns The ID of the created response
    */
   async function saveAssistantResponseToSupabase(
-    conversationId: string, 
-    content: string, 
-    promptId: string
+    conversationId: string,
+    content: string,
+    promptId: string,
   ): Promise<string> {
     try {
       // Insert the response
-      const { data, error } = await dwightResponsesQuery.insert({
+      const { data, error } = await dwightResponsesQuery
+        .insert({
           conversation_id: conversationId,
           message: content,
           prompt_id: promptId,
         } as any)
-        .select('id')
+        .select("id")
         .single();
 
       if (error) {
@@ -85,6 +87,6 @@ export function useMessageRepository() {
 
   return {
     saveUserPromptToSupabase,
-    saveAssistantResponseToSupabase
-  }
+    saveAssistantResponseToSupabase,
+  };
 }

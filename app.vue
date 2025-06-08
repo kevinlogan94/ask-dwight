@@ -12,5 +12,5 @@
 </template>
 
 <script setup lang="ts">
-import NoConnectionModal from '~/components/NoConnectionModal.vue';
+import NoConnectionModal from "~/components/NoConnectionModal.vue";
 </script>
