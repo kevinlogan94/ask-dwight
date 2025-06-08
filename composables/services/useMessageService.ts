@@ -150,6 +150,7 @@ export function useMessageService() {
    */
   async function sendMessage(content: string): Promise<boolean> {
     let conversation = chatStore.selectedConversation;
+    chatStore.anyMessagesSentForCurrentSession = true;
 
     // If no conversation exists or is selected, create a new one
     if (!conversation) {

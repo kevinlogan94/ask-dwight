@@ -192,6 +192,9 @@ watch(
     // --- 1. Track conversation changes ---
     const isNewConversation = (chatStore.selectedConversation?.messages.length ?? 0) <= 2;
     const isChangedConversation = chatStore.selectedConversation?.id !== lastConversationId.value;
+
+    // skip milestone checks if we just opened the app
+    if (!chatStore.anyMessagesSentForCurrentSession) return;
     
     // Update conversation tracking for new conversations
     if (isNewConversation) {
