@@ -39,11 +39,15 @@
                 size="lg"
                 v-if="message.isThrottleMessage"
                 label="Start a new conversation"
-                @click="chatStore.createNewConversation()"
+                @click="setupForNewConversation()"
                 color="primary"
               />
               <!-- Show suggestion chips for assistant messages if available -->
-              <SuggestionChips v-if="message.suggestions?.length" :suggestions="message.suggestions" class="mt-3 mb-4" />
+              <SuggestionChips
+                v-if="message.suggestions?.length"
+                :suggestions="message.suggestions"
+                class="mt-3 mb-4"
+              />
             </div>
           </div>
 
@@ -95,6 +99,11 @@ onMounted(() => {
     scrollButton.value?.scrollToBottom();
   });
 });
+
+function setupForNewConversation() {
+  // Select null to display the new conversation screen
+  chatStore.selectConversation(null);
+}
 
 // Watch for changes in the messages array and scroll down when new messages are added
 watch(
