@@ -37,6 +37,12 @@ export function organizePromptInfo(prompt: string): { category: SalesActivityCat
   return matchedCategories[0];
 }
 
+//todo: Replace this with a database query that does a summation on timeSaved.
+/**
+ * Calculates the total time saved across all conversations
+ * @param conversations Array of conversations to calculate total time saved for
+ * @returns Total time saved in minutes
+ */
 export function getTotalTimeSaved(conversations: Conversation[]): number {
   if (!conversations || conversations.length === 0) return 0;
 
