@@ -21,7 +21,7 @@ export default defineNuxtConfig({
         { property: "og:type", content: "website" },
         { property: "og:url", content: "https://ask-dwight.com" },
         { property: 'og:image', content: '/og-image.png' },
-        // { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:card', content: 'summary_large_image' },
         { name: "twitter:title", content: "Ask Dwight - Conquer AI. Win Business. Fear Nothing." },
         {
           name: "twitter:description",
