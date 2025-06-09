@@ -7,8 +7,8 @@
     <div class="flex-1 flex flex-col w-full max-w-3xl mx-auto">
       <!-- Chat messages area-->
       <div class="flex-1 py-4 px-4 md:px-6">
-        <!-- Dynamic message rendering from messages array -->
         <div v-for="message in chatStore.currentMessages" :key="message.id" class="mb-4" v-motion-slide-bottom>
+
           <!-- System Message (Loading, Errors) -->
           <div v-if="message.role === 'system'" class="flex items-start">
             <div class="max-w-[80%]">
@@ -62,7 +62,7 @@
             </UButtonGroup>
             <!-- New conversation button -->
             <UButton
-              class="mt-4 w-full"
+              :class="['mt-4 w-full', { 'mb-4': !message.suggestions?.length }]"
               size="lg"
               v-if="message.isThrottleMessage"
               label="Start a new conversation"
