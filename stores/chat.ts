@@ -13,7 +13,7 @@ export const useChatStore = defineStore("chat", () => {
   let conversations = ref<Conversation[]>([]);
   const selectedConversationId = ref<string | null>(null);
   const sidebarOpen = ref(false);
-  const aiResponsePending = ref(false);
+  const chatStatus = ref("ready" as "ready" | "error" | "submitted" | "streaming");
   const anyMessagesSentForCurrentSession = ref(false); // need to know if they just opened the app.
 
   // todo: integrate supabase user
@@ -72,8 +72,8 @@ export const useChatStore = defineStore("chat", () => {
     conversations,
     selectedConversationId,
     sidebarOpen,
-    aiResponsePending,
     anyMessagesSentForCurrentSession,
+    chatStatus,
 
     // Getters
     selectedConversation,

@@ -50,7 +50,7 @@ export function useMessageService() {
     const newMessage: Message = {
       id: messageId,
       content,
-      sender: "user",
+      role: "user",
       timestamp: new Date(),
     };
 
@@ -77,7 +77,7 @@ export function useMessageService() {
 
     try {
       // For assistant messages, we need the previous user message ID
-      const userMessages = chatStore.selectedConversation.messages.filter((m: any) => m.sender === "user");
+      const userMessages = chatStore.selectedConversation.messages.filter((m: any) => m.role === "user");
       const lastUserMessageId = userMessages.length > 0 ? userMessages[userMessages.length - 1].id : null;
 
       if (!lastUserMessageId) {
@@ -102,7 +102,7 @@ export function useMessageService() {
     const newMessage: Message = {
       id: messageId,
       content,
-      sender: "assistant",
+      role: "assistant",
       timestamp: new Date(),
       htmlContent,
       isThrottleMessage: throttleMessage,
@@ -123,7 +123,7 @@ export function useMessageService() {
     const newMessage: Message = {
       id: generatedId,
       content: messageType === "loading" ? "" : DEFAULT_ERROR_MESSAGE,
-      sender: "system",
+      role: "system",
       status: messageType === "loading" ? "loading" : "sent",
       timestamp: new Date(),
     };
@@ -163,13 +163,13 @@ export function useMessageService() {
     }
 
     clearSuggestions();
-    chatStore.aiResponsePending = true;
 
     // Add user message
     await addUserMessage(content);
 
     // Add loading message
     AddSystemMessage("loading");
+    chatStore.chatStatus = "submitted";
 
     try {
       // Prepare messages for the API (only user and assistant roles)
@@ -199,9 +199,11 @@ export function useMessageService() {
           // For non-throttled conversations, generate suggestions as normal
           await generateSuggestions();
         }
+        chatStore.chatStatus = "ready";
       } else {
         // Add an error message if the API call failed or returned no content
         AddSystemMessage("error");
+        chatStore.chatStatus = "error";
         console.error("Failed to get response from getClientSideChatCompletion");
       }
     } catch (error) {
@@ -210,8 +212,7 @@ export function useMessageService() {
       removeLoadingMessage();
       // Add an error message
       AddSystemMessage("error");
-    } finally {
-      chatStore.aiResponsePending = false;
+      chatStore.chatStatus = "error";
     }
 
     return true;

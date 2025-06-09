@@ -10,7 +10,7 @@
         <!-- Dynamic message rendering from messages array -->
         <div v-for="message in chatStore.currentMessages" :key="message.id" class="mb-4" v-motion-slide-bottom>
           <!-- System Message (Loading, Errors) -->
-          <div v-if="message.sender === 'system'" class="flex items-start">
+          <div v-if="message.role === 'system'" class="flex items-start">
             <div class="max-w-[80%]">
               <div class="bg-gray-800 backdrop-blur-sm rounded-lg p-3 text-white">
                 <!-- Use the typing animation component only when loading -->
@@ -22,42 +22,62 @@
           </div>
 
           <!-- Assistant Message (AI Response) -->
-          <div v-else-if="message.sender === 'assistant'" class="flex items-start">
-            <div class="max-w-[90%]">
-              <div
-                :class="
-                  message.isThrottleMessage
-                    ? 'bg-gray-900 backdrop-blur-sm rounded-lg p-3 text-white'
-                    : 'bg-gray-800 backdrop-blur-sm rounded-lg p-3 text-white'
-                "
+          <div v-else-if="message.role === 'assistant'" class="flex flex-col group">
+            <!-- Display AI response content -->
+            <div
+              :class="
+                message.isThrottleMessage
+                  ? 'text-white bg-gray-900 backdrop-blur-sm rounded-lg p-3'
+                  : 'text-black dark:text-white'
+              "
+              class="prose max-w-none dark:prose-invert"
+              v-html="message.htmlContent || message.content"
+            ></div>
+            <!-- Assistant Message Actions -->
+            <UButtonGroup
+              :class="[
+                'mt-4',
+                {
+                  'opacity-0 group-hover:opacity-100 transition-opacity duration-300':
+                    chatStore.currentMessages.indexOf(message) !== chatStore.currentMessages.length - 1,
+                },
+              ]"
+              size="sm"
+            >
+              <UTooltip
+                v-for="action in assistantMessageActions"
+                :key="action.label"
+                :text="action.label"
+                :content="{ side: 'top' }"
+                :delayDuration="50"
               >
-                <!-- Display AI response content -->
-                <div class="prose prose-invert max-w-none" v-html="message.htmlContent || message.content"></div>
-              </div>
-              <UButton
-                class="mt-4 w-full"
-                size="lg"
-                v-if="message.isThrottleMessage"
-                label="Start a new conversation"
-                @click="setupForNewConversation()"
-                color="primary"
-              />
-              <!-- Show suggestion chips for assistant messages if available -->
-              <SuggestionChips
-                v-if="message.suggestions?.length"
-                :suggestions="message.suggestions"
-                class="mt-3 mb-4"
-              />
-            </div>
+                <UButton
+                  variant="ghost"
+                  color="neutral"
+                  class="rounded-full"
+                  :icon="action.icon"
+                  @click="action.onClick($event, message)"
+                />
+              </UTooltip>
+            </UButtonGroup>
+            <!-- New conversation button -->
+            <UButton
+              class="mt-4 w-full"
+              size="lg"
+              v-if="message.isThrottleMessage"
+              label="Start a new conversation"
+              @click="setupForNewConversation()"
+              color="primary"
+            />
+            <!-- Show suggestion chips for assistant messages if available -->
+            <SuggestionChips v-if="message.suggestions?.length" :suggestions="message.suggestions" class="mt-3 mb-4" />
           </div>
 
           <!-- User Message -->
-          <div v-else-if="message.sender === 'user'" class="flex items-start justify-end">
-            <div class="max-w-[80%]">
-              <div class="bg-primary-600 backdrop-blur-sm rounded-lg p-3 text-white">
-                <p>{{ message.content }}</p>
-              </div>
-            </div>
+          <div v-else-if="message.role === 'user'" class="flex justify-end">
+            <p class="bg-primary-600 rounded-lg p-3 text-white max-w-[80%] text-wrap">
+              {{ message.content }}
+            </p>
           </div>
         </div>
       </div>
@@ -65,7 +85,7 @@
 
     <!-- Fixed elements container at bottom -->
     <div
-      class="fixed bottom-0 left-0 right-0 flex flex-col items-center bg-gradient-to-t from-gray-950 to-transparent pb-4 transition-all duration-300"
+      class="fixed bottom-0 left-0 right-0 flex flex-col items-center pb-4"
       :class="{ 'ml-0 lg:ml-64': chatStore.sidebarOpen }"
     >
       <div class="w-full max-w-3xl mx-auto">
@@ -89,10 +109,32 @@ import TypingAnimation from "~/components/chat/TypingAnimation.vue";
 import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
 import AskAnythingInput from "~/components/chat/input/AskAnythingInput.vue";
 import { useChatStore } from "~/stores/chat";
+import type { Message } from "~/models/chat";
+import { useChatActions } from "~/composables/useChatActions";
 
 // Use the chat store
 const chatStore = useChatStore();
 const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
+
+const { handleCopyMessage, handleThumbsUp, handleThumbsDown } = useChatActions();
+
+const assistantMessageActions = [
+  {
+    label: "Thumbs Up",
+    icon: "i-heroicons-hand-thumb-up",
+    onClick: (e: MouseEvent, message: Message) => handleThumbsUp(message),
+  },
+  {
+    label: "Thumbs Down",
+    icon: "i-heroicons-hand-thumb-down",
+    onClick: (e: MouseEvent, message: Message) => handleThumbsDown(message),
+  },
+  {
+    label: "Copy",
+    icon: "i-heroicons-clipboard-document",
+    onClick: (e: MouseEvent, message: Message) => handleCopyMessage(message),
+  },
+];
 
 onMounted(() => {
   nextTick(() => {

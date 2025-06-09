@@ -25,10 +25,10 @@ export const getOrCreateSessionId = (): string => {
  */
 export function organizeMessagesForApi(messages: Message[]) {
   return messages
-    .filter((msg) => msg.status !== "loading" && msg.sender !== "system")
+    .filter((msg) => msg.status !== "loading" && msg.role !== "system")
     .map((msg) => ({
-      // Role directly maps from sender ('user' or 'assistant')
-      role: msg.sender as "user" | "assistant",
+      // Role directly maps from role ('user' or 'assistant')
+      role: msg.role as "user" | "assistant",
       content: msg.content,
     }));
 }
@@ -107,6 +107,6 @@ export const throttleConversation = (conversation: Conversation) => {
 };
 
 export const throttlePerMessages = (messages: Message[]) => {
-  const userMessages = messages.filter((x) => x.sender === "user") ?? [];
+  const userMessages = messages.filter((x) => x.role === "user") ?? [];
   return userMessages.length >= 10;
 };

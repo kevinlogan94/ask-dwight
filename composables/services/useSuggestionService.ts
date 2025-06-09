@@ -10,7 +10,7 @@ export function useSuggestionService() {
   async function generateSuggestions(): Promise<void> {
     if (
       !chatStore.selectedConversation ||
-      chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1].sender !== "assistant"
+      chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1].role !== "assistant"
     ) {
       if ((chatStore.selectedConversation?.messages?.length ?? 0) > 2) {
         console.error("Failed to generate suggestions: No assistant message found");

@@ -49,7 +49,7 @@ export function getTotalTimeSaved(conversations: Conversation[]): number {
   let totalTimeSaved = 0;
 
   for (const conversation of conversations) {
-    const userMessages = conversation.messages.filter((msg) => msg.sender === "user");
+    const userMessages = conversation.messages.filter((msg) => msg.role === "user");
 
     for (const message of userMessages) {
       const { timeSaved } = organizePromptInfo(message.content);

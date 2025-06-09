@@ -69,7 +69,7 @@ export function useConversationRepository() {
         let lastUserPromptIdInConversation: string | null = null;
 
         for (const message of conversation.messages) {
-          if (message.sender === "user") {
+          if (message.role === "user") {
             const { category, timeSaved } = organizePromptInfo(message.content);
             const { error: promptError } = await userPromptsQuery.insert({
               id: message.id,
@@ -90,7 +90,7 @@ export function useConversationRepository() {
               continue;
             }
             lastUserPromptIdInConversation = message.id;
-          } else if (message.sender === "assistant") {
+          } else if (message.role === "assistant") {
             if (lastUserPromptIdInConversation) {
               const { error: responseError } = await dwightResponsesQuery.insert({
                 id: message.id,
@@ -131,7 +131,7 @@ export function useConversationRepository() {
                 conversation.id,
               );
             }
-          } else if (message.sender === "system") {
+          } else if (message.role === "system") {
             // Ignored
           }
         }
@@ -279,7 +279,7 @@ export function useConversationRepository() {
           messages.push({
             id: prompt.id,
             content: prompt.message,
-            sender: "user",
+            role: "user",
             timestamp: new Date(prompt.created_at),
             status: "sent",
           });
@@ -292,7 +292,7 @@ export function useConversationRepository() {
           messages.push({
             id: response.id,
             content: response.message,
-            sender: "assistant",
+            role: "assistant",
             timestamp: new Date(response.created_at),
             status: "sent",
             suggestions: response.user_prompt_suggestions?.map((s) => s.suggestion_text) || [],
@@ -323,7 +323,7 @@ export function useConversationRepository() {
       await Promise.all(
         organizedConversations.map(async (conversation) => {
           conversation.messages.forEach(async (message) => {
-            if (message.sender === "assistant") {
+            if (message.role === "assistant") {
               message.htmlContent = await parseMarkdown(message.content);
             }
           });

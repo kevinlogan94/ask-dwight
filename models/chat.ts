@@ -2,7 +2,7 @@ export interface Message {
   id: string;
   content: string;
   htmlContent?: string;
-  sender: "user" | "assistant" | "system";
+  role: "user" | "assistant" | "system";
   timestamp: Date;
   status?: "loading" | "sent";
   suggestions?: string[];
