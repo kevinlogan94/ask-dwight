@@ -286,8 +286,10 @@ export function useConversationRepository() {
         });
 
         // Process Dwight responses
-        (rawConv.dwight_responses || []).forEach((response, index) => {
-          const isLastResponse = index === rawConv.dwight_responses?.length - 1;
+        (rawConv.dwight_responses || [])
+          .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+          .forEach((response, index) => {
+            const isLastResponse = index === rawConv.dwight_responses?.length - 1;
 
           messages.push({
             id: response.id,
@@ -295,7 +297,7 @@ export function useConversationRepository() {
             role: "assistant",
             timestamp: new Date(response.created_at),
             status: "sent",
-            suggestions: response.user_prompt_suggestions?.map((s) => s.suggestion_text) || [],
+            suggestions: isLastResponse ? response.user_prompt_suggestions?.map((s) => s.suggestion_text) || [] : [],
             isThrottleMessage: isLastResponse && throttlePerMessages(messages),
           });
         });
