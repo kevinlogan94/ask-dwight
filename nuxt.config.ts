@@ -20,14 +20,14 @@ export default defineNuxtConfig({
         },
         { property: "og:type", content: "website" },
         { property: "og:url", content: "https://ask-dwight.com" },
-        // { property: 'og:image', content: '/og-image.png' },
+        { property: 'og:image', content: '/og-image.png' },
         // { name: 'twitter:card', content: 'summary_large_image' },
         { name: "twitter:title", content: "Ask Dwight - Conquer AI. Win Business. Fear Nothing." },
         {
           name: "twitter:description",
           content: "The Only Sales Tool That Can Outsell, Outwit, and Outweird the Competition.",
         },
-        // { name: 'twitter:image', content: '/og-image.png' },
+        { name: 'twitter:image', content: '/og-image.png' },
         { name: "apple-mobile-web-app-title", content: "Ask Dwight" }
       ],
       link: [
