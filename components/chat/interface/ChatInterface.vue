@@ -55,7 +55,7 @@
                   variant="ghost"
                   color="neutral"
                   class="rounded-full"
-                  :icon="action.icon"
+                  :icon="getActionIcon(action, message)"
                   @click="action.onClick($event, message)"
                 />
               </UTooltip>
@@ -109,7 +109,7 @@ import TypingAnimation from "~/components/chat/TypingAnimation.vue";
 import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
 import AskAnythingInput from "~/components/chat/input/AskAnythingInput.vue";
 import { useChatStore } from "~/stores/chat";
-import type { Message } from "~/models/chat";
+import type { Message, MessageAction } from "~/models/chat";
 import { useChatActions } from "~/composables/useChatActions";
 
 // Use the chat store
@@ -118,7 +118,18 @@ const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 
 const { handleCopyMessage, handleThumbsUp, handleThumbsDown } = useChatActions();
 
-const assistantMessageActions = [
+function getActionIcon(action: MessageAction, message: Message): string {
+  if (action.label === "thumbs up" && message.liked) {
+    return "i-heroicons-hand-thumb-up-solid";
+  }
+  if (action.label === "thumbs down" && message.disliked) {
+    return "i-heroicons-hand-thumb-down-solid";
+  }
+
+  return action.icon;
+}
+
+const assistantMessageActions: MessageAction[] = [
   {
     label: "Thumbs Up",
     icon: "i-heroicons-hand-thumb-up",

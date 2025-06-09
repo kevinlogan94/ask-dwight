@@ -1,3 +1,5 @@
+
+//todo introduce parts to organize parts of the assistant message
 export interface Message {
   id: string;
   content: string;
@@ -7,6 +9,8 @@ export interface Message {
   status?: "loading" | "sent";
   suggestions?: string[];
   isThrottleMessage?: boolean;
+  liked: boolean;
+  disliked: boolean;
 }
 
 export interface Conversation {
@@ -15,3 +19,10 @@ export interface Conversation {
   messages: Message[];
   createdAt: Date;
 }
+
+export interface MessageAction {
+  label: string;
+  icon: string;
+  onClick: (e: MouseEvent, message: Message) => void;
+}
+
