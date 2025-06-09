@@ -30,7 +30,11 @@ export default defineNuxtConfig({
         // { name: 'twitter:image', content: '/og-image.png' }
       ],
       link: [
-        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "icon", type: "image/svg+xml", href: "/favicons/favicon.svg" },
+        { rel: "apple-touch-icon", href: "/favicons/apple-touch-icon.png" },
+        { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicons/favicon-96x96.png" },
+        { rel: "manifest", href: "/favicons/site.webmanifest" },
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" }, // Fallback for older browsers
         { rel: "canonical", href: "https://ask-dwight.com" },
       ],
     },
