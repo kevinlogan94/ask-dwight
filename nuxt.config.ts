@@ -27,7 +27,8 @@ export default defineNuxtConfig({
           name: "twitter:description",
           content: "The Only Sales Tool That Can Outsell, Outwit, and Outweird the Competition.",
         },
-        // { name: 'twitter:image', content: '/og-image.png' }
+        // { name: 'twitter:image', content: '/og-image.png' },
+        { name: "apple-mobile-web-app-title", content: "Ask Dwight" }
       ],
       link: [
         { rel: "icon", type: "image/svg+xml", href: "/favicons/favicon.svg" },
