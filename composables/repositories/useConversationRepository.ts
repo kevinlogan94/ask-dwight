@@ -223,6 +223,9 @@ export function useConversationRepository() {
         message: string;
         created_at: string;
         user_prompt_suggestions: { suggestion_text: string }[];
+        ai_response_feedback: {
+          reaction: "thumbs_up" | "thumbs_down" | null;
+        }[];
       }[];
     };
 
@@ -253,6 +256,9 @@ export function useConversationRepository() {
             created_at,
             user_prompt_suggestions (
               suggestion_text
+            ),
+            ai_response_feedback!ai_response_feedback_dwight_response_id_fkey (
+              reaction
             )
           )
         `,
@@ -291,16 +297,17 @@ export function useConversationRepository() {
           .forEach((response, index) => {
             const isLastResponse = index === rawConv.dwight_responses?.length - 1;
 
-          messages.push({
-            id: response.id,
-            content: response.message,
-            role: "assistant",
-            timestamp: new Date(response.created_at),
-            status: "sent",
-            suggestions: isLastResponse ? response.user_prompt_suggestions?.map((s) => s.suggestion_text) || [] : [],
-            isThrottleMessage: isLastResponse && throttlePerMessages(messages),
+            messages.push({
+              id: response.id,
+              content: response.message,
+              role: "assistant",
+              timestamp: new Date(response.created_at),
+              status: "sent",
+              suggestions: isLastResponse ? response.user_prompt_suggestions?.map((s) => s.suggestion_text) || [] : [],
+              isThrottleMessage: isLastResponse && throttlePerMessages(messages),
+              reaction: response.ai_response_feedback?.[0]?.reaction,
+            });
           });
-        });
 
         // Sort all messages by timestamp chronologically
         messages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());

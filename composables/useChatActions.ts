@@ -18,6 +18,7 @@ export function useChatActions() {
       await clipboard.copy(message.content);
       toast.add({
         title: 'Copied to clipboard',
+        description: 'Content copied to clipboard.',
         color: 'success',
         icon: 'i-heroicons-check-circle',
         duration: 2000,
