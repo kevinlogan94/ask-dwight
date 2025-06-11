@@ -93,7 +93,8 @@ const profileMenuItems = computed(() => [
           event_label: "authentication",
           non_interaction: false,
         });
-        window.location.reload();
+        chatStore.conversations = [];
+        chatStore.selectConversation(null);
       },
     },
   ],
