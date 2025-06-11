@@ -1,88 +1,80 @@
 import type { Message } from '~/models/chat';
 import { useClipboard } from '@vueuse/core'
-
+import { useFeedbackService } from '~/composables/services/useFeedbackService';
 
 export function useChatActions() {
   const toast = useToast();
+  const { recordFeedback, toggleReaction } = useFeedbackService();
   const clipboard = useClipboard();
 
-  const handleCopyMessage = (message: Message) => {
-    const contentToCopy = message.content;
 
-    if (navigator.clipboard && contentToCopy) {
-      try {
-        clipboard.copy(message.content)
-        toast.add({
-          title: "Copied to clipboard",
-          description: "Message content copied to clipboard",
-          color: "success",
-          icon: "i-heroicons-check-circle",
-          duration: 2000,
-        });
-      } catch (err) {
-        console.error("Failed to copy message content: ", err);
-        toast.add({
-          title: "Failed to copy to clipboard",
-          description: "Message content could not be copied to clipboard",
-          color: "error",
-          icon: "i-heroicons-x-circle",
-          duration: 2000,
-        });
-      }
-    } else {
+  const handleCopyMessage = async (message: Message) => {
+    if (!message.id || !message.content) {
+      toast.add({ title: 'Error', description: 'No content to copy.', color: 'warning', icon: 'i-heroicons-exclamation-triangle' });
+      return;
+    }
+
+    try {
+      await clipboard.copy(message.content);
       toast.add({
-        title: "Clipboard API not available",
-        description: "Clipboard API not available or no content to copy.",
-        color: "error",
-        icon: "i-heroicons-x-circle",
+        title: 'Copied to clipboard',
+        color: 'success',
+        icon: 'i-heroicons-check-circle',
+        duration: 2000,
+      });
+      useTrackEvent('chat_click_copy', {
+        event_category: 'engagement',
+        event_label: 'copy',
+        dwight_response_id: message.id,
+      });
+      // Record copy action, don't change reaction (pass undefined)
+      await recordFeedback(message.id, undefined, true);
+    } catch (err) {
+      console.error('Failed to copy message content: ', err);
+      toast.add({
+        title: 'Failed to copy',
+        description: 'Could not copy content to clipboard.',
+        color: 'error',
+        icon: 'i-heroicons-x-circle',
         duration: 2000,
       });
     }
-    useTrackEvent("chat_click_copy", {
-      event_category: "engagement",
-      event_label: "copy",
-      non_interaction: false,
-      message_id: message.id,
-    });
   };
 
-  const handleThumbsUp = async (message: Message) => {
-    toast.add({
-      title: "Feedback received!",
-      description: "Thanks for your feedback.",
-      color: "success",
-      icon: "i-heroicons-check-circle",
-      duration: 2000,
-    });
-    useTrackEvent("chat_action_feedback_positive", {
-      event_category: "engagement",
-      event_label: "positive_feedback",
-      message_id: message.id,
-      non_interaction: false,
-    });
-    // TODO: Optionally, send feedback to a backend or update message state
-  };
+  const handleReaction = async (message: Message, reaction: 'thumbs_up' | 'thumbs_down') => {
+    if (!message.id) return;
 
-  const handleThumbsDown = async (message: Message) => {
-    toast.add({
-      title: "Feedback received!",
-      description: "Thanks for helping us improve.",
-      color: "warning", 
-      icon: "i-heroicons-exclamation-circle",
-      duration: 2000
-    });
-    useTrackEvent("chat_action_feedback_negative", {
-      event_category: "engagement",
-      event_label: "negative_feedback",
-      message_id: message.id,
-      non_interaction: false,
-    });
-    // TODO: Optionally, allow user to provide more details or send feedback to a backend
+    try {
+      await toggleReaction(message, reaction);
+
+      const toastDescription = reaction === 'thumbs_up' 
+        ? "Thanks for your feedback!" 
+        : "Thanks for helping us improve!";
+
+      const color = reaction === 'thumbs_up' ? 'success' : 'warning';
+      const icon = reaction === 'thumbs_up' ? 'i-heroicons-hand-thumb-up' : 'i-heroicons-hand-thumb-down';
+      
+      toast.add({
+        title: 'Feedback Received',
+        description: toastDescription,
+        color,
+        icon,
+        duration: 2000,
+      });
+
+      useTrackEvent('chat_click_reaction', {
+        event_category: 'engagement',
+        event_label: reaction,
+        dwight_response_id: message.id,
+      });
+
+    } catch (error) {
+      console.error('Failed to save feedback: ', error);
+    }
   };
 
   return {
     handleCopyMessage,
-    handleThumbsUp,
-    handleThumbsDown,
+    handleReaction,
   };
 }

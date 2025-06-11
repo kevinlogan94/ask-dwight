@@ -116,13 +116,13 @@ import { useChatActions } from "~/composables/useChatActions";
 const chatStore = useChatStore();
 const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 
-const { handleCopyMessage, handleThumbsUp, handleThumbsDown } = useChatActions();
+const { handleCopyMessage, handleReaction } = useChatActions();
 
 function getActionIcon(action: MessageAction, message: Message): string {
-  if (action.label === "thumbs up" && message.liked) {
+  if (action.label === "Thumbs Up" && message.reaction === 'thumbs_up') {
     return "i-heroicons-hand-thumb-up-solid";
   }
-  if (action.label === "thumbs down" && message.disliked) {
+  if (action.label === "Thumbs Down" && message.reaction === 'thumbs_down') {
     return "i-heroicons-hand-thumb-down-solid";
   }
 
@@ -133,12 +133,12 @@ const assistantMessageActions: MessageAction[] = [
   {
     label: "Thumbs Up",
     icon: "i-heroicons-hand-thumb-up",
-    onClick: (e: MouseEvent, message: Message) => handleThumbsUp(message),
+    onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_up'),
   },
   {
     label: "Thumbs Down",
     icon: "i-heroicons-hand-thumb-down",
-    onClick: (e: MouseEvent, message: Message) => handleThumbsDown(message),
+    onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_down'),
   },
   {
     label: "Copy",

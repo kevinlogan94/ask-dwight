@@ -9,8 +9,7 @@ export interface Message {
   status?: "loading" | "sent";
   suggestions?: string[];
   isThrottleMessage?: boolean;
-  liked: boolean;
-  disliked: boolean;
+  reaction?: 'thumbs_up' | 'thumbs_down' | null;
 }
 
 export interface Conversation {
