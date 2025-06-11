@@ -69,7 +69,7 @@ export function useConversationRepository() {
         let lastUserPromptIdInConversation: string | null = null;
 
         for (const message of conversation.messages) {
-          if (message.role === "user") {
+          if (message.sender === "user") {
             const { category, timeSaved } = organizePromptInfo(message.content);
             const { error: promptError } = await userPromptsQuery.insert({
               id: message.id,
@@ -90,7 +90,7 @@ export function useConversationRepository() {
               continue;
             }
             lastUserPromptIdInConversation = message.id;
-          } else if (message.role === "assistant") {
+          } else if (message.sender === "assistant") {
             if (lastUserPromptIdInConversation) {
               const { error: responseError } = await dwightResponsesQuery.insert({
                 id: message.id,
@@ -131,7 +131,7 @@ export function useConversationRepository() {
                 conversation.id,
               );
             }
-          } else if (message.role === "system") {
+          } else if (message.sender === "system") {
             // Ignored
           }
         }

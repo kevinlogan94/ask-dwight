@@ -5,6 +5,8 @@ export interface Message {
   content: string;
   htmlContent?: string;
   role: "user" | "assistant" | "system";
+  /** @deprecated use role instead */
+  sender?: "user" | "assistant" | "system";
   timestamp: Date;
   status?: "loading" | "sent";
   suggestions?: string[];
