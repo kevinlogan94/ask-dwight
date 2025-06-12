@@ -66,10 +66,5 @@ export default defineNuxtConfig({
     key: process.env.NUXT_PUBLIC_SUPABASE_KEY,
     redirect: false,
   },
-  runtimeConfig: {
-    public: {
-      chatgptApiKey: process.env.NUXT_PUBLIC_CHATGPT_API_KEY,
-    },
-  },
   compatibilityDate: "2025-04-05",
 });
