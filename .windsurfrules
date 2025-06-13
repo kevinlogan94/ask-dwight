@@ -3,9 +3,11 @@
 3. I'm new to Nuxt
 4. I'm using Nuxt UI Pro
 5. I'm using @vueuse/motion/nuxt
-7. I'm using netlify for form submission
 8. I'm using nuxt-gtag for google analytics
 9. Always prioritize the latest documentation for the tools that I'm using over what is on external sites.
 10. Don't use radial gradient backgrounds
 11. Use prettier rules for formatting
 12. I'm using pnpm
+13. Always try to see if we can simplify logic using vueuse
+14. We are using supabase
+15. We are using openai
