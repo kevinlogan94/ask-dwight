@@ -8,6 +8,6 @@
 10. Don't use radial gradient backgrounds
 11. Use prettier rules for formatting
 12. I'm using pnpm
-13. Always try to see if we can simplify logic using vueuse
+13. Always try to see if we can simplify logic using a nuxt module or VueUse
 14. We are using supabase
 15. We are using openai
