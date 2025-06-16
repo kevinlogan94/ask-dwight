@@ -130,16 +130,16 @@ function getActionIcon(action: MessageAction, message: Message): string {
 }
 
 const assistantMessageActions: MessageAction[] = [
-  {
-    label: "Thumbs Up",
-    icon: "i-heroicons-hand-thumb-up",
-    onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_up'),
-  },
-  {
-    label: "Thumbs Down",
-    icon: "i-heroicons-hand-thumb-down",
-    onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_down'),
-  },
+  // {
+  //   label: "Thumbs Up",
+  //   icon: "i-heroicons-hand-thumb-up",
+  //   onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_up'),
+  // },
+  // {
+  //   label: "Thumbs Down",
+  //   icon: "i-heroicons-hand-thumb-down",
+  //   onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_down'),
+  // },
   {
     label: "Copy",
     icon: "i-heroicons-clipboard-document",
