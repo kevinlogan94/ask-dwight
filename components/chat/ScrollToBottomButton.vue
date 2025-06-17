@@ -1,9 +1,12 @@
 <template>
-  <div v-if="!isAtBottom" class="flex justify-center mb-4">
-    <UButton variant="ghost" class="rounded-full p-2 bg-gray-800/60" @click="scrollToBottom">
-      <Icon name="heroicons:arrow-down" class="w-5 h-5" />
-    </UButton>
-  </div>
+  <UButton
+    v-if="!isAtBottom"
+    variant="ghost"
+    class="fixed bottom-44 left-1/2 -translate-x-1/2 transform rounded-full p-2 bg-gray-800/60 z-50"
+    @click="scrollToBottom"
+  >
+    <Icon name="heroicons:arrow-down" class="w-5 h-5" />
+  </UButton>
 </template>
 
 <script setup lang="ts">
