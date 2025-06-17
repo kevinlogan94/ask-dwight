@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import AskAnythingInput from "~/components/chat/input/AskAnythingInput.vue";
 import SuggestionChips from "~/components/chat/input/SuggestionChips.vue";
-import { useChatStore } from "~/stores/chat";
+import { useChatStore } from "~//stores/chat";
 
 const chatStore = useChatStore();
 
