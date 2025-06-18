@@ -86,8 +86,12 @@ const profileMenuItems = computed(() => [
     {
       label: "Logout",
       icon: "heroicons:arrow-right-on-rectangle",
-      onSelect: () => {
-        supabase.auth.signOut();
+      onSelect: async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          console.error("Error logging out:", error);
+        }
+        //deleteSupabaseCookies();
         useTrackEvent("navbar_click_logout", {
           event_category: "conversion",
           event_label: "authentication",
