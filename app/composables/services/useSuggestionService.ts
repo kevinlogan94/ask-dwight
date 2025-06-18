@@ -2,6 +2,8 @@ import type { ChatCompletionMessageParam } from "openai/resources/chat/completio
 import { organizeMessagesForApi } from "~/utils/helpers";
 import { useChatStore } from "~/stores/chat";
 import { useSuggestionRepository } from "~/composables/repositories/useSuggestionRepository";
+import { useOpenAIClient } from "~/composables/useOpenAIClient";
+import type { Message } from "~/models/chat";
 
 export function useSuggestionService() {
   const chatStore = useChatStore();
@@ -10,7 +12,8 @@ export function useSuggestionService() {
   async function generateSuggestions(): Promise<void> {
     if (
       !chatStore.selectedConversation ||
-      chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1].role !== "assistant"
+      chatStore.selectedConversation.messages?.length === 0 ||
+      chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1]?.role !== "assistant"
     ) {
       if ((chatStore.selectedConversation?.messages?.length ?? 0) > 2) {
         console.error("Failed to generate suggestions: No assistant message found");
@@ -19,7 +22,7 @@ export function useSuggestionService() {
     }
 
     // Set placeholder suggestions while loading
-    const assistantMsg = chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1];
+    const assistantMsg = chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1] as Message;
     assistantMsg.suggestions = ["loading", "loading", "loading"];
 
     const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(
