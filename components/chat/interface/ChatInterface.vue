@@ -140,11 +140,11 @@ const assistantMessageActions: MessageAction[] = [
   //   icon: "i-heroicons-hand-thumb-down",
   //   onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_down'),
   // },
-  // {
-  //   label: "Copy",
-  //   icon: "i-heroicons-clipboard-document",
-  //   onClick: (e: MouseEvent, message: Message) => handleCopyMessage(message),
-  // },
+  {
+    label: "Copy",
+    icon: "i-heroicons-clipboard-document",
+    onClick: (e: MouseEvent, message: Message) => handleCopyMessage(message),
+  },
 ];
 
 onMounted(() => {
