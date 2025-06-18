@@ -22,6 +22,8 @@ export const getOrCreateSessionId = (): string => {
 
 /**
  * Organizes messages for sending to API (filters and formats)
+ * @param messages The array of messages to organize
+ * @returns The organized messages for API
  */
 export function organizeMessagesForApi(messages: Message[]) {
   return messages
@@ -101,16 +103,30 @@ export const formatTimeSaved = (minutes: number, longForm: boolean = false): str
   return `${hours} ${hourUnit} ${remainingMinutes} ${minuteUnit}`;
 };
 
-//todo add subscription check
+/**
+ * Checks if a conversation has exceeded the throttle limit based on the number of user messages.
+ * @param conversation The conversation to check.
+ * @returns True if the conversation has exceeded the throttle limit, false otherwise.
+ */
+// todo add subscription check
 export const throttleConversation = (conversation: Conversation) => {
   return throttlePerMessages(conversation.messages);
 };
 
+/**
+ * Checks if a conversation has exceeded the throttle limit based on the number of user messages.
+ * @param messages The array of messages to check.
+ * @returns True if the conversation has exceeded the throttle limit, false otherwise.
+ */
 export const throttlePerMessages = (messages: Message[]) => {
   const userMessages = messages.filter((x) => x.sender === "user") ?? [];
   return userMessages.length >= 10;
 };
 
+/**
+ * Deletes all Supabase cookies from the browser.
+ * This is used to handle critical authentication errors that require a full logout.
+ */
 export const deleteSupabaseCookies = () => {
   document.cookie.split(";").forEach((cookie) => {
     if (cookie.trim().startsWith("sb-")) {
