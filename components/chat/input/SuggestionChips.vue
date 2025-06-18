@@ -2,7 +2,6 @@
   <div>
     <!-- Suggestions static header with icon -->
     <div v-if="!chatStore.showNewConversationScreen" class="text-sm dark:text-gray-300 mb-2 flex items-center gap-1">
-      <Icon name="heroicons:light-bulb" class="w-3.5 h-3.5 dark:text-gray-400" />
       <span>Continue with:</span>
     </div>
 
