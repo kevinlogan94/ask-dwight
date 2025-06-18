@@ -54,7 +54,7 @@
                 <UButton
                   variant="ghost"
                   color="neutral"
-                  class="rounded-full p-0"
+                  class="rounded-full p-0 mr-3 hover:bg-transparent"
                   :icon="getActionIcon(action, message)"
                   @click="action.onClick($event, message)"
                 />
