@@ -52,11 +52,13 @@ import { useChatStore } from "~//stores/chat";
 import { useRoute } from "vue-router";
 import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
 import { validateImageUrl } from "~/utils/helpers";
+import { deleteSupabaseCookies } from "~/utils/helpers";
 
 const route = useRoute();
 const chatStore = useChatStore();
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
+const toast = useToast();
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const isMobile = breakpoints.smaller("sm"); // smaller than 640px
@@ -68,6 +70,23 @@ onMounted(async () => {
     ? user.value?.user_metadata?.avatar_url
     : "";
 });
+
+/**
+ * Checks if an authentication error is critical and requires clearing Supabase cookies.
+ * @param error The authentication error to check.
+ * @returns True if the error is critical and requires cookie clearing, false otherwise.
+ */
+const isKnownAuthErrorRequiringCookieClear = (error: any): boolean => {
+  if (!error) return false;
+  if (error.name === "AuthSessionMissingError") {
+    return true;
+  }
+  if (error.name === "AuthApiError") {
+    const criticalErrorCodes = ["refresh_token_not_found", "invalid_grant"];
+    return criticalErrorCodes.includes(error.code);
+  }
+  return false;
+};
 
 const profileMenuItems = computed(() => [
   [
@@ -86,8 +105,24 @@ const profileMenuItems = computed(() => [
     {
       label: "Logout",
       icon: "heroicons:arrow-right-on-rectangle",
-      onSelect: () => {
-        supabase.auth.signOut();
+      onSelect: async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          console.error("Error logging out:", error);
+          if (isKnownAuthErrorRequiringCookieClear(error)) {
+            console.warn("Known authentication error encountered during logout. Manually clearing Supabase cookies.");
+            deleteSupabaseCookies();
+          } else {
+            console.error("Logout failed with an unhandled error. Requesting user to try again.");
+            toast.add({
+              title: "Logout Failed",
+              icon: "heroicons:exclamation-circle",
+              description: "An unexpected error occurred. Please try logging out again.",
+              color: "error",
+            });
+            return;
+          }
+        }
         useTrackEvent("navbar_click_logout", {
           event_category: "conversion",
           event_label: "authentication",
