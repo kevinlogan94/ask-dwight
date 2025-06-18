@@ -54,7 +54,7 @@
                 <UButton
                   variant="ghost"
                   color="neutral"
-                  class="rounded-full"
+                  class="rounded-full p-0"
                   :icon="getActionIcon(action, message)"
                   @click="action.onClick($event, message)"
                 />
@@ -140,11 +140,11 @@ const assistantMessageActions: MessageAction[] = [
   //   icon: "i-heroicons-hand-thumb-down",
   //   onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_down'),
   // },
-  {
-    label: "Copy",
-    icon: "i-heroicons-clipboard-document",
-    onClick: (e: MouseEvent, message: Message) => handleCopyMessage(message),
-  },
+  // {
+  //   label: "Copy",
+  //   icon: "i-heroicons-clipboard-document",
+  //   onClick: (e: MouseEvent, message: Message) => handleCopyMessage(message),
+  // },
 ];
 
 onMounted(() => {
