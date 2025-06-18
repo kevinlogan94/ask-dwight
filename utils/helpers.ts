@@ -110,3 +110,13 @@ export const throttlePerMessages = (messages: Message[]) => {
   const userMessages = messages.filter((x) => x.sender === "user") ?? [];
   return userMessages.length >= 10;
 };
+
+export const deleteSupabaseCookies = () => {
+  document.cookie.split(";").forEach((cookie) => {
+    if (cookie.trim().startsWith("sb-")) {
+      document.cookie = cookie
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/");
+    }
+  });
+};

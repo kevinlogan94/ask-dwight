@@ -52,6 +52,7 @@ import { useChatStore } from "~/stores/chat";
 import { useRoute } from "vue-router";
 import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
 import { validateImageUrl } from "~/utils/helpers";
+import { deleteSupabaseCookies } from "~/utils/helpers";
 
 const route = useRoute();
 const chatStore = useChatStore();
@@ -90,8 +91,8 @@ const profileMenuItems = computed(() => [
         const { error } = await supabase.auth.signOut();
         if (error) {
           console.error("Error logging out:", error);
+          deleteSupabaseCookies();
         }
-        //deleteSupabaseCookies();
         useTrackEvent("navbar_click_logout", {
           event_category: "conversion",
           event_label: "authentication",
