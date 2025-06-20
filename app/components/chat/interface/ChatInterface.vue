@@ -36,13 +36,13 @@
             <!-- Assistant Message Actions -->
             <UButtonGroup
               :class="[
-                'mt-4',
+                'mt-2',
                 {
                   'opacity-0 group-hover:opacity-100 transition-opacity duration-300':
                     chatStore.currentMessages.indexOf(message) !== chatStore.currentMessages.length - 1,
                 },
               ]"
-              size="sm"
+              size="md"
             >
               <UTooltip
                 v-for="action in assistantMessageActions"
@@ -54,7 +54,7 @@
                 <UButton
                   variant="ghost"
                   color="neutral"
-                  class="rounded-full"
+                  class="rounded-full p-0 mr-3 hover:bg-transparent"
                   :icon="getActionIcon(action, message)"
                   @click="action.onClick($event, message)"
                 />
