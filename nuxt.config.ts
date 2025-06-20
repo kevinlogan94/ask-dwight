@@ -66,5 +66,8 @@ export default defineNuxtConfig({
     key: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY,
     redirect: false,
   },
+  future: {
+    compatibilityVersion: 4,
+  },
   compatibilityDate: "2025-04-05",
 });

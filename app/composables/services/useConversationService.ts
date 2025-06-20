@@ -1,4 +1,4 @@
-import { useChatStore } from "~/stores/chat";
+import { useChatStore } from "~//stores/chat";
 import { useConversationRepository } from "~/composables/repositories/useConversationRepository";
 import type { Conversation } from "~/models/chat";
 

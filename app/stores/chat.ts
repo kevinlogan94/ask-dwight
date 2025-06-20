@@ -63,7 +63,7 @@ export const useChatStore = defineStore("chat", () => {
     conversations.value = await fetchConversationsFromSupabase();
 
     if (conversations.value.length > 0 && !selectedConversationId.value) {
-      selectedConversationId.value = conversations.value[0].id;
+      selectedConversationId.value = conversations.value[0]!.id;
     }
   });
 

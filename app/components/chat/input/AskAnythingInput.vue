@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { useChatStore } from "~/stores/chat";
+import { useChatStore } from "~//stores/chat";
 import DojoMeter from "~/components/chat/DojoMeter.vue";
 
 const chatStore = useChatStore();

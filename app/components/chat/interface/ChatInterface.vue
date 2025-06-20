@@ -108,7 +108,7 @@ import SuggestionChips from "~/components/chat/input/SuggestionChips.vue";
 import TypingAnimation from "~/components/chat/TypingAnimation.vue";
 import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
 import AskAnythingInput from "~/components/chat/input/AskAnythingInput.vue";
-import { useChatStore } from "~/stores/chat";
+import { useChatStore } from "~//stores/chat";
 import type { Message, MessageAction } from "~/models/chat";
 import { useChatActions } from "~/composables/useChatActions";
 

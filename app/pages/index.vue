@@ -8,7 +8,7 @@
 import NewConversationScreen from "~/components/chat/interface/NewConversationScreen.vue";
 import ChatInterface from "~/components/chat/interface/ChatInterface.vue";
 import ChatSidebar from "~/components/chat/interface/ChatSidebar.vue";
-import { useChatStore } from "~/stores/chat";
+import { useChatStore } from "~//stores/chat";
 
 const chatStore = useChatStore();
 
