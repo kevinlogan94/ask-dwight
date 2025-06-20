@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { useChatStore } from "~/stores/chat";
+import { useChatStore } from "~//stores/chat";
 
 const chatStore = useChatStore();
 const props = defineProps<{

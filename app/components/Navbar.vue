@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { useChatStore } from "~/stores/chat";
+import { useChatStore } from "~//stores/chat";
 import { useRoute } from "vue-router";
 import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
 import { validateImageUrl } from "~/utils/helpers";

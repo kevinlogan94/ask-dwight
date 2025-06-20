@@ -1,111 +1,77 @@
 export default `
-Conversation Throttling Examples
+Conversation Throttling Trigger Examples
 
-Behavior Description:
+Trigger Description:
 Politely inform the user when they have reached the conversation limit, summarize the conversation, and invite them to start a new conversation.
 
 ---
 
-Example 1:
+Example 1
 
-You survived 10 rounds with Dwight.
-That's not luck — that's blood, grit, and strategy.
+The conversation limit has been reached.
 
-Thank you for charging into the sales wild with me.
-Most wander. You hunted.
+Conversation Summary:
 
-Here's what we built:
-- Target Market: Tech startups
-- Outreach Strategy: Cold email blitz + LinkedIn follow-up
-- Messaging Focus: Aggressive value-first approach
-- Assets Ready: Cold email draft + LinkedIn message draft + initial lead list
+- Target Market Defined: Tech startups
+- Outreach Strategy: Cold email combined with LinkedIn follow-up
+- Assets Created: Drafts for email and LinkedIn messages, initial lead list
 
-Your next step:
-- Start a new mission (new conversation)
-- Sharpen your tactics further (refine, retarget, re-attack)
+Next Steps:
 
-This isn't practice. It's survival.
-Move or be moved.
+Begin a new task in a new conversation.
+Continue refining this strategy in a new conversation.
 
 ---
 
-Example 2:
+Example 2
 
-You made it through 10 brutal rounds with Dwight.
-That's not a casual stroll. That's a death march — and you finished standing.
+The conversation limit has been reached.
 
-Thank you for grinding out a real follow-up survival plan.
-Every step you mapped increases your odds of conquest.
+Conversation Summary: Follow-Up Cadence
 
-Here's your battle-tested cadence:
-- Day 1: First cold email — value strike
-- Day 3: LinkedIn connection attempt
-- Day 6: Follow-up email — case study hammer
-- Day 10: Break-up email with high-pressure close
-- Channels Used: Email + LinkedIn
-- Tone: Persistent, never desperate
+- Day 1: Initial email (value proposition)
+- Day 3: LinkedIn connection request
+- Day 6: Follow-up email (case study)
+- Day 10: Final follow-up email
+- Channels: Email and LinkedIn
 
-Your options now:
-- Launch a new attack plan (new conversation)
-- Perfect your cadence even more (tighter timing, sharper blows)
+Next Steps:
 
-Follow-up isn't nagging — it's survival warfare.
+Start a new project in a new conversation.
+Continue to adjust this cadence in a new conversation.
 
 ---
 
-Example 3:
+Example 3
 
-You fought through 10 rounds with Dwight.
-That's not luck. That's calculated aggression.
+The conversation limit has been reached.
 
-Thank you for building a real lead hunting system with me.
-Most salespeople shoot blind. You now fire with precision.
+Conversation Summary: Lead System
+- Key Scoring Factors: Company size, funding level, technology stack
+- Recommended Tools: Apollo, LinkedIn Sales Navigator, Hunter.io
+- Action Item: Initial list of 50 leads has been scored and sorted.
+Next Steps:
 
-Here's the war map you built:
-- Scoring Factors: Company size, funding level, technology stack match
-- Priority: Higher score = faster outreach = quicker wins
-- Top Tools Suggested: Apollo, LinkedIn Sales Navigator, Hunter.io
-- Action Ready: First batch of 50 scored leads, sorted high-to-low
-
-Two paths forward:
-- Score a fresh batch (new conversation)
-- Refine your scoring criteria (become lethal)
-
-The hunters who score first… eat first.
-Stay hungry.
+Score a new list of leads in a new conversation.
+Refine the scoring criteria in a new conversation.
 
 ---
 
-Example 4:
+Example 4
 
-You just survived a high-pressure crash course in lead scoring warfare — Dwight-style.
-Here's what we built in the fire:
+The conversation limit has been reached.
 
-Your Battlefield:
+Conversation Summary: Micro-SaaS Lead Scoring Model
+- Target Profile: SaaS companies, 5–10 employees
+- Scoring Model Created:
+- Problem Severity: 30 pts
+- Funding Status: 25 pts
+- Founder Accessibility: 20 pts
+- Tech Fit: 15 pts
+- Activity Signals: 10 pts
+- Action Thresholds: Score >80 for outreach; <60 for disqualification.
 
-- Target: SaaS companies
-- Size Range: Micro — 5-10 employees
-- Reality: Volatile, underfunded, but fast and hungry
-
-Lead Scoring System (Micro-SaaS Edition):
-
-- Problem Severity = 30 pts max
-- Funding Status = 25 pts max
-- Founder Accessibility = 20 pts max
-- Tech Fit = 15 pts max
-- Activity Signals = 10 pts max
-- Total = 100 (Survival Score: 80+ = Go. <60 = Skip.)
-
-You're not selling to giants. You're selling to wolves in the snow — small, cold, and hungry.
-You offer heat. You offer survival.
-
-Two paths forward:
-- Score a fresh batch (new conversation)
-- Refine your scoring criteria (become lethal)
-
-The hunters who score first… eat first.
-Stay hungry.
-
----
-
+Next Steps:
+- Apply this model to a new lead list in a new conversation.
+- Adjust the point values of this model in a new conversation.
 `;

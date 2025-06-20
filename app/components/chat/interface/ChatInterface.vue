@@ -54,7 +54,7 @@
                 <UButton
                   variant="ghost"
                   color="neutral"
-                  class="rounded-full p-0"
+                  class="rounded-full p-0 mr-3 hover:bg-transparent"
                   :icon="getActionIcon(action, message)"
                   @click="action.onClick($event, message)"
                 />
@@ -108,7 +108,7 @@ import SuggestionChips from "~/components/chat/input/SuggestionChips.vue";
 import TypingAnimation from "~/components/chat/TypingAnimation.vue";
 import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
 import AskAnythingInput from "~/components/chat/input/AskAnythingInput.vue";
-import { useChatStore } from "~/stores/chat";
+import { useChatStore } from "~//stores/chat";
 import type { Message, MessageAction } from "~/models/chat";
 import { useChatActions } from "~/composables/useChatActions";
 
@@ -130,16 +130,16 @@ function getActionIcon(action: MessageAction, message: Message): string {
 }
 
 const assistantMessageActions: MessageAction[] = [
-  // {
-  //   label: "Thumbs Up",
-  //   icon: "i-heroicons-hand-thumb-up",
-  //   onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_up'),
-  // },
-  // {
-  //   label: "Thumbs Down",
-  //   icon: "i-heroicons-hand-thumb-down",
-  //   onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_down'),
-  // },
+  {
+    label: "Thumbs Up",
+    icon: "i-heroicons-hand-thumb-up",
+    onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_up'),
+  },
+  {
+    label: "Thumbs Down",
+    icon: "i-heroicons-hand-thumb-down",
+    onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_down'),
+  },
   {
     label: "Copy",
     icon: "i-heroicons-clipboard-document",
