@@ -211,19 +211,27 @@ supabase db reset     # Reset local database
 
 ```
 ask-dwight/
-├── components/           # Vue components
-├── composables/         # Vue composables
-├── pages/              # Nuxt pages (auto-routed)
-├── server/             # Nuxt server-side code
-├── supabase/           # Supabase configuration
-│   ├── functions/      # Edge Functions
-│   │   ├── .env        # Functions environment variables
-│   │   └── */          # Individual function directories
-│   ├── migrations/     # Database migrations
-│   └── config.toml     # Supabase configuration
-├── .env                # Main environment variables
-├── nuxt.config.ts      # Nuxt configuration
-└── package.json        # Dependencies and scripts
+├── app/                  # Nuxt 4 app directory
+│   ├── components/       # Vue components
+│   ├── composables/      # Vue composables & services
+│   ├── pages/           # Nuxt pages (auto-routed)
+│   ├── models/          # TypeScript models & types
+│   ├── stores/          # Pinia stores
+│   ├── utils/           # Utility functions
+│   ├── plugins/         # Nuxt plugins
+│   ├── assets/          # Static assets
+│   ├── app.vue          # Root Vue component
+│   └── app.config.ts    # App configuration
+├── public/              # Public static files
+├── supabase/            # Supabase configuration
+│   ├── functions/       # Edge Functions
+│   │   ├── .env         # Functions environment variables
+│   │   └── */           # Individual function directories
+│   ├── migrations/      # Database migrations
+│   └── config.toml      # Supabase configuration
+├── .env                 # Main environment variables
+├── nuxt.config.ts       # Nuxt configuration
+└── package.json         # Dependencies and scripts
 ```
 
 ## Deployment
