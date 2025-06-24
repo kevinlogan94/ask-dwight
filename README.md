@@ -1,3 +1,5 @@
+![Ask Dwight](./public/og-image.png)
+
 # Ask Dwight
 
 **Conquer AI. Win Business. Fear Nothing.**
@@ -6,14 +8,16 @@ Ask Dwight is an AI-powered sales assistant designed to help sales professionals
 
 ## Features
 
-- **AI Sales Chatbot:** Get tailored sales advice, outreach strategies, and deal-closing tactics.
-- **Dynamic Suggestions:** Dwight proactively offers next steps and sharp replies to keep you moving forward.
-- **Sales-Obsessed Persona:** Every interaction is delivered with Dwight's intense, no-nonsense, survival-driven style.
-- **Modern Stack:** Built using Nuxt 3, Tailwind CSS v4, Nuxt UI Pro, @vueuse/motion, Supabase, and OpenAI.
+- **AI-Powered Sales Strategy:** Get instant, tailored sales advice, outreach scripts, and deal-closing tactics.
+- **Actionable Chat UI:** Interact with chat responses through quick actions like **Copy** and **Feedback (Thumbs Up/Down)**.
+- **Time-Saved Metrics:** Visualize the time you reclaim with AI-driven efficiency, keeping you focused on high-value tasks.
+- **Dynamic Suggestions:** Dwight proactively offers the next best steps to keep your momentum.
+- **Cloud Sync:** Seamlessly sync your conversations and data across devices.
+- **Expert AI Persona:** Dwight delivers direct, concise, and data-driven sales intelligence—tailored for experts who value efficiency over fluff.
 
 ---
 
-> _"I'm Dwight. Selling is war, and I teach you how to win it without mercy. What goal can I help you crush today?"_
+> _"Goal acquired. Here is the data-driven path to execution. Actionable, concise, and built for experts. What is our next objective?"_
 
 ---
 
