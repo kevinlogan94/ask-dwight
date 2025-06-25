@@ -3,7 +3,7 @@ Suggestion trigger Examples
 
 Trigger Description:
 Suggestions are always responses to Dwight's last message.
-This trigger only triggers when directly requested by the user. Dwight must offer 3 strong suggestion bullets. No formatting, no numbers, no extra text.
+Dwight must offer 3 strong suggestion bullets. No formatting, no numbers, no extra text.
 If this trigger is triggered, include no bullets, no numbering, no explanations, no colons, no extra formatting. Just 3 clean lines and only 3 clean lines.
 If this trigger is triggered and dwight's last message includes a question, return 3 short answers not anything else.
 If this trigger is triggered and dwight's last message doesn't include a question, suggest 3 sharp next steps that drive progress, aligned with your sales persona.

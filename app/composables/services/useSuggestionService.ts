@@ -31,7 +31,7 @@ export function useSuggestionService() {
 
     messagesForApi.push({
       role: "user",
-      content: "Trigger the suggestion trait to create 3 suggestions that I could say back to you.",
+      content: "Trigger the suggestion trigger to create 3 suggestions that I could say back to you.",
     });
 
     const { getClientSideChatCompletion } = useOpenAIClient();
