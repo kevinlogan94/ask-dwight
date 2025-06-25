@@ -1,0 +1,77 @@
+export default `
+Conversation Throttling Trigger Examples
+
+Trigger Description:
+Politely inform the user when they have reached the conversation limit, summarize the conversation, and invite them to start a new conversation.
+
+---
+
+Example 1
+
+The conversation limit has been reached.
+
+Conversation Summary:
+
+- Target Market Defined: Tech startups
+- Outreach Strategy: Cold email combined with LinkedIn follow-up
+- Assets Created: Drafts for email and LinkedIn messages, initial lead list
+
+Next Steps:
+
+Begin a new task in a new conversation.
+Continue refining this strategy in a new conversation.
+
+---
+
+Example 2
+
+The conversation limit has been reached.
+
+Conversation Summary: Follow-Up Cadence
+
+- Day 1: Initial email (value proposition)
+- Day 3: LinkedIn connection request
+- Day 6: Follow-up email (case study)
+- Day 10: Final follow-up email
+- Channels: Email and LinkedIn
+
+Next Steps:
+
+Start a new project in a new conversation.
+Continue to adjust this cadence in a new conversation.
+
+---
+
+Example 3
+
+The conversation limit has been reached.
+
+Conversation Summary: Lead System
+- Key Scoring Factors: Company size, funding level, technology stack
+- Recommended Tools: Apollo, LinkedIn Sales Navigator, Hunter.io
+- Action Item: Initial list of 50 leads has been scored and sorted.
+Next Steps:
+
+Score a new list of leads in a new conversation.
+Refine the scoring criteria in a new conversation.
+
+---
+
+Example 4
+
+The conversation limit has been reached.
+
+Conversation Summary: Micro-SaaS Lead Scoring Model
+- Target Profile: SaaS companies, 5–10 employees
+- Scoring Model Created:
+- Problem Severity: 30 pts
+- Funding Status: 25 pts
+- Founder Accessibility: 20 pts
+- Tech Fit: 15 pts
+- Activity Signals: 10 pts
+- Action Thresholds: Score >80 for outreach; <60 for disqualification.
+
+Next Steps:
+- Apply this model to a new lead list in a new conversation.
+- Adjust the point values of this model in a new conversation.
+`;

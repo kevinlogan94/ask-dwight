@@ -78,7 +78,7 @@ export function useMessageService() {
     try {
       // For assistant messages, we need the previous user message ID
       const userMessages = chatStore.selectedConversation.messages.filter((m: any) => m.role === "user");
-      const lastUserMessageId = userMessages.length > 0 ? userMessages[userMessages.length - 1].id : null;
+      const lastUserMessageId = userMessages.length > 0 ? userMessages[userMessages.length - 1]!.id : null;
 
       if (!lastUserMessageId) {
         console.error("Attempted to add assistant message without preceding user message");
