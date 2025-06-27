@@ -1,4 +1,3 @@
-
 //todo introduce parts to organize parts of the assistant message
 export interface Message {
   id: string;
@@ -19,6 +18,8 @@ export interface Conversation {
   title: string;
   messages: Message[];
   createdAt: Date;
+  responseId?: string;
+  updatedAt: Date;
 }
 
 export interface MessageAction {
@@ -27,3 +28,7 @@ export interface MessageAction {
   onClick: (e: MouseEvent, message: Message) => void;
 }
 
+export interface ConversationUpdateDto {
+  title?: string;
+  responseId?: string;
+}
