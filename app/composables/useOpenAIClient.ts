@@ -1,39 +1,17 @@
-import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import type { Responses } from "openai/resources/responses";
-import { createParser, type EventSourceMessage } from "eventsource-parser";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { createParser } from "eventsource-parser";
+import type { ResponseApiCompletedEvent } from "~/models/chat";
+import { useMessageService } from "~/composables/services/useMessageService";
 
 export const useOpenAIClient = () => {
-  const getClientSideChatCompletion = async (
-    messages: ChatCompletionMessageParam[],
-  ): Promise<ChatCompletionMessage | null> => {
+
+  const chatStore = useChatStore();
+  const supabase = useSupabaseClient();
+  const { manageStreamingAssistantMessage } = useMessageService();
+  
+  //to be used for the suggestions
+  const getResponseAPIResponse = async (prompt: Array<ChatCompletionMessageParam>): Promise<string> => {
     try {
-      // Get Supabase client using the built-in composable
-      const supabase = useSupabaseClient();
-
-      const { data, error } = await supabase.functions.invoke("chat-conversations", {
-        body: { messages },
-      });
-
-      if (error) {
-        console.error("Error from Supabase Function:", error);
-        throw error;
-      }
-
-      if (data?.message) {
-        return data.message;
-      } else {
-        console.error("Invalid response structure from edge function:", data);
-        throw new Error("Invalid response structure from edge function");
-      }
-    } catch (error) {
-      console.error("Error fetching chat completion from edge function:", error);
-      throw error;
-    }
-  };
-
-    const getResponseAPIResponse = async (prompt: string): Promise<Responses | null> => {
-    try {
-      const supabase = useSupabaseClient();
       const { data, error } = await supabase.functions.invoke("response-conversations", {
         body: { prompt },
       });
@@ -43,49 +21,56 @@ export const useOpenAIClient = () => {
         throw error;
       }
 
-      return data;
+      return data.output_text;
     } catch (error) {
       console.error("Error in getResponseAPIResponse:", error);
       throw error;
     }
   };
 
-  const getResponseAPIStreamingResponse = async (prompt: string) => {
+  const getResponseAPIStreamingResponse = async (prompt: string | Array<ChatCompletionMessageParam>, responseId?: string): Promise<ResponseApiCompletedEvent> => {
     try {
-      // Get Supabase client using the built-in composable
-      const supabase = useSupabaseClient();
-
-      // Call the Supabase edge function
-      const { data, error } = await supabase.functions.invoke("response-conversations-stream", {
-        body: { prompt },
+      const { data, error } = await supabase.functions.invoke<ReadableStream>("response-conversations-stream", {
+        body: { prompt, responseId },
       });
 
-      if (error || !data.body) {
+      if (error || !data) {
         console.error("Error from Supabase Function:", error);
         throw error || new Error("No response body");
       }
 
-      const onEvent = (event: EventSourceMessage) => {
-        if (event.data) {
+      let fullResponse = "";
+      let responseCompletedEvent;
+
+      const onEvent = (event: any) => {
+        if (event.type === "response.output_text.delta") {
           try {
             const parsedData = JSON.parse(event.data);
             // Now you can process the event from OpenAI
             console.log(parsedData);
+            fullResponse += parsedData.delta;
+            // manageStreamingAssistantMessage(parsedData);
           } catch (e) {
             console.error("Failed to parse JSON:", e);
           }
         }
+
+        if (event.type === "response.completed") {
+          console.log("id", event.response.id);
+          console.log("output", event.response.output);
+          console.log("content", event.response.output.content);
+          responseCompletedEvent = event;
+        }
       };
 
-      const reader = data.body.getReader();
+      const reader = data.getReader();
       const decoder = new TextDecoder();
       const parser = createParser({ onEvent });
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
-          //save the full response to the dwight_response table
-          break;
+          return responseCompletedEvent as unknown as ResponseApiCompletedEvent;
         }
         const chunk = decoder.decode(value);
         parser.feed(chunk);
@@ -98,7 +83,6 @@ export const useOpenAIClient = () => {
 
   // Return the function to be used by the caller
   return {
-    getClientSideChatCompletion,
     getResponseAPIResponse,
     getResponseAPIStreamingResponse,
   };
