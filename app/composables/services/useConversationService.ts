@@ -20,6 +20,7 @@ export function useConversationService() {
         title,
         messages: [],
         createdAt: new Date(),
+        updatedAt: new Date()
       };
 
       // Add to local state
