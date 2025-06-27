@@ -1,10 +1,11 @@
 import { useChatStore } from "~//stores/chat";
 import { useConversationRepository } from "~/composables/repositories/useConversationRepository";
 import type { Conversation } from "~/models/chat";
+import type { ConversationUpdateDto } from "~/models/chat";
 
 export function useConversationService() {
   const chatStore = useChatStore();
-  const { createConversationInSupabase } = useConversationRepository();
+  const { createConversationInSupabase, updateConversationInSupabase } = useConversationRepository();
 
   async function createNewConversation() {
     const conversationNumber = chatStore.conversations.length + 1;
@@ -37,8 +38,23 @@ export function useConversationService() {
     chatStore.selectedConversationId = conversationId;
   }
 
+  async function updateConversation(conversationId: string, dto: ConversationUpdateDto) {
+    const conversation = chatStore.conversations.find(c => c.id === conversationId);
+    if (!conversation) {
+      console.error(`updateConversation: Conversation with ID ${conversationId} not found`);
+      return;
+    }
+
+    // Update local state
+    conversation.title = dto.title || conversation.title;
+    conversation.responseId = dto.responseId || conversation.responseId;
+
+    await updateConversationInSupabase(conversationId, dto);
+  }
+
   return {
     createNewConversation,
     selectConversation,
+    updateConversation,
   };
 }

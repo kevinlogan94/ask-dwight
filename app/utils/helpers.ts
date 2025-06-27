@@ -1,6 +1,7 @@
 import { marked } from "marked";
 import DOMPurify from "isomorphic-dompurify";
 import type { Conversation, Message } from "~/models/chat";
+import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
 // Session utilities
 const SESSION_ID_KEY = "supabase-session-id";
@@ -25,7 +26,7 @@ export const getOrCreateSessionId = (): string => {
  * @param messages The array of messages to organize
  * @returns The organized messages for API
  */
-export function organizeMessagesForApi(messages: Message[]) {
+export function organizeMessagesForApi(messages: Message[]): ChatCompletionMessageParam[] {
   return messages
     .filter((msg) => msg.status !== "loading" && msg.role !== "system")
     .map((msg) => ({

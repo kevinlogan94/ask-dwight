@@ -1,10 +1,11 @@
-import type { Message } from "~/models/chat";
-import type { ChatCompletionMessage, ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import type { ConversationUpdateDto, Message } from "~/models/chat";
 import { useOpenAIClient } from "~/composables/useOpenAIClient";
-import { organizeMessagesForApi, parseMarkdown } from "~/utils/helpers";
+import { parseMarkdown } from "~/utils/helpers";
 import { useMessageRepository } from "~/composables/repositories/useMessageRepository";
 import { useConversationService } from "~/composables/services/useConversationService";
 import { useSuggestionService } from "~/composables/services/useSuggestionService";
+import { useSystemInteractionControls } from "~/composables/useSystemInteractionControls";
+import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
 export const DEFAULT_ERROR_MESSAGE =
   "Your sales coach is temporarily off the grid—probably closing a deal or wrestling an API. Don't worry. We're rerouting. Try again in a few.";
@@ -14,11 +15,24 @@ export function useMessageService() {
   const chatStore = useChatStore();
 
   // Get utilities and services
-  const { getClientSideChatCompletion } = useOpenAIClient();
+  const { getResponseAPIStreamingResponse } = useOpenAIClient();
   const { clearSuggestions, generateSuggestions } = useSuggestionService();
   const { saveAssistantResponseToSupabase, saveUserPromptToSupabase } = useMessageRepository();
-  const { getThrottlingResponse } = useSystemInteractionControls();
-  const { createNewConversation } = useConversationService();
+  const { getThrottlingResponseStreaming } = useSystemInteractionControls();
+  const { createNewConversation, updateConversation } = useConversationService();
+
+
+  // Watch for chat status changes to manage loading indicators
+  watch(
+    () => chatStore.chatStatus,
+    (newStatus, oldStatus) => {
+      if (newStatus === "submitted") {
+        AddSystemMessage("loading");
+      } else if (oldStatus === "submitted" && newStatus !== "submitted") {
+        removeLoadingMessage();
+      }
+    },
+  );
 
   /**
    * Add a user message to the current conversation
@@ -132,6 +146,37 @@ export function useMessageService() {
   }
 
   /**
+   * Handles the logic for a streaming chat response.
+   */
+  async function _handleStreamingChat(content: string | ChatCompletionMessageParam[]): Promise<boolean> {
+    const response = await getResponseAPIStreamingResponse(content);
+
+    console.log("response", response);
+
+    if (response) {
+      if (chatStore.throttleSelectedConversation) {
+        const throttlingResponse = await getThrottlingResponseStreaming();
+  
+        if (throttlingResponse) {
+          const throttleHtmlContent = await parseMarkdown(throttlingResponse);
+          await addAssistantMessage(throttlingResponse, throttleHtmlContent, true);
+        }
+      } else {
+        await generateSuggestions();
+      }
+
+      //handle setting the response id if needed
+      if(!chatStore.selectedConversation?.responseId) {
+        const conversationUpdate: ConversationUpdateDto = { responseId: response.id };
+        await updateConversation(chatStore.selectedConversationId as string, conversationUpdate);
+      }
+
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Remove a message from the current conversation
    */
   function removeLoadingMessage(): void {
@@ -146,79 +191,59 @@ export function useMessageService() {
     }
   }
 
-  /**
-   * Send a message and get an AI response
-   */
-  async function sendMessage(content: string): Promise<boolean> {
-    let conversation = chatStore.selectedConversation;
+  function manageStreamingAssistantMessage() {
+    //todo
+  }
+
+  // Sends a message and gets an AI response.
+  // @param content the text of the message to send
+  // @returns a Promise that resolves when the AI response is received
+  //          The Promise resolves to void, but the response is saved to the conversation
+  //          and the conversation is updated in the store.
+  async function sendMessage(content: string): Promise<void> {
     chatStore.anyMessagesSentForCurrentSession = true;
+    let conversation = chatStore.selectedConversation;
 
     // If no conversation exists or is selected, create a new one
     if (!conversation) {
       conversation = await createNewConversation();
       if (!conversation) {
         console.error("Failed to create or find a conversation.");
-        return false;
+        AddSystemMessage("error"); 
+        chatStore.chatStatus = "error";
+        return;
       }
     }
 
     clearSuggestions();
-
-    // Add user message
     await addUserMessage(content);
-
-    // Add loading message
-    AddSystemMessage("loading");
     chatStore.chatStatus = "submitted";
 
+    //we need to account for old conversations that were being used by the old api that we don't have a stored conversation thread.
+    let contentToSend: string | ChatCompletionMessageParam[] = content;
+    if (!conversation.responseId && conversation.messages.length > 0) {
+      contentToSend = organizeMessagesForApi(conversation.messages);
+    }
+
     try {
-      // Prepare messages for the API (only user and assistant roles)
-      const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(conversation.messages);
+      const success = await _handleStreamingChat(contentToSend);
 
-      // Call the client-side OpenAI utility function
-      const responseMessage: ChatCompletionMessage | null = await getClientSideChatCompletion(messagesForApi);
-
-      // Remove loading message regardless of success or failure
-      removeLoadingMessage();
-
-      if (responseMessage && responseMessage.content) {
-        const htmlContent = await parseMarkdown(responseMessage.content);
-
-        // Add the actual AI response with parsed HTML
-        await addAssistantMessage(responseMessage.content, htmlContent);
-
-        if (chatStore.throttleSelectedConversation) {
-          // Trigger conversation throttling and get the response
-          const throttlingResponse = await getThrottlingResponse();
-          if (throttlingResponse && throttlingResponse.content) {
-            const throttleHtmlContent = await parseMarkdown(throttlingResponse.content);
-            // Add the throttling response message as if it came from the assistant
-            await addAssistantMessage(throttlingResponse.content, throttleHtmlContent, true);
-          }
-        } else {
-          // For non-throttled conversations, generate suggestions as normal
-          await generateSuggestions();
-        }
+      if (success) {
         chatStore.chatStatus = "ready";
       } else {
-        // Add an error message if the API call failed or returned no content
         AddSystemMessage("error");
         chatStore.chatStatus = "error";
-        console.error("Failed to get response from getClientSideChatCompletion");
+        console.error("Failed to get a valid response from the API.");
       }
     } catch (error) {
       console.error("Error during sendMessage:", error);
-      // Remove loading message in case of an exception
-      removeLoadingMessage();
-      // Add an error message
       AddSystemMessage("error");
       chatStore.chatStatus = "error";
     }
-
-    return true;
   }
 
   return {
     sendMessage,
+    manageStreamingAssistantMessage
   };
 }

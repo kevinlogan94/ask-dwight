@@ -32,3 +32,10 @@ export interface ConversationUpdateDto {
   title?: string;
   responseId?: string;
 }
+
+export interface ResponseApiCompletedEvent {
+  id: string,
+  type: string,
+  status: string,
+  content: Array<{text: string}>
+}
