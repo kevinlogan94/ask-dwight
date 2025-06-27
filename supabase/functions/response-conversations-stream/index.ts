@@ -15,14 +15,22 @@ const corsHeaders = {
   "Access-Control-Max-Age": "86400", // Cache preflight response for 24 hours
 };
 
-// Create a single OpenAI client instance
-const openai = new OpenAI({
-  apiKey: Deno.env.get("OPENAI_API_KEY"),
-});
-
 // Main handler function
 Deno.serve(async (req) => {
   try {
+    // Ensure the OPENAI_API_KEY is set
+    const apiKey = Deno.env.get("OPENAI_API_KEY");
+    if (!apiKey) {
+      console.error("OPENAI_API_KEY environment variable not set");
+      return new Response(JSON.stringify({ error: "Missing OPENAI_API_KEY" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Create a new OpenAI client for each request
+    const openai = new OpenAI({ apiKey });
+
     // Handle CORS preflight requests
     if (req.method === "OPTIONS") {
       return new Response("ok", {
