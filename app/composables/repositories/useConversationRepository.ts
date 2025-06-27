@@ -1,6 +1,6 @@
 import { getOrCreateSessionId, throttlePerMessages } from "~/utils/helpers";
 import { organizePromptInfo } from "~/utils/gamification";
-import type { Conversation, Message } from "~/models/chat";
+import type { Conversation, Message, ConversationUpdateDto } from "~/models/chat";
 import { parseMarkdown } from "~/utils/helpers";
 
 export function useConversationRepository() {
@@ -211,12 +211,16 @@ export function useConversationRepository() {
     }
   }
 
-  // Placeholder for the new function
+  /**
+   * Fetches conversations from Supabase based on the current user or session ID
+   */
   async function fetchConversationsFromSupabase(): Promise<Conversation[]> {
     type RawCloudConversation = {
       id: string;
       title: string;
       created_at: string; // Timestamp for the conversation itself
+      updated_at: string;
+      response_id: string | undefined;
       user_prompts: { id: string; message: string; created_at: string; time_saved: string }[];
       dwight_responses: {
         id: string;
@@ -244,6 +248,8 @@ export function useConversationRepository() {
           id,
           title,
           created_at,
+          updated_at,
+          response_id,
           user_prompts (
             id,
             message,
@@ -317,11 +323,13 @@ export function useConversationRepository() {
           title: rawConv.title,
           createdAt: new Date(rawConv.created_at),
           messages: messages,
+          responseId: rawConv.response_id,
+          updatedAt: new Date(rawConv.updated_at),
         };
 
         if (conversation.messages.length > 0) {
           //define throttling
-          conversation.messages[conversation.messages.length - 1].isThrottleMessage =
+          conversation.messages[conversation.messages.length - 1]!.isThrottleMessage =
             throttleConversation(conversation);
         }
 
@@ -346,10 +354,46 @@ export function useConversationRepository() {
     }
   }
 
+  /**
+   * Updates a single conversation in Supabase using a DTO.
+   * @param id The ID of the conversation to update.
+   * @param dto The data transfer object with the fields to update.
+   */
+  async function updateConversationInSupabase(id: string, dto: ConversationUpdateDto): Promise<void> {
+    try {
+      // Map DTO to database column names (e.g., responseId -> response_id)
+      const updateData: { [key: string]: any } = {};
+      if (dto.title) {
+        updateData.title = dto.title;
+      }
+      if (dto.responseId) {
+        updateData.response_id = dto.responseId;
+      }
+
+      // Ensure we don't try to send an empty update
+      if (Object.keys(updateData).length === 0) {
+        console.log("updateConversationInSupabase: No fields to update.");
+        return;
+      }
+
+      //@ts-ignore
+      const { error } = await conversationsQuery.update(updateData).eq("id", id);
+
+      if (error) {
+        console.error(`updateConversationInSupabase: Error updating conversation ${id}:`, error.message);
+        throw error;
+      }
+    } catch (err: any) {
+      console.error("updateConversationInSupabase: Exception during update:", err.message);
+      throw err;
+    }
+  }
+
   return {
     syncConversationsToSupabase,
     fetchConversationsFromSupabase,
     associateConversationsWithUser,
     createConversationInSupabase,
+    updateConversationInSupabase,
   };
 }
