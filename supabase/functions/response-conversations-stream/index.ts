@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { prompt } = await req.json();
+    const { prompt, responseId } = await req.json();
 
     if (typeof prompt !== "string" || prompt.trim() === "") {
       return new Response(JSON.stringify({ error: "Prompt must be a non-empty string" }), {
@@ -60,41 +60,38 @@ Deno.serve(async (req) => {
     // This stream will be the body of our response. We can push data into it.
     const readableStream = new ReadableStream({
       async start(controller) {
+        const encoder = new TextEncoder();
         try {
           // 2. Start the OpenAI stream
-          // This is the same logic you already have.
           const stream = await openai.responses.create({
             model: "gpt-4.1-mini",
             instructions: DWIGHT_FULL_INSTRUCTIONS,
             input: prompt,
             temperature: 0.7,
             max_output_tokens: 10000,
+            previous_response_id: responseId,
             stream: true,
           });
 
           // 3. Process the stream events
-          // We loop through each event coming from OpenAI.
           for await (const event of stream) {
-            // Format the event as a Server-Sent Event (SSE)
-            const sseChunk = `data: ${JSON.stringify(event)}\n\n`;
-            // 4. Enqueue the chunk into our stream controller
-            // This sends the piece of data immediately to the client.
-            controller.enqueue(new TextEncoder().encode(sseChunk));
+            if (event.type === "response.output_text.delta" || event.type === "response.completed") {
+              const sseChunk = `data: ${JSON.stringify(event)}\n\n`;
+              controller.enqueue(encoder.encode(sseChunk));
+            }
           }
         } catch (error) {
           // Handle errors from the OpenAI stream
           console.error("Error during OpenAI stream:", error);
-          const errorChunk = new TextEncoder().encode(JSON.stringify({ error: "Stream error" }));
-          controller.enqueue(errorChunk);
+          const errorChunk = `data: ${JSON.stringify({ error: "Stream error", message: error.message })}\n\n`;
+          controller.enqueue(encoder.encode(errorChunk));
         } finally {
           // 5. Close the stream
-          // Once the loop is done, we signal that no more data will be sent.
           controller.close();
         }
       },
       cancel() {
-        // This is called if the client disconnects.
-        console.log("Client disconnected.");
+        console.log("Stream cancelled by client.");
       },
     });
 
@@ -104,9 +101,9 @@ Deno.serve(async (req) => {
     return new Response(readableStream, {
       headers: {
         "Content-Type": "text/event-stream; charset=utf-8",
-        "Connection": "keep-alive",
+        Connection: "keep-alive",
         "Cache-Control": "no-cache",
-        ...corsHeaders
+        ...corsHeaders,
       },
     });
   } catch (error) {
@@ -128,4 +125,3 @@ Deno.serve(async (req) => {
     --data '{"prompt":"What are the key elements of a good sales pitch?"}'
 
 */
-
