@@ -5,7 +5,7 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { OpenAI } from "https://esm.sh/openai@5.7.0";
-import { DWIGHT_FULL_INSTRUCTIONS } from "./configs/dwight-instructions.ts";
+import { DWIGHT_FULL_INSTRUCTIONS } from "./configs/dwight-instructions.js";
 
 // CORS headers to allow requests from localhost and your production domain
 const corsHeaders = {
