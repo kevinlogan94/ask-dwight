@@ -1,6 +1,6 @@
-import suggestionTrait from "./documents/dwight-suggestion-trigger.js";
-import conversationThrottlingTrait from "./documents/dwight-conversation-throttling.js";
-import generalExamples from "./documents/dwight-general-examples.js";
+import suggestionTrait from "./documents/dwight-suggestion-trigger.ts";
+import conversationThrottlingTrait from "./documents/dwight-conversation-throttling.ts";
+import generalExamples from "./documents/dwight-general-examples.ts";
 
 export const DWIGHT_FULL_INSTRUCTIONS = `
 Persona
