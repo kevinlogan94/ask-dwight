@@ -49,8 +49,11 @@ Deno.serve(async (req) => {
 
     const { prompt, responseId } = await req.json();
 
-    if (typeof prompt !== "string" || prompt.trim() === "") {
-      return new Response(JSON.stringify({ error: "Prompt must be a non-empty string" }), {
+    const isStringPrompt = typeof prompt === "string" && prompt.trim() !== "";
+    const isArrayPrompt = Array.isArray(prompt) && prompt.length > 0;
+
+    if (!isStringPrompt && !isArrayPrompt) {
+      return new Response(JSON.stringify({ error: "Prompt must be a non-empty string or a non-empty array of messages" }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
