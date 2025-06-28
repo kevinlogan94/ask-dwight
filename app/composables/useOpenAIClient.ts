@@ -14,13 +14,17 @@ export const useOpenAIClient = () => {
  */
   const getResponseAPIResponse = async (prompt: Array<ChatCompletionMessageParam>): Promise<string> => {
     try {
-      const { data, error } = await supabase.functions.invoke("response-conversations", {
-        body: { prompt },
+      const { data, error } = await supabase.functions.invoke<{ output_text: string }>("response-conversations", {
+        body: { prompt, stream: false },
       });
 
       if (error) {
         console.error("Error from Supabase Function:", error);
         throw error;
+      }
+
+      if (!data) {
+        throw new Error("No response data");
       }
 
       return data.output_text;
@@ -43,8 +47,8 @@ export const useOpenAIClient = () => {
     onDelta: (delta: string) => void,
   ): Promise<ResponseApiCompletedEvent> => {
     try {
-      const { data, error } = await supabase.functions.invoke<ReadableStream>("response-conversations-stream", {
-        body: { prompt, responseId },
+      const { data, error } = await supabase.functions.invoke<ReadableStream>("response-conversations", {
+        body: { prompt, responseId, stream: true },
       });
 
       if (error || !data) {

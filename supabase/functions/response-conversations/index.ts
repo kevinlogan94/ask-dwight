@@ -16,7 +16,7 @@ const corsHeaders = {
 };
 
 // Main handler function
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request): Promise<Response> => {
   try {
     // Ensure the OPENAI_API_KEY is set
     const apiKey = Deno.env.get("OPENAI_API_KEY");
@@ -44,33 +44,51 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { prompt } = await req.json();
+    const { prompt, responseId, stream = true } = await req.json();
 
+    // Validate the prompt
+    const isStringPrompt = typeof prompt === "string" && prompt.trim() !== "";
     const isArrayPrompt = Array.isArray(prompt) && prompt.length > 0;
-
-    if (!isArrayPrompt) {
-      return new Response(JSON.stringify({ error: "Prompt must be a non-empty array of messages" }), {
+    if (!isStringPrompt && !isArrayPrompt) {
+      return new Response(JSON.stringify({ error: "Prompt must be a non-empty string or array of messages" }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
-    // Call the OpenAI API for a single, non-streamed response
-    const response = await openai.responses.create({
+    // Prepare the API payload using the project's specific structure
+    const payload: any = {
       model: "gpt-4.1-mini",
       instructions: DWIGHT_FULL_INSTRUCTIONS,
       input: prompt,
       temperature: 0.7,
       max_output_tokens: 10000,
-    });
+      stream: stream,
+    };
 
-    // Return the complete response object
-    return new Response(JSON.stringify(response), {
-      headers: { "Content-Type": "application/json", ...corsHeaders },
-    });
+    if (responseId) {
+      payload.response_id = responseId;
+    }
+
+    // The user's code uses a custom `responses` endpoint.
+    // This is not standard OpenAI, but we will adhere to the project's existing pattern.
+    if (stream) {
+      const responseStream = await openai.responses.create(payload);
+      // Assuming the response object has a `toReadableStream` method, which is common for streaming SDKs.
+      return new Response(responseStream.toReadableStream(), {
+        headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      });
+    } else {
+      const response = await openai.responses.create(payload);
+
+      return new Response(JSON.stringify(response), {
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
   } catch (error) {
     console.error("Error processing request:", error);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+    const errorMessage = error instanceof Error ? error.message : "Internal Server Error";
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
