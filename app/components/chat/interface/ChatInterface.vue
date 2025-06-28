@@ -160,15 +160,13 @@ function setupForNewConversation() {
 
 // Watch for changes in the messages array and scroll down when new messages are added
 watch(
-  () => chatStore.currentMessages.length,
-  (newLength, oldLength) => {
-    // Only scroll if a new message was added
-    if (newLength > oldLength) {
-      // Use nextTick to ensure DOM is updated before scrolling
-      nextTick(() => {
-        scrollButton.value?.scrollToBottom();
-      });
-    }
+  () => chatStore.currentMessages,
+  () => {
+    // Use nextTick to ensure DOM is updated before scrolling
+    nextTick(() => {
+      scrollButton.value?.scrollToBottom();
+    });
   },
+  { deep: true },
 );
 </script>
