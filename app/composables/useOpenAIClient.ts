@@ -14,7 +14,7 @@ export const useOpenAIClient = () => {
  */
   const getResponseAPIResponse = async (prompt: Array<ChatCompletionMessageParam>): Promise<string> => {
     try {
-      const { data, error } = await supabase.functions.invoke<{ output_text: string }>("response-conversations", {
+      const { data, error } = await supabase.functions.invoke<{output_text: string}>("response-conversations", {
         body: { prompt, stream: false },
       });
 
@@ -24,7 +24,7 @@ export const useOpenAIClient = () => {
       }
 
       if (!data) {
-        throw new Error("No response data");
+        throw new Error("Response body is null");
       }
 
       return data.output_text;
@@ -47,38 +47,39 @@ export const useOpenAIClient = () => {
     onDelta: (delta: string) => void,
   ): Promise<ResponseApiCompletedEvent> => {
     try {
-      const { data, error } = await supabase.functions.invoke<ReadableStream>("response-conversations", {
+      const { data, error } = await supabase.functions.invoke<Response>("response-conversations", {
         body: { prompt, responseId, stream: true },
       });
 
-      if (error || !data) {
+      if (error || !data || !data.body) {
         console.error("Error from Supabase Function:", error);
         throw error || new Error("No response body");
       }
 
       let responseCompletedEvent;
 
-      const onEvent = (event: any) => {
-        if (event.type === "response.created") {
-          chatStore.chatStatus = "streaming";
-        }
+      const onEvent = (event: { data: string }) => {
+        try {
+          const parsedData = JSON.parse(event.data);
 
-        if (event.type === "response.output_text.delta") {
-          try {
-            const parsedData = JSON.parse(event.data);
+          if (parsedData.type === "response.created") {
+            chatStore.chatStatus = "streaming";
+          }
+
+          if (parsedData.type === "response.output_text.delta") {
             const delta = parsedData.delta;
             onDelta(delta);
-          } catch (e) {
-            console.error("Failed to parse JSON:", e);
           }
-        }
 
-        if (event.type === "response.completed") {
-          responseCompletedEvent = event;
+          if (parsedData.type === "response.completed") {
+            responseCompletedEvent = parsedData;
+          }
+        } catch (e) {
+          console.error("Failed to parse event data from stream:", event.data, e);
         }
       };
 
-      const reader = data.getReader();
+      const reader = data.body.getReader();
       const decoder = new TextDecoder();
       const parser = createParser({ onEvent });
 
@@ -91,7 +92,7 @@ export const useOpenAIClient = () => {
         parser.feed(chunk);
       }
     } catch (error) {
-      console.error("Error fetching chat completion from edge function:", error);
+      console.error("Error fetching responses from edge function:", error);
       throw error;
     }
   };

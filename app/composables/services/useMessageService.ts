@@ -104,27 +104,25 @@ export function useMessageService() {
       manageStreamingAssistantMessage,
     );
 
-    console.log("ResponseCompletedApiEvent:", response);
-
     if (response) {
-      const finalContent = response.response.content[0]?.text ?? "";
+      const finalContent = response.response.output[0]?.content[0]?.text ?? "";
       await finalizeStreamedMessage(finalContent);
+
+      //handle setting the response id if needed
+      if (!conversation.responseId) {
+        const conversationUpdate: ConversationUpdateDto = { responseId: response.response.id };
+        await updateConversation(conversation.id, conversationUpdate);
+      }
 
       if (chatStore.throttleSelectedConversation) {
         const throttlingResponseEvent = await getThrottlingResponseStreaming(conversation.responseId!, manageStreamingAssistantMessage);
 
         if (throttlingResponseEvent) {
-          const finalThrottleContent = throttlingResponseEvent.response.content[0]?.text ?? "";
+          const finalThrottleContent = throttlingResponseEvent.response.output[0]?.content[0]?.text ?? "";
           await finalizeStreamedMessage(finalThrottleContent);
         }
       } else {
         await generateSuggestions();
-      }
-
-      //handle setting the response id if needed
-      if (!conversation.responseId) {
-        const conversationUpdate: ConversationUpdateDto = { responseId: response.id };
-        await updateConversation(conversation.id, conversationUpdate);
       }
 
       return true;
@@ -154,8 +152,6 @@ export function useMessageService() {
   async function manageStreamingAssistantMessage(delta: string): Promise<void> {
     const conversation = chatStore.selectedConversation;
     if (!conversation) return;
-
-    console.log("Delta:", delta);
 
     let streamingMessage = conversation.messages.find((m) => m.status === "streaming");
 
@@ -204,8 +200,6 @@ export function useMessageService() {
 
       streamingMessage.id = savedId;
       streamingMessage.status = "sent";
-      streamingMessage.content = finalContent;
-      streamingMessage.htmlContent = await parseMarkdown(finalContent);
     } catch (error) {
       console.error("Error finalizing streamed message:", error);
       streamingMessage.status = "error"; 

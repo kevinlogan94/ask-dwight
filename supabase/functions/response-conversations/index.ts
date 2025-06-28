@@ -44,7 +44,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    const { prompt, responseId, stream = true } = await req.json();
+    const { prompt, response_id, stream = true } = await req.json();
 
     // Validate the prompt
     const isStringPrompt = typeof prompt === "string" && prompt.trim() !== "";
@@ -66,16 +66,34 @@ Deno.serve(async (req: Request): Promise<Response> => {
       stream: stream,
     };
 
-    if (responseId) {
-      payload.response_id = responseId;
+    if (response_id) {
+      payload.response_id = response_id;
     }
 
     // The user's code uses a custom `responses` endpoint.
     // This is not standard OpenAI, but we will adhere to the project's existing pattern.
     if (stream) {
       const responseStream = await openai.responses.create(payload);
-      // Assuming the response object has a `toReadableStream` method, which is common for streaming SDKs.
-      return new Response(responseStream.toReadableStream(), {
+
+      // The OpenAI stream yields JSON objects. We need to format them into
+      // Server-Sent Events (SSE) format for the client's parser to work.
+      const sseStream = new TransformStream({
+        transform(chunk, controller) {
+          // The chunk is a Uint8Array with a JSON string. Decode it.
+          const jsonString = new TextDecoder().decode(chunk);
+          // Format as an SSE `data` field, encode it back to bytes (Uint8Array),
+          // and enqueue it. The Response object requires a stream of bytes.
+          const sseFormattedString = `data: ${jsonString}\n\n`;
+          controller.enqueue(new TextEncoder().encode(sseFormattedString));
+        },
+      });
+
+      // Pipe the raw stream from OpenAI through our SSE formatter.
+      // The SDK's stream needs to be converted to a standard ReadableStream first.
+      const formattedStream = responseStream.toReadableStream().pipeThrough(sseStream);
+
+      // Return the new, correctly formatted stream.
+      return new Response(formattedStream, {
         headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
       });
     } else {

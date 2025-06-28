@@ -38,9 +38,11 @@ export interface ResponseApiCompletedEvent {
   type: "response.completed";
   response: {
     id: string; // message id
-    content: Array<{
-      type: "output_text";
-      text: string;
+    output: Array<{
+      content: Array<{
+        type: "output_text";
+        text: string;
+      }>;
     }>;
     role: "assistant";
     status: "completed";
