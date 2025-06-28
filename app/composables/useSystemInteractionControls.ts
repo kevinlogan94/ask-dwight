@@ -1,5 +1,4 @@
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { organizeMessagesForApi } from "~/utils/helpers";
+import type { ResponseApiCompletedEvent } from "~/models/chat";
 
 /**
  * Composable for system-level interaction controls via Dwight.
@@ -9,24 +8,32 @@ export function useSystemInteractionControls() {
   const { getResponseAPIStreamingResponse } = useOpenAIClient();
   const chatStore = useChatStore();
 
-//todo finish this
-
   /**
- * Triggers conversation throttling by sending a special message to the AI via streaming.
- * @returns The AI response message or null if the request failed
- */
-async function getThrottlingResponseStreaming(): Promise<any> {
-  if (!chatStore.selectedConversation) {
+   * Triggers conversation throttling by sending a special message to the AI via streaming.
+   * @param responseId The ID of the response to stream.
+   * @param onDelta A callback function to be called when a delta is received.
+   * @returns A promise that resolves to the completed response.
+   */
+  async function getThrottlingResponseStreaming(
+    responseId: string,
+    onDelta: (delta: string) => void,
+  ): Promise<ResponseApiCompletedEvent | undefined> {
+    if (!chatStore.selectedConversation) {
       console.error("No conversation found to throttle.");
-      return;
+      return undefined;
     }
 
     try {
-      const response = await getResponseAPIStreamingResponse("trigger conversation throttling");
+      const response = await getResponseAPIStreamingResponse(
+        "Trigger the throttle trigger so that you can tell me that I have to wait to ask another question.",
+        responseId,
+        onDelta,
+      );
+
       return response;
     } catch (error) {
       console.error("Failed to trigger conversation throttling:", error);
-      return;
+      return undefined;
     }
   }
 

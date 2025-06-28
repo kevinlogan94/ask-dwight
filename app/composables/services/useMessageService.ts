@@ -74,60 +74,6 @@ export function useMessageService() {
     return newMessage;
   }
 
-  /**
-   * Add an assistant message to the current conversation
-   */
-  async function addAssistantMessage(
-    content: string,
-    htmlContent: string,
-    throttleMessage: boolean = false,
-  ): Promise<Message> {
-    if (!chatStore.selectedConversation || !chatStore.selectedConversationId) {
-      console.error("No conversation selected to add message");
-      throw new Error("No conversation selected");
-    }
-
-    let messageId: string;
-
-    try {
-      // For assistant messages, we need the previous user message ID
-      const userMessages = chatStore.selectedConversation.messages.filter((m: any) => m.role === "user");
-      const lastUserMessageId = userMessages.length > 0 ? userMessages[userMessages.length - 1]!.id : null;
-
-      if (!lastUserMessageId) {
-        console.error("Attempted to add assistant message without preceding user message");
-        throw new Error("No preceding user message found");
-      }
-
-      // We know lastUserMessageId is not null at this point
-      const savedId = await saveAssistantResponseToSupabase(
-        chatStore.selectedConversationId,
-        content,
-        lastUserMessageId,
-      );
-
-      messageId = savedId;
-    } catch (error) {
-      console.error("Error saving assistant message to Supabase:", error);
-      throw error;
-    }
-
-    // Create a new message with the ID from Supabase
-    const newMessage: Message = {
-      id: messageId,
-      content,
-      role: "assistant",
-      timestamp: new Date(),
-      htmlContent,
-      isThrottleMessage: throttleMessage,
-    };
-
-    // Add the message to the conversation
-    chatStore.selectedConversation.messages.push(newMessage);
-
-    return newMessage;
-  }
-
   function AddSystemMessage(messageType: "loading" | "error"): Message {
     if (!chatStore.selectedConversation) {
       console.error("No conversation selected to add message");
@@ -165,11 +111,11 @@ export function useMessageService() {
       await finalizeStreamedMessage(finalContent);
 
       if (chatStore.throttleSelectedConversation) {
-        const throttlingResponse = await getThrottlingResponseStreaming();
+        const throttlingResponseEvent = await getThrottlingResponseStreaming(conversation.responseId!, manageStreamingAssistantMessage);
 
-        if (throttlingResponse) {
-          const throttleHtmlContent = await parseMarkdown(throttlingResponse);
-          await addAssistantMessage(throttlingResponse, throttleHtmlContent, true);
+        if (throttlingResponseEvent) {
+          const finalThrottleContent = throttlingResponseEvent.response.content[0]?.text ?? "";
+          await finalizeStreamedMessage(finalThrottleContent);
         }
       } else {
         await generateSuggestions();
@@ -205,7 +151,7 @@ export function useMessageService() {
    * Manages the UI updates for a streaming assistant message.
    * This function is intended to be used as a callback for each text delta.
    */
-  async function manageStreamingAssistantMessage(delta: string) {
+  async function manageStreamingAssistantMessage(delta: string): Promise<void> {
     const conversation = chatStore.selectedConversation;
     if (!conversation) return;
 
@@ -232,7 +178,7 @@ export function useMessageService() {
   /**
    * Finalizes a streamed message by saving it to the database and updating its local state.
    */
-  async function finalizeStreamedMessage(finalContent: string) {
+  async function finalizeStreamedMessage(finalContent: string): Promise<void> {
     const conversation = chatStore.selectedConversation;
     if (!conversation) return;
 
@@ -266,11 +212,13 @@ export function useMessageService() {
     }
   }
 
-  // Sends a message and gets an AI response.
-  // @param content the text of the message to send
-  // @returns a Promise that resolves when the AI response is received
-  //          The Promise resolves to void, but the response is saved to the conversation
-  //          and the conversation is updated in the store.
+  /**
+   * Sends a message and gets an AI response.
+   * @param content the text of the message to send
+   * @returns a Promise that resolves when the AI response is received
+   *          The Promise resolves to void, but the response is saved to the conversation
+   *          and the conversation is updated in the store.
+   */
   async function sendMessage(content: string): Promise<void> {
     chatStore.anyMessagesSentForCurrentSession = true;
     let conversation = chatStore.selectedConversation;

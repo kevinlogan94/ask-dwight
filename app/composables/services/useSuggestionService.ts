@@ -34,31 +34,34 @@ export function useSuggestionService() {
       content: "Trigger the suggestion trigger to create 3 suggestions that I could say back to you.",
     });
 
-    const { getClientSideChatCompletion } = useOpenAIClient();
+    const { getResponseAPIResponse } = useOpenAIClient();
 
     try {
-      let response = await getClientSideChatCompletion(messagesForApi);
+      const apiResponse = await getResponseAPIResponse(messagesForApi);
+      const content = apiResponse;
 
-      //organize suggestions into latest message from AI
-      if (response && response.content) {
-        let suggestions = organizeSuggestions(response.content);
+      if (content) {
+        let suggestions = organizeSuggestions(content);
 
+        // Retry logic if the response is not as expected
         if (suggestions.length !== 3) {
-          response = await getClientSideChatCompletion(messagesForApi);
-          if (response && response.content) {
-            suggestions = organizeSuggestions(response.content);
-            assistantMsg.suggestions = suggestions;
-            await saveSuggestionsToSupabase(assistantMsg.id, suggestions);
+          const retryApiResponse = await getResponseAPIResponse(messagesForApi);
+          const retryContent = retryApiResponse;
+          if (retryContent) {
+            suggestions = organizeSuggestions(retryContent);
+          } else {
+            console.error("Failed to generate suggestions on retry: No content in API response");
+            assistantMsg.suggestions = [];
             return;
           }
-          console.error("Failed to generate suggestions: No response from API");
         }
 
         assistantMsg.suggestions = suggestions;
         await saveSuggestionsToSupabase(assistantMsg.id, suggestions);
-        return;
+      } else {
+        console.error("Failed to generate suggestions: No content in API response");
+        assistantMsg.suggestions = [];
       }
-      console.error("Failed to generate suggestions: No response from API");
     } catch (error) {
       console.error("Failed to generate suggestions:", error);
       assistantMsg.suggestions = [];
@@ -71,8 +74,6 @@ export function useSuggestionService() {
     const message = chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1];
     if (message) {
       message.suggestions = [];
-    } else {
-      console.error("Failed to clear suggestions: No message found");
     }
   }
 

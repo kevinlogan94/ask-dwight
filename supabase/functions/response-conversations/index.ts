@@ -46,8 +46,10 @@ Deno.serve(async (req) => {
 
     const { prompt } = await req.json();
 
-    if (typeof prompt !== "string" || prompt.trim() === "") {
-      return new Response(JSON.stringify({ error: "Prompt must be a non-empty string" }), {
+    const isArrayPrompt = Array.isArray(prompt) && prompt.length > 0;
+
+    if (!isArrayPrompt) {
+      return new Response(JSON.stringify({ error: "Prompt must be a non-empty array of messages" }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -83,6 +85,6 @@ Deno.serve(async (req) => {
 
     --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
     --header 'Content-Type: application/json' \
-    --data '{"prompt":"What are the key elements of a good sales pitch?"}'
+    --data '{"prompt":[{"role":"user","content":"What are the key elements of a good sales pitch?"}]}'
 
 */

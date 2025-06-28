@@ -7,7 +7,11 @@ export const useOpenAIClient = () => {
   const chatStore = useChatStore();
   const supabase = useSupabaseClient();
   
-  //to be used for the suggestions
+  /**
+ * Gets a response from the OpenAI API.
+ * @param prompt The prompt to send to the API.
+ * @returns A promise that resolves to the response text.
+ */
   const getResponseAPIResponse = async (prompt: Array<ChatCompletionMessageParam>): Promise<string> => {
     try {
       const { data, error } = await supabase.functions.invoke("response-conversations", {
@@ -26,6 +30,13 @@ export const useOpenAIClient = () => {
     }
   };
 
+  /**
+ * Gets a streaming response from the OpenAI API.
+ * @param prompt The prompt to send to the API.
+ * @param responseId The ID of the response to stream.
+ * @param onDelta A callback function to be called when a delta is received.
+ * @returns A promise that resolves to the completed response.
+ */
   const getResponseAPIStreamingResponse = async (
     prompt: string | Array<ChatCompletionMessageParam>,
     responseId: string | undefined,
