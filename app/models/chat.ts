@@ -7,7 +7,7 @@ export interface Message {
   /** @deprecated use role instead */
   sender?: "user" | "assistant" | "system";
   timestamp: Date;
-  status?: "loading" | "sent";
+  status?: "loading" | "sent" | "streaming" | "error";
   suggestions?: string[];
   isThrottleMessage?: boolean;
   reaction?: 'thumbs_up' | 'thumbs_down' | null;
@@ -34,8 +34,15 @@ export interface ConversationUpdateDto {
 }
 
 export interface ResponseApiCompletedEvent {
-  id: string,
-  type: string,
-  status: string,
-  content: Array<{text: string}>
+  id: string; // event id
+  type: "response.completed";
+  response: {
+    id: string; // message id
+    content: Array<{
+      type: "output_text";
+      text: string;
+    }>;
+    role: "assistant";
+    status: "completed";
+  };
 }

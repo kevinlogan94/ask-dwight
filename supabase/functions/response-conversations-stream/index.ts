@@ -78,7 +78,7 @@ Deno.serve(async (req) => {
 
           // 3. Process the stream events
           for await (const event of stream) {
-            if (event.type === "response.output_text.delta" || event.type === "response.completed") {
+            if (event.type === "response.output_text.delta" || event.type === "response.completed" || event.type === "response.created") {
               const sseChunk = `data: ${JSON.stringify(event)}\n\n`;
               controller.enqueue(encoder.encode(sseChunk));
             }

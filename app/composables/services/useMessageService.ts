@@ -149,14 +149,24 @@ export function useMessageService() {
    * Handles the logic for a streaming chat response.
    */
   async function _handleStreamingChat(content: string | ChatCompletionMessageParam[]): Promise<boolean> {
-    const response = await getResponseAPIStreamingResponse(content);
+    const conversation = chatStore.selectedConversation;
+    if (!conversation) return false;
 
-    console.log("response", response);
+    const response = await getResponseAPIStreamingResponse(
+      content,
+      conversation.responseId,
+      manageStreamingAssistantMessage,
+    );
+
+    console.log("ResponseCompletedApiEvent:", response);
 
     if (response) {
+      const finalContent = response.response.content[0]?.text ?? "";
+      await finalizeStreamedMessage(finalContent);
+
       if (chatStore.throttleSelectedConversation) {
         const throttlingResponse = await getThrottlingResponseStreaming();
-  
+
         if (throttlingResponse) {
           const throttleHtmlContent = await parseMarkdown(throttlingResponse);
           await addAssistantMessage(throttlingResponse, throttleHtmlContent, true);
@@ -166,9 +176,9 @@ export function useMessageService() {
       }
 
       //handle setting the response id if needed
-      if(!chatStore.selectedConversation?.responseId) {
+      if (!conversation.responseId) {
         const conversationUpdate: ConversationUpdateDto = { responseId: response.id };
-        await updateConversation(chatStore.selectedConversationId as string, conversationUpdate);
+        await updateConversation(conversation.id, conversationUpdate);
       }
 
       return true;
@@ -191,8 +201,69 @@ export function useMessageService() {
     }
   }
 
-  function manageStreamingAssistantMessage() {
-    //todo
+  /**
+   * Manages the UI updates for a streaming assistant message.
+   * This function is intended to be used as a callback for each text delta.
+   */
+  async function manageStreamingAssistantMessage(delta: string) {
+    const conversation = chatStore.selectedConversation;
+    if (!conversation) return;
+
+    console.log("Delta:", delta);
+
+    let streamingMessage = conversation.messages.find((m) => m.status === "streaming");
+
+    if (streamingMessage) {
+      streamingMessage.content += delta;
+      streamingMessage.htmlContent = await parseMarkdown(streamingMessage.content);
+    } else {
+      const newMessage: Message = {
+        id: `temp-${Date.now()}`,
+        content: delta,
+        htmlContent: await parseMarkdown(delta),
+        role: "assistant",
+        timestamp: new Date(),
+        status: "streaming",
+      };
+      conversation.messages.push(newMessage);
+    }
+  }
+
+  /**
+   * Finalizes a streamed message by saving it to the database and updating its local state.
+   */
+  async function finalizeStreamedMessage(finalContent: string) {
+    const conversation = chatStore.selectedConversation;
+    if (!conversation) return;
+
+    const streamingMessage = conversation.messages.find((m) => m.status === "streaming");
+    if (!streamingMessage) {
+      console.error("Could not find a streaming message to finalize.");
+      return;
+    }
+
+    try {
+      const userMessages = conversation.messages.filter((m: any) => m.role === "user");
+      const lastUserMessageId = userMessages.length > 0 ? userMessages[userMessages.length - 1]!.id : null;
+
+      if (!lastUserMessageId) {
+        throw new Error("No preceding user message found for finalizing assistant response.");
+      }
+
+      const savedId = await saveAssistantResponseToSupabase(
+        conversation.id,
+        finalContent,
+        lastUserMessageId,
+      );
+
+      streamingMessage.id = savedId;
+      streamingMessage.status = "sent";
+      streamingMessage.content = finalContent;
+      streamingMessage.htmlContent = await parseMarkdown(finalContent);
+    } catch (error) {
+      console.error("Error finalizing streamed message:", error);
+      streamingMessage.status = "error"; 
+    }
   }
 
   // Sends a message and gets an AI response.
@@ -244,6 +315,5 @@ export function useMessageService() {
 
   return {
     sendMessage,
-    manageStreamingAssistantMessage
   };
 }
