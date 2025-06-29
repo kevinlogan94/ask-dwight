@@ -115,13 +115,14 @@ export const throttleConversation = (conversation: Conversation) => {
 };
 
 /**
- * Checks if a conversation has exceeded the throttle limit based on the number of user messages.
+ * Checks if a conversation has exceeded the throttle limit based on the number of user and assistant messages.
  * @param messages The array of messages to check.
  * @returns True if the conversation has exceeded the throttle limit, false otherwise.
  */
 export const throttlePerMessages = (messages: Message[]) => {
   const userMessages = messages.filter((x) => x.role === "user") ?? [];
-  return userMessages.length >= 10;
+  const assistantMessages = messages.filter((x) => x.role === "assistant") ?? [];
+  return userMessages.length >= 10 && assistantMessages.length >= 10;
 };
 
 /**

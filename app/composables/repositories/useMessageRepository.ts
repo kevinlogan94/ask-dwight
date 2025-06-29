@@ -53,6 +53,7 @@ export function useMessageRepository() {
    * @returns The ID of the created response
    */
   async function saveAssistantResponseToSupabase(
+    id: string,
     conversationId: string,
     content: string,
     promptId: string,
@@ -61,6 +62,7 @@ export function useMessageRepository() {
       // Insert the response
       const { data, error } = await dwightResponsesQuery
         .insert({
+          id,
           conversation_id: conversationId,
           message: content,
           prompt_id: promptId,
