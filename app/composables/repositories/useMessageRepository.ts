@@ -1,6 +1,6 @@
-import { useSupabaseClient } from "#imports";
 import { organizePromptInfo } from "~/utils/gamification";
 import { getOrCreateSessionId } from "~/utils/helpers";
+import type { AssistantMessageCreateDto } from "~/models/chat";
 
 export function useMessageRepository() {
   const supabase = useSupabaseClient();
@@ -47,25 +47,23 @@ export function useMessageRepository() {
 
   /**
    * Save an assistant response to Supabase
-   * @param conversationId The conversation ID
-   * @param content The message content
-   * @param promptId The ID of the corresponding user prompt
+   * @param id The ID of the response
+   * @param dto The assistant message create DTO
    * @returns The ID of the created response
    */
   async function saveAssistantResponseToSupabase(
     id: string,
-    conversationId: string,
-    content: string,
-    promptId: string,
+    dto: AssistantMessageCreateDto,
   ): Promise<string> {
     try {
       // Insert the response
       const { data, error } = await dwightResponsesQuery
         .insert({
           id,
-          conversation_id: conversationId,
-          message: content,
-          prompt_id: promptId,
+          conversation_id: dto.conversationId,
+          message: dto.content,
+          prompt_id: dto.promptId,
+          response_id: dto.responseId,
         } as any)
         .select("id")
         .single();
@@ -75,12 +73,12 @@ export function useMessageRepository() {
         throw error;
       }
 
-      const responseId = (data as any)?.id;
-      if (!responseId) {
+      const dwightResponseId = (data as any)?.id;
+      if (!dwightResponseId) {
         throw new Error("Failed to save assistant response to Supabase");
       }
 
-      return responseId;
+      return dwightResponseId;
     } catch (error) {
       console.error("Error in saveAssistantResponseToSupabase:", error);
       throw error;

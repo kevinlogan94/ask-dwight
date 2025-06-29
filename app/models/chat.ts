@@ -11,6 +11,7 @@ export interface Message {
   suggestions?: string[];
   isThrottleMessage?: boolean;
   reaction?: 'thumbs_up' | 'thumbs_down' | null;
+  responseId?: string; // The unique ID from the OpenAI response
 }
 
 export interface Conversation {
@@ -18,8 +19,6 @@ export interface Conversation {
   title: string;
   messages: Message[];
   createdAt: Date;
-  responseId?: string;
-  updatedAt: Date;
 }
 
 export interface MessageAction {
@@ -30,6 +29,12 @@ export interface MessageAction {
 
 export interface ConversationUpdateDto {
   title?: string;
+}
+
+export interface AssistantMessageCreateDto {
+  conversationId: string;
+  content: string;
+  promptId: string;
   responseId?: string;
 }
 

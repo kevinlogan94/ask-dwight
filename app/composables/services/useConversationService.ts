@@ -7,11 +7,14 @@ export function useConversationService() {
   const chatStore = useChatStore();
   const { createConversationInSupabase, updateConversationInSupabase } = useConversationRepository();
 
-  async function createNewConversation() {
-    const conversationNumber = chatStore.conversations.length + 1;
-    const title = `Conversation ${conversationNumber}`;
+  /*
+  * Creates a new conversation in the chat store and in Supabase.
+  */
+async function createNewConversation() {
+  const conversationNumber = chatStore.conversations.length + 1;
+  const title = `Conversation ${conversationNumber}`;
 
-    try {
+  try {
       const conversationId = await createConversationInSupabase(title);
 
       // Create new conversation with the ID from Supabase
@@ -20,7 +23,6 @@ export function useConversationService() {
         title,
         messages: [],
         createdAt: new Date(),
-        updatedAt: new Date()
       };
 
       // Add to local state
@@ -39,6 +41,7 @@ export function useConversationService() {
     chatStore.selectedConversationId = conversationId;
   }
 
+  //todo use this when we start setting the title of conversations
   async function updateConversation(conversationId: string, dto: ConversationUpdateDto) {
     const conversation = chatStore.conversations.find(c => c.id === conversationId);
     if (!conversation) {
@@ -48,7 +51,6 @@ export function useConversationService() {
 
     // Update local state
     conversation.title = dto.title || conversation.title;
-    conversation.responseId = dto.responseId || conversation.responseId;
 
     await updateConversationInSupabase(conversationId, dto);
   }

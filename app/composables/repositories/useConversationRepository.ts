@@ -220,7 +220,6 @@ export function useConversationRepository() {
       title: string;
       created_at: string; // Timestamp for the conversation itself
       updated_at: string;
-      response_id: string | undefined;
       user_prompts: { id: string; message: string; created_at: string; time_saved: string }[];
       dwight_responses: {
         id: string;
@@ -248,8 +247,6 @@ export function useConversationRepository() {
           id,
           title,
           created_at,
-          updated_at,
-          response_id,
           user_prompts (
             id,
             message,
@@ -260,6 +257,7 @@ export function useConversationRepository() {
             id,
             message,
             created_at,
+            response_id,
             user_prompt_suggestions (
               suggestion_text
             ),
@@ -323,8 +321,6 @@ export function useConversationRepository() {
           title: rawConv.title,
           createdAt: new Date(rawConv.created_at),
           messages: messages,
-          responseId: rawConv.response_id,
-          updatedAt: new Date(rawConv.updated_at),
         };
 
         if (conversation.messages.length > 0) {
@@ -365,9 +361,6 @@ export function useConversationRepository() {
       const updateData: { [key: string]: any } = {};
       if (dto.title) {
         updateData.title = dto.title;
-      }
-      if (dto.responseId) {
-        updateData.response_id = dto.responseId;
       }
 
       // Ensure we don't try to send an empty update

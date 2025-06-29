@@ -1,4 +1,4 @@
-import type { ConversationUpdateDto, Message } from "~/models/chat";
+import type { Message, AssistantMessageCreateDto } from "~/models/chat";
 import { useOpenAIClient } from "~/composables/useOpenAIClient";
 import { parseMarkdown } from "~/utils/helpers";
 import { useMessageRepository } from "~/composables/repositories/useMessageRepository";
@@ -19,7 +19,7 @@ export function useMessageService() {
   const { clearSuggestions, generateSuggestions } = useSuggestionService();
   const { saveAssistantResponseToSupabase, saveUserPromptToSupabase } = useMessageRepository();
   const { getThrottlingResponseStreaming } = useSystemInteractionControls();
-  const { createNewConversation, updateConversation } = useConversationService();
+  const { createNewConversation } = useConversationService();
 
 
   // Watch for chat status changes to manage loading indicators
@@ -94,30 +94,30 @@ export function useMessageService() {
   /**
    * Handles the logic for a streaming chat response.
    */
-  async function _handleStreamingChat(content: string | ChatCompletionMessageParam[]): Promise<boolean> {
+  async function _handleStreamingChat(
+    content: string | ChatCompletionMessageParam[],
+    responseId?: string,
+  ): Promise<boolean> {
     const conversation = chatStore.selectedConversation;
     if (!conversation) return false;
 
     const response = await getResponseAPIStreamingResponse(
       content,
-      conversation.responseId,
+      responseId,
       manageStreamingAssistantMessage,
     );
 
     if (response) {
       const finalContent = response.response.output[0]?.content[0]?.text ?? "";
-      await finalizeStreamedMessage(finalContent);
-
-      // handle setting the response id if needed
-      const conversationUpdate: ConversationUpdateDto = { responseId: response.response.id };
-      await updateConversation(conversation.id, conversationUpdate);
+      const newResponseId = response.response.id;
+      await _finalizeStreamedMessage(finalContent, newResponseId);
 
       if (chatStore.throttleSelectedConversation) {
-        const throttlingResponseEvent = await getThrottlingResponseStreaming(conversation.responseId!, manageStreamingAssistantMessage);
+        const throttlingResponseEvent = await getThrottlingResponseStreaming(newResponseId, manageStreamingAssistantMessage);
 
         if (throttlingResponseEvent) {
           const finalThrottleContent = throttlingResponseEvent.response.output[0]?.content[0]?.text ?? "";
-          await finalizeStreamedMessage(finalThrottleContent);
+          await _finalizeStreamedMessage(finalThrottleContent, newResponseId);
         }
       } else {
         await generateSuggestions();
@@ -126,6 +126,49 @@ export function useMessageService() {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Finalizes a streamed message by saving it to the database and updating its local state.
+   */
+  async function _finalizeStreamedMessage(finalContent: string, responseId: string): Promise<void> {
+    const conversation = chatStore.selectedConversation;
+    if (!conversation) return;
+
+    const streamingMessage = conversation.messages.find((m) => m.status === "streaming");
+    if (!streamingMessage) {
+      console.error("Could not find a streaming message to finalize.");
+      return;
+    }
+
+    // Assign the OpenAI response ID to the message
+    streamingMessage.responseId = responseId;
+
+    try {
+      const userMessages = conversation.messages.filter((m: any) => m.role === "user");
+      const lastUserMessageId = userMessages.length > 0 ? userMessages[userMessages.length - 1]!.id : null;
+
+      if (!lastUserMessageId) {
+        throw new Error("No preceding user message found for finalizing assistant response.");
+      }
+
+      const dto: AssistantMessageCreateDto = {
+        conversationId: conversation.id,
+        content: finalContent,
+        promptId: lastUserMessageId,
+        responseId,
+      };
+
+      await saveAssistantResponseToSupabase(
+        streamingMessage.id,
+        dto,
+      );
+
+      streamingMessage.status = "sent";
+    } catch (error) {
+      console.error("Error finalizing streamed message:", error);
+      streamingMessage.status = "error";
+    }
   }
 
   /**
@@ -171,41 +214,6 @@ export function useMessageService() {
   }
 
   /**
-   * Finalizes a streamed message by saving it to the database and updating its local state.
-   */
-  async function finalizeStreamedMessage(finalContent: string): Promise<void> {
-    const conversation = chatStore.selectedConversation;
-    if (!conversation) return;
-
-    const streamingMessage = conversation.messages.find((m) => m.status === "streaming");
-    if (!streamingMessage) {
-      console.error("Could not find a streaming message to finalize.");
-      return;
-    }
-
-    try {
-      const userMessages = conversation.messages.filter((m: any) => m.role === "user");
-      const lastUserMessageId = userMessages.length > 0 ? userMessages[userMessages.length - 1]!.id : null;
-
-      if (!lastUserMessageId) {
-        throw new Error("No preceding user message found for finalizing assistant response.");
-      }
-
-      await saveAssistantResponseToSupabase(
-        streamingMessage.id,
-        conversation.id,
-        finalContent,
-        lastUserMessageId,
-      );
-
-      streamingMessage.status = "sent";
-    } catch (error) {
-      console.error("Error finalizing streamed message:", error);
-      streamingMessage.status = "error"; 
-    }
-  }
-
-  /**
    * Sends a message and gets an AI response.
    * @param content the text of the message to send
    * @returns a Promise that resolves when the AI response is received
@@ -231,14 +239,18 @@ export function useMessageService() {
     await addUserMessage(content);
     chatStore.chatStatus = "submitted";
 
+    const assistantMessages = conversation.messages.filter((m) => m.role === "assistant" && m.responseId);
+    const lastResponseId =
+      assistantMessages.length > 0 ? assistantMessages[assistantMessages.length - 1]!.responseId : undefined;
+
     //we need to account for old conversations that were being used by the old api that we don't have a stored conversation thread.
     let contentToSend: string | ChatCompletionMessageParam[] = content;
-    if (!conversation.responseId && conversation.messages.length > 0) {
+    if (!lastResponseId && conversation.messages.length > 1) {
       contentToSend = organizeMessagesForApi(conversation.messages);
     }
 
     try {
-      const success = await _handleStreamingChat(contentToSend);
+      const success = await _handleStreamingChat(contentToSend, lastResponseId);
 
       if (success) {
         chatStore.chatStatus = "ready";
