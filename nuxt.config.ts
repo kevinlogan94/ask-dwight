@@ -2,33 +2,33 @@
 export default defineNuxtConfig({
   app: {
     head: {
-      title: "Ask Dwight - Conquer AI. Win Business. Fear Nothing.",
+      title: "Ask-Dwight App | Your Sales-Specialized LLM",
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { name: "description", content: "The Only Sales Tool That Can Outsell, Outwit, and Outweird the Competition." },
+        { name: "description", content: "Try Ask-Dwight now and boost your team's sales with AI-driven cold outreach, lead scoring, and follow-up strategies. Ask-Dwight uses a first-of-its-kind, sales-specialized large language model to improve your sales processes and elevate your team. Try it for free today." },
         {
           name: "keywords",
           content: "AI sales assistant, sales automation, deal closing, AI for sales, sales optimization",
         },
         { name: "robots", content: "index, follow" },
-        { name: "author", content: "Ask Dwight" },
-        { property: "og:title", content: "Ask Dwight - Conquer AI. Win Business. Fear Nothing." },
+        { name: "author", content: "Ask-Dwight" },
+        { property: "og:title", content: "Ask-Dwight App | Your Sales-Specialized LLM" },
         {
           property: "og:description",
-          content: "The Only Sales Tool That Can Outsell, Outwit, and Outweird the Competition.",
+          content: "Try Ask-Dwight now and boost your team's sales with AI-driven cold outreach, lead scoring, and follow-up strategies. Ask-Dwight uses a first-of-its-kind, sales-specialized large language model to improve your sales processes and elevate your team. Try it for free today.",
         },
         { property: "og:type", content: "website" },
         { property: "og:url", content: "https://ask-dwight.com" },
         { property: 'og:image', content: '/og-image.png' },
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: "twitter:title", content: "Ask Dwight - Conquer AI. Win Business. Fear Nothing." },
+        { name: "twitter:title", content: "Ask-Dwight App | Your Sales-Specialized LLM" },
         {
           name: "twitter:description",
-          content: "The Only Sales Tool That Can Outsell, Outwit, and Outweird the Competition.",
+          content: "Try Ask-Dwight now and boost your team's sales with AI-driven cold outreach, lead scoring, and follow-up strategies. Ask-Dwight uses a first-of-its-kind, sales-specialized large language model to improve your sales processes and elevate your team. Try it for free today.",
         },
         { name: 'twitter:image', content: '/og-image.png' },
-        { name: "apple-mobile-web-app-title", content: "Ask Dwight" }
+        { name: "apple-mobile-web-app-title", content: "Ask-Dwight" }
       ],
       link: [
         { rel: "icon", type: "image/svg+xml", href: "/favicons/favicon.svg" },
