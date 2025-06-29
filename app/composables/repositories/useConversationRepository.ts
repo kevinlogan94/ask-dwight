@@ -219,7 +219,6 @@ export function useConversationRepository() {
       id: string;
       title: string;
       created_at: string; // Timestamp for the conversation itself
-      updated_at: string;
       user_prompts: { id: string; message: string; created_at: string; time_saved: string }[];
       dwight_responses: {
         id: string;
