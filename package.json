@@ -5,7 +5,7 @@
   "version": "0.6.1",
   "author": "Kevin Logan",
   "license": "MIT",
-  "description": "The Only Sales Tool That Can Outsell, Outwit, and Outweird the Competition.",
+  "description": "Your Sales-Specialized LLM",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
