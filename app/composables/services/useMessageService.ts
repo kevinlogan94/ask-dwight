@@ -108,11 +108,9 @@ export function useMessageService() {
       const finalContent = response.response.output[0]?.content[0]?.text ?? "";
       await finalizeStreamedMessage(finalContent);
 
-      //handle setting the response id if needed
-      if (!conversation.responseId) {
-        const conversationUpdate: ConversationUpdateDto = { responseId: response.response.id };
-        await updateConversation(conversation.id, conversationUpdate);
-      }
+      // handle setting the response id if needed
+      const conversationUpdate: ConversationUpdateDto = { responseId: response.response.id };
+      await updateConversation(conversation.id, conversationUpdate);
 
       if (chatStore.throttleSelectedConversation) {
         const throttlingResponseEvent = await getThrottlingResponseStreaming(conversation.responseId!, manageStreamingAssistantMessage);
@@ -160,12 +158,13 @@ export function useMessageService() {
       streamingMessage.htmlContent = await parseMarkdown(streamingMessage.content);
     } else {
       const newMessage: Message = {
-        id: `temp-${Date.now()}`,
+        id: crypto.randomUUID(),
         content: delta,
         htmlContent: await parseMarkdown(delta),
         role: "assistant",
         timestamp: new Date(),
         status: "streaming",
+        isThrottleMessage: chatStore.throttleSelectedConversation
       };
       conversation.messages.push(newMessage);
     }
@@ -192,13 +191,13 @@ export function useMessageService() {
         throw new Error("No preceding user message found for finalizing assistant response.");
       }
 
-      const savedId = await saveAssistantResponseToSupabase(
+      await saveAssistantResponseToSupabase(
+        streamingMessage.id,
         conversation.id,
         finalContent,
         lastUserMessageId,
       );
 
-      streamingMessage.id = savedId;
       streamingMessage.status = "sent";
     } catch (error) {
       console.error("Error finalizing streamed message:", error);

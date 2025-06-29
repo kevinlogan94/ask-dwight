@@ -44,7 +44,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    const { prompt, response_id, stream = true } = await req.json();
+    const { prompt, responseId, stream = true } = await req.json();
 
     // Validate the prompt
     const isStringPrompt = typeof prompt === "string" && prompt.trim() !== "";
@@ -66,8 +66,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
       stream: stream,
     };
 
-    if (response_id) {
-      payload.response_id = response_id;
+    if (responseId) {
+      payload.previous_response_id = responseId;
     }
 
     // The user's code uses a custom `responses` endpoint.
