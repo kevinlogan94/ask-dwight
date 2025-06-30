@@ -2,9 +2,11 @@
 
 # Ask Dwight
 
-**Conquer AI. Win Business. Fear Nothing.**
+**Your Sales-Specialized LLM**
 
-Ask Dwight is an AI-powered sales assistant designed to help sales professionals and teams close more deals, sharpen their outreach, and dominate their market. Built with Nuxt 3, Tailwind CSS v4, Nuxt UI Pro, and OpenAI, Dwight delivers intense, actionable sales guidance in real time, with a unique survival-expert personality.
+Try Ask-Dwight now and boost your team's sales with AI-driven cold outreach, lead scoring, and follow-up strategies. Ask-Dwight uses a first-of-its-kind, sales-specialized large language model to improve your sales processes and elevate your team. Try it for free today.
+
+Built with Nuxt 3, Tailwind CSS v4, Nuxt UI Pro, and OpenAI, Dwight delivers intense, actionable sales guidance in real time, with a unique survival-expert personality.
 
 ## Features
 
