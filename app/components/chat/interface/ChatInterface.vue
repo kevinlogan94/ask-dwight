@@ -142,7 +142,7 @@ const assistantMessageActions: MessageAction[] = [
   },
   {
     label: "Copy",
-    icon: "i-heroicons-clipboard-document",
+    icon: "i-lucide-copy",
     onClick: (e: MouseEvent, message: Message) => handleCopyMessage(message),
   },
 ];

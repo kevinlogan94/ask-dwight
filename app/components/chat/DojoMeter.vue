@@ -48,7 +48,7 @@
             'text-green-500': showMilestoneReachedVisuals,
           }"
         >
-          <UIcon name="i-heroicons-bolt" class="w-6 h-6" />
+          <UIcon name="i-lucide-zap" class="w-6 h-6" />
         </div>
 
         <!-- Lightning effect (only visible when milestone reached) -->

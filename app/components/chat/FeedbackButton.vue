@@ -1,7 +1,7 @@
 <template>
   <UModal v-model:open="isOpen" title="Provide Feedback">
     <UButton
-      icon="i-heroicons-chat-bubble-left-ellipsis"
+      icon="i-lucide-message-square"
       color="neutral"
       variant="ghost"
       aria-label="Open Feedback Form"
