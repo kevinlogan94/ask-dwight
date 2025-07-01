@@ -31,35 +31,38 @@ entrypoint = "./functions/response-conversations/index.ts"
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/response-conversations/*.html" ]
 
+[functions.add-file-to-vector-store]
+enabled = true
+verify_jwt = true
+import_map = "./functions/openai/vectorStore/add-file-to-vector-store/deno.json"
+entrypoint = "./functions/openai/vectorStore/add-file-to-vector-store/index.ts"
+
 [functions.create-vector-store]
 enabled = true
 verify_jwt = true
-import_map = "./functions/openai/create-vector-store/deno.json"
-# Uncomment to specify a custom file path to the entrypoint.
-# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
-entrypoint = "./functions/openai/create-vector-store/index.ts"
-# Specifies static files to be bundled with the function. Supports glob patterns.
-# For example, if you want to serve static HTML pages in your function:
-# static_files = [ "./functions/create-vector-store/*.html" ]
+import_map = "./functions/openai/vectorStore/create-vector-store/deno.json"
+entrypoint = "./functions/openai/vectorStore/create-vector-store/index.ts"
+
+[functions.list-vector-store-files]
+enabled = true
+verify_jwt = true
+import_map = "./functions/openai/vectorStore/list-vector-store-files/deno.json"
+entrypoint = "./functions/openai/vectorStore/list-vector-store-files/index.ts"
+
+[functions.remove-file-from-vector-store]
+enabled = true
+verify_jwt = true
+import_map = "./functions/openai/vectorStore/remove-file-from-vector-store/deno.json"
+entrypoint = "./functions/openai/vectorStore/remove-file-from-vector-store/index.ts"
 
 [functions.upload-file]
 enabled = true
 verify_jwt = true
-import_map = "./functions/openai/upload-file/deno.json"
-# Uncomment to specify a custom file path to the entrypoint.
-# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
-entrypoint = "./functions/openai/upload-file/index.ts"
-# Specifies static files to be bundled with the function. Supports glob patterns.
-# For example, if you want to serve static HTML pages in your function:
-# static_files = [ "./functions/openai/upload-file/*.html" ]
+import_map = "./functions/openai/file/upload-file/deno.json"
+entrypoint = "./functions/openai/file/upload-file/index.ts"
 
-[functions.add-file-to-vector-store]
+[functions.get-file-details]
 enabled = true
 verify_jwt = true
-import_map = "./functions/openai/add-file-to-vector-store/deno.json"
-# Uncomment to specify a custom file path to the entrypoint.
-# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
-entrypoint = "./functions/openai/add-file-to-vector-store/index.ts"
-# Specifies static files to be bundled with the function. Supports glob patterns.
-# For example, if you want to serve static HTML pages in your function:
-# static_files = [ "./functions/add-file-to-vector-store/*.html" ]
+import_map = "./functions/openai/file/get-file-details/deno.json"
+entrypoint = "./functions/openai/file/get-file-details/index.ts"
