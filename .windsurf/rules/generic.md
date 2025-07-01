@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 1. I'm using Nuxt v3
 2. I'm using Tailwind CSS V4
 3. I'm new to Nuxt
