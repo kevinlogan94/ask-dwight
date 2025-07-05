@@ -15,3 +15,5 @@ trigger: always_on
 13. Always try to see if we can simplify logic using a nuxt module or VueUse
 14. We are using supabase
 15. We are using openai
+16. Make sure we are always following the existing coding pattern defined in our other files.
+17. Use Lucide Icons
