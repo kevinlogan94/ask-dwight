@@ -20,15 +20,71 @@
         </div>
       </div>
 
-      <!-- New conversation button -->
-      <div class="p-4 border-b border-gray-400 dark:border-gray-800">
-        <UButton color="primary" variant="soft" class="w-full" :icon="'heroicons:plus'" @click="handleNewConversation">
+      <!-- Main navigation -->
+      <div class="p-2 space-y-1">
+        <UButton
+          to="/my-playbook"
+          icon="i-lucide-notebook-tabs"
+          variant="ghost"
+          color="neutral"
+          class="w-full justify-start text-base font-normal"
+        >
+          My Playbook
+        </UButton>
+
+        <UAccordion v-if="accounts.length > 0" :items="accordionItems" :ui="{ label:'text-base font-normal', item: 'p-0 w-full', trigger: 'px-3 py-2 hover:bg-transparent dark:hover:bg-transparent' }">
+          
+          <template #accounts-body>
+            <div class="space-y-1">
+              <UButton
+                v-for="account in accounts.slice(0, 2)"
+                :key="account.to"
+                :to="account.to"
+                variant="ghost"
+                color="neutral"
+                class="w-full justify-start text-base font-normal pl-8"
+              >
+                {{ account.label }}
+              </UButton>
+              <UButton
+                v-if="accounts.length > 0"
+                to="/accounts"
+                variant="ghost"
+                color="neutral"
+                class="w-full justify-start text-base font-normal pl-8"
+              >
+                See all
+              </UButton>
+            </div>
+          </template>
+        </UAccordion>
+        <UButton
+          v-else
+          to="/accounts"
+          icon="i-lucide-users"
+          variant="ghost"
+          color="neutral"
+          class="w-full justify-start text-base font-normal"
+        >
+          Accounts
+        </UButton>
+
+        <UButton
+          icon="i-lucide-plus-circle"
+          variant="ghost"
+          color="neutral"
+          class="w-full justify-start text-base font-normal"
+          @click="handleNewConversation"
+        >
           New Conversation
         </UButton>
       </div>
 
       <!-- Conversation list -->
-      <div class="flex-1 overflow-y-auto py-2 px-2">
+      <div class="flex-1 overflow-y-auto py-2 px-2 border-t border-gray-200 dark:border-gray-800 mt-2">
+        <div class="px-2 pb-2 pt-2">
+          <p class="text-xs font-semibold text-gray-500 dark:text-gray-400">Recent</p>
+        </div>
         <div v-if="chatStore.conversations.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
           No conversations yet
         </div>
@@ -36,21 +92,19 @@
         <UButton
           v-for="conversation in chatStore.conversations"
           :key="conversation.id"
-          size="md"
-          color="secondary"
+          icon="i-lucide-message-square"
           variant="ghost"
-          class="w-full mb-2 text-left text-gray-700 dark:text-gray-300"
-          :class="{ 'bg-primary-500/10': conversation.id === chatStore.selectedConversationId }"
+          color="neutral"
+          class="w-full mb-1 justify-start font-normal"
+          :class="{ 'bg-gray-200 dark:bg-gray-800': conversation.id === chatStore.selectedConversationId }"
           @click="selectConversation(conversation)"
         >
-          <div class="flex items-center justify-between w-full">
-            <div class="truncate">{{ conversation.title || "Untitled Conversation" }}</div>
-          </div>
+          <span class="truncate">{{ conversation.title || "Untitled Conversation" }}</span>
         </UButton>
       </div>
 
       <!-- Sidebar footer with ColorModeButton -->
-      <div class="mt-auto p-4 border-t border-gray-400 dark:border-gray-800 flex items-center justify-between">
+      <div class="mt-auto p-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
         <div class="text-sm text-gray-500 dark:text-gray-400">
           <span>© {{ new Date().getFullYear() }} Ask Dwight</span>
         </div>
@@ -69,9 +123,23 @@
 </template>
 
 <script setup lang="ts">
-import { useChatStore } from "~//stores/chat";
+import { useChatStore } from "~/stores/chat";
 import type { Conversation } from "~/models/chat";
 import FeedbackButton from "~/components/chat/FeedbackButton.vue";
+
+const accordionItems = [
+  {
+    label: 'Accounts',
+    icon: 'i-lucide-users',
+    slot: 'accounts-body',
+  },
+];
+
+// Placeholder for accounts data
+const accounts = ref([
+  { label: "Acme Corp", to: "/accounts/acme" },
+  { label: "MegaCorp", to: "/accounts/mega" },
+]);
 
 // Use the chat store
 const chatStore = useChatStore();
