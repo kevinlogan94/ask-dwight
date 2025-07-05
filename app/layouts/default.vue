@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen">
+  <div class="flex">
     <!-- Conditionally render the sidebar based on the route's meta field -->
     <AppSidebar v-if="showSidebar" />
     <div class="w-full transition-all duration-300" :class="{ 'lg:ml-64': showSidebar && chatStore.sidebarOpen }">
