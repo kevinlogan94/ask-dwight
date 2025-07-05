@@ -6,6 +6,7 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ showSidebar: true });
 const route = useRoute();
 // You can fetch account-specific data using the slug from route.params.slug
 </script>

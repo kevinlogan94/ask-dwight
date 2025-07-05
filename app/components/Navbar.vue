@@ -7,9 +7,9 @@
     <template #title>
       <div class="flex items-center">
         <UButton
-          v-if="route.path === '/' && chatStore.conversations.length"
+          v-if="showSidebar"
           @click="toggleSidebar"
-          :icon="chatStore.sidebarOpen ? 'heroicons:x-mark' : 'heroicons:bars-3'"
+          :icon="chatStore.sidebarOpen ? 'i-lucide-x' : 'i-lucide-menu'"
           color="neutral"
           variant="ghost"
           class="mr-3"
@@ -62,6 +62,8 @@ const toast = useToast();
 
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const isMobile = breakpoints.smaller("sm"); // smaller than 640px
+
+const showSidebar = computed(() => route.meta.showSidebar === true);
 
 const avatarUrl = ref("");
 

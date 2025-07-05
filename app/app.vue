@@ -4,7 +4,9 @@
       <Navbar />
       <UMain>
         <NuxtRouteAnnouncer />
-        <NuxtPage />
+        <NuxtLayout>
+          <NuxtPage />
+        </NuxtLayout>
       </UMain>
     </div>
     <NoConnectionModal />

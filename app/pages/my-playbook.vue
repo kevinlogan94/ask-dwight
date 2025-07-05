@@ -6,5 +6,6 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ showSidebar: true });
 // You can add any necessary logic here in the future
 </script>

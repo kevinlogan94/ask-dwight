@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="flex flex-col transition-all duration-300 pt-16 pb-32"
-    :class="{ 'ml-0 lg:ml-64': chatStore.sidebarOpen }"
-  >
+  <div class="flex flex-col pt-16 pb-32">
     <!-- Chat container - centered with max width -->
     <div class="flex-1 flex flex-col w-full max-w-3xl mx-auto">
       <!-- Chat messages area-->
@@ -86,7 +83,7 @@
     <!-- Fixed elements container at bottom -->
     <div
       class="fixed bottom-0 left-0 right-0 flex flex-col items-center pb-4 transition-all duration-300"
-      :class="{ 'ml-0 lg:ml-64': chatStore.sidebarOpen }"
+      :class="{ 'lg:ml-64': chatStore.sidebarOpen }"
     >
       <div class="w-full max-w-3xl mx-auto">
         <!-- Scroll down button component -->
