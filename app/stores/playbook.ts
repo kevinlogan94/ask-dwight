@@ -28,13 +28,20 @@ export const usePlaybookStore = defineStore("playbook", () => {
   }
 
   async function addFileToPlaybook(file: globalThis.File) {
-    if (!globalVectorStoreId.value) {
-      console.error("Cannot add file without a global vector store ID.");
-      return;
-    }
     try {
+      // If the playbook doesn't exist yet, create it on the fly.
+      if (!globalVectorStoreId.value) {
+        await createPlaybook();
+      }
+
+      // After creation, the ID should be available. If not, something went wrong.
+      if (!globalVectorStoreId.value) {
+        throw new Error("Playbook doesn't exist. Cannot add file.");
+      }
+
+      // Now, proceed with adding the file.
       await addFile(globalVectorStoreId.value, file);
-      await fetchPlaybookFiles(); // Refresh the list
+      await fetchPlaybookFiles(); // Refresh the list after adding.
     } catch (error) {
       console.error("Error adding file to playbook:", error);
     }
