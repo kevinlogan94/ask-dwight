@@ -1,5 +1,5 @@
 import { useChatStore } from "~//stores/chat";
-import { useConversationRepository } from "~/composables/repositories/useConversationRepository";
+import { useConversationRepository } from "~/composables/repositories/chat/useConversationRepository";
 import type { Conversation } from "~/models/chat";
 import type { ConversationUpdateDto } from "~/models/chat";
 

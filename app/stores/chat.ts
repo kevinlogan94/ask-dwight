@@ -4,7 +4,7 @@ import type { Message, Conversation } from "~/models/chat";
 import { throttleConversation } from "~/utils/helpers";
 import { useMessageService } from "~/composables/services/useMessageService";
 import { useConversationService } from "~/composables/services/useConversationService";
-import { useConversationRepository } from "~/composables/repositories/useConversationRepository";
+import { useConversationRepository } from "~/composables/repositories/chat/useConversationRepository";
 
 export const useChatStore = defineStore("chat", () => {
   // State

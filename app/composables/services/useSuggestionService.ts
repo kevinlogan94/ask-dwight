@@ -1,7 +1,7 @@
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { organizeMessagesForApi } from "~/utils/helpers";
 import { useChatStore } from "~/stores/chat";
-import { useSuggestionRepository } from "~/composables/repositories/useSuggestionRepository";
+import { useSuggestionRepository } from "~/composables/repositories/chat/useSuggestionRepository";
 import { useOpenAIClient } from "~/composables/useOpenAIClient";
 import type { Message } from "~/models/chat";
 

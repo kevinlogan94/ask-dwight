@@ -1,6 +1,6 @@
 // c:\Users\KevinLogan\githubRepositories\ask-dwight\composables\services\useFeedbackService.ts
 
-import { useFeedbackRepository } from '~/composables/repositories/useFeedbackRepository';
+import { useFeedbackRepository } from '~/composables/repositories/chat/useFeedbackRepository';
 import type { Message } from '~/models/chat';
 import type { Database } from '~/models/supabase';
 

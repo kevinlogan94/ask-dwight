@@ -1,5 +1,5 @@
 import { useSupabaseClient } from '#imports';
-import type { Database } from '../../models/supabase';
+import type { Database } from '../../../models/supabase';
 import { getOrCreateSessionId } from '~/utils/helpers';
 
 type FeedbackReactionType = Database['public']['Enums']['feedback_reaction_type'];
@@ -18,15 +18,21 @@ export function useFeedbackRepository() {
    * @returns The feedback data for the specified response.
    */
   async function fetchFeedback(dwightResponseId: string) {
-    const { data, error } = await userFeedbackQuery
-      .select('id, reaction, copied')
-      .eq('dwight_response_id', dwightResponseId)
-      .maybeSingle();
+    try {
+      const { data, error } = await userFeedbackQuery
+        .select('id, reaction, copied')
+        .eq('dwight_response_id', dwightResponseId)
+        .maybeSingle();
 
-    if (error) {
+      if (error) {
+        console.error(`Error fetching feedback for response ${dwightResponseId}:`, error);
+        throw error;
+      }
+      return data;
+    } catch (error) {
+      console.error(`An unexpected error occurred in fetchFeedback for response ${dwightResponseId}:`, error);
       throw error;
     }
-    return data;
   }
 
   /**
@@ -40,17 +46,23 @@ export function useFeedbackRepository() {
     reaction: FeedbackReactionType | null,
     isCopied: boolean
   ) {
-    const { error } = await userFeedbackQuery
-      .update({
-        reaction,
-        copied: isCopied,
-      })
-      .eq('id', feedbackId);
+    try {
+      const { error } = await userFeedbackQuery
+        .update({
+          reaction,
+          copied: isCopied,
+        })
+        .eq('id', feedbackId);
 
-    if (error) {
+      if (error) {
+        console.error(`Error updating feedback for id ${feedbackId}:`, error);
+        throw error;
+      }
+      return;
+    } catch (error) {
+      console.error(`An unexpected error occurred in updateFeedback for id ${feedbackId}:`, error);
       throw error;
     }
-    return;
   }
 
   /**
@@ -64,17 +76,23 @@ export function useFeedbackRepository() {
     reaction: FeedbackReactionType | null,
     isCopied: boolean
   ) {
-    const { error } = await userFeedbackQuery
-      .insert({
-        dwight_response_id: dwightResponseId,
-        reaction,
-        copied: isCopied,
-      });
+    try {
+      const { error } = await userFeedbackQuery
+        .insert({
+          dwight_response_id: dwightResponseId,
+          reaction,
+          copied: isCopied,
+        });
 
-    if (error) {
+      if (error) {
+        console.error(`Error inserting feedback for response ${dwightResponseId}:`, error);
+        throw error;
+      }
+      return;
+    } catch (error) {
+      console.error(`An unexpected error occurred in insertFeedback for response ${dwightResponseId}:`, error);
       throw error;
     }
-    return;
   }
 
   return {

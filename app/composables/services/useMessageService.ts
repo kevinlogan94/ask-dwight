@@ -1,7 +1,7 @@
 import type { Message, AssistantMessageCreateDto } from "~/models/chat";
 import { useOpenAIClient } from "~/composables/useOpenAIClient";
 import { parseMarkdown } from "~/utils/helpers";
-import { useMessageRepository } from "~/composables/repositories/useMessageRepository";
+import { useMessageRepository } from "~/composables/repositories/chat/useMessageRepository";
 import { useConversationService } from "~/composables/services/useConversationService";
 import { useSuggestionService } from "~/composables/services/useSuggestionService";
 import { useSystemInteractionControls } from "~/composables/useSystemInteractionControls";
