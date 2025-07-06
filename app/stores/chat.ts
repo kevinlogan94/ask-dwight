@@ -16,16 +16,6 @@ export const useChatStore = defineStore("chat", () => {
   const chatStatus = ref("ready" as "ready" | "error" | "submitted" | "streaming");
   const anyMessagesSentForCurrentSession = ref(false); // need to know if they just opened the app.
 
-  // todo: integrate supabase user
-  // this is currently just a placeholder
-  const user = ref<User>({
-    id: "",
-    name: "John Doe",
-    email: "",
-    subscription: { status: "active", tier: "free" },
-    createdAt: new Date(),
-  });
-
   // Getters
   const selectedConversation = computed<Conversation | undefined>(() => {
     return conversations.value.find((c) => c.id === selectedConversationId.value);
@@ -53,6 +43,7 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
+  // Dependencies
   const { sendMessage } = useMessageService();
   const { createNewConversation, selectConversation } = useConversationService();
   const { syncConversationsToSupabase, fetchConversationsFromSupabase, associateConversationsWithUser } =
