@@ -270,7 +270,7 @@ supabase secrets set --env-file ./supabase/.env
 - Check function logs with `supabase functions serve`
 
 **Type generation:**
-- Regenerate types with `supabase gen types typescript --local > types/supabase.ts`
+- Regenerate types with `supabase gen types typescript --local > app/models/supabase.ts`
 
 ### Common Commands
 
