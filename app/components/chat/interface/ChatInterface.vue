@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col pt-16 pb-32">
+  <div class="flex flex-col pb-32">
     <!-- Chat container - centered with max width -->
     <div class="flex-1 flex flex-col w-full max-w-3xl mx-auto">
       <!-- Chat messages area-->

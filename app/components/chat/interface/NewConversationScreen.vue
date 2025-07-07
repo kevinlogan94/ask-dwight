@@ -1,11 +1,9 @@
 <template>
-  <div class="transition-all duration-300" :class="{ 'ml-0 lg:ml-64': chatStore.sidebarOpen }">
-    <UContainer class="min-h-screen flex flex-col items-center justify-center max-w-3xl">
-      <h1 class="text-3xl font-bold text-center" v-motion-fade>What are we selling today?</h1>
-      <AskAnythingInput class="w-full mt-5" v-motion-slide-bottom />
-      <SuggestionChips class="w-[80%] mt-4" :suggestions="suggestions" v-motion-slide-bottom />
-    </UContainer>
-  </div>
+  <UContainer class="min-h-screen flex flex-col items-center justify-center max-w-3xl">
+    <h1 class="text-3xl font-bold text-center" v-motion-fade>What are we selling today?</h1>
+    <AskAnythingInput class="w-full mt-5" v-motion-slide-bottom />
+    <SuggestionChips class="w-[80%] mt-4" :suggestions="suggestions" v-motion-slide-bottom />
+  </UContainer>
 </template>
 
 <script setup lang="ts">
