@@ -107,9 +107,7 @@ export const usePlaybookStore = defineStore("playbook", () => {
     globalVectorStoreId,
 
     // Actions
-    fetchPlaybookFiles,
     addFileToPlaybook,
     removeFileFromPlaybook,
-    createPlaybook,
   };
 });
