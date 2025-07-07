@@ -20,7 +20,7 @@ export function useChatActions() {
         title: 'Copied to clipboard',
         description: 'Content copied to clipboard.',
         color: 'success',
-        icon: 'i-heroicons-check-circle',
+        icon: 'i-lucide-circle-check',
         duration: 2000,
       });
       useTrackEvent('chat_click_copy', {
@@ -36,7 +36,7 @@ export function useChatActions() {
         title: 'Failed to copy',
         description: 'Could not copy content to clipboard.',
         color: 'error',
-        icon: 'i-heroicons-x-circle',
+        icon: 'i-lucide-circle-x',
         duration: 2000,
       });
     }
@@ -53,7 +53,7 @@ export function useChatActions() {
         : "Thanks for helping us improve!";
 
       const color = reaction === 'thumbs_up' ? 'success' : 'warning';
-      const icon = reaction === 'thumbs_up' ? 'i-heroicons-hand-thumb-up' : 'i-heroicons-hand-thumb-down';
+      const icon = reaction === 'thumbs_up' ? 'i-lucide-thumbs-up' : 'i-lucide-thumbs-down';
       
       toast.add({
         title: 'Feedback Received',
