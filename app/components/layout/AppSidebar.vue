@@ -127,6 +127,8 @@ import { useChatStore } from "~/stores/chat";
 import type { Conversation } from "~/models/chat";
 import FeedbackButton from "~/components/chat/FeedbackButton.vue";
 
+const router = useRouter();
+
 const accordionItems = [
   {
     label: 'Accounts',
@@ -157,6 +159,10 @@ const toggleSidebar = () => {
 const handleNewConversation = () => {
   // Select null to display the new conversation screen
   chatStore.selectConversation(null);
+  if (router.currentRoute.value.path !== '/') {
+    router.push('/');
+  }
+  
 
   if (window.innerWidth < 1024) {
     // Auto-close sidebar on mobile after creating a new conversation
@@ -172,6 +178,9 @@ const handleNewConversation = () => {
 
 const selectConversation = (conversation: Conversation) => {
   chatStore.selectConversation(conversation.id);
+  if (router.currentRoute.value.path !== '/') {
+    router.push('/');
+  }
   if (window.innerWidth < 1024) {
     // Auto-close sidebar on mobile after selecting a conversation
     isOpen.value = false;
