@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
-import type { User } from "~/models/user";
-import type { Message, Conversation } from "~/models/chat";
+import type { Message, Conversation, Source } from "~/models/chat";
 import { throttleConversation } from "~/utils/helpers";
 import { useMessageService } from "~/composables/services/useMessageService";
 import { useConversationService } from "~/composables/services/useConversationService";
@@ -15,6 +14,8 @@ export const useChatStore = defineStore("chat", () => {
   const sidebarOpen = ref(false);
   const chatStatus = ref("ready" as "ready" | "error" | "submitted" | "streaming");
   const anyMessagesSentForCurrentSession = ref(false); // need to know if they just opened the app.
+  const isSourcesPanelOpen = ref(false);
+  const activeSources = ref<Source[]>([]);
 
   // Getters
   const selectedConversation = computed<Conversation | undefined>(() => {
@@ -43,6 +44,17 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
+  function openSourcesPanel(sources: Source[]) {
+    activeSources.value = sources;
+    isSourcesPanelOpen.value = true;
+  }
+
+  function closeSourcesPanel() {
+    isSourcesPanelOpen.value = false;
+    // We can clear the sources when the panel closes
+    activeSources.value = [];
+  }
+
   // Dependencies
   const { sendMessage } = useMessageService();
   const { createNewConversation, selectConversation } = useConversationService();
@@ -65,6 +77,8 @@ export const useChatStore = defineStore("chat", () => {
     sidebarOpen,
     anyMessagesSentForCurrentSession,
     chatStatus,
+    isSourcesPanelOpen,
+    activeSources,
 
     // Getters
     selectedConversation,
@@ -78,5 +92,7 @@ export const useChatStore = defineStore("chat", () => {
     selectConversation,
     sendMessage,
     associateConversationsWithUser,
+    openSourcesPanel,
+    closeSourcesPanel,
   };
 });

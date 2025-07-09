@@ -11,7 +11,13 @@ export interface Message {
   suggestions?: string[];
   isThrottleMessage?: boolean;
   reaction?: 'thumbs_up' | 'thumbs_down' | null;
+  sources?: Source[];
   responseId?: string; // The unique ID from the OpenAI response
+}
+
+export interface Source {
+  title: string;
+  type: 'web' | 'file';
 }
 
 export interface Conversation {

@@ -30,6 +30,18 @@
               class="prose max-w-none dark:prose-invert"
               v-html="message.htmlContent || message.content"
             ></div>
+            <!-- Sources Button -->
+            <div v-if="message.sources && message.sources.length" class="mt-2">
+              <UButton
+                icon="i-lucide-book-open"
+                size="sm"
+                color="neutral"
+                variant="link"
+                :label="`Sources (${message.sources.length})`"
+                :padded="false"
+                @click="chatStore.openSourcesPanel(message.sources)"
+              />
+            </div>
             <!-- Assistant Message Actions -->
             <UButtonGroup
               :class="[
@@ -97,6 +109,7 @@
       </div>
     </div>
   </div>
+  <SourcesPanel />
 </template>
 
 <script setup lang="ts">
@@ -105,6 +118,7 @@ import SuggestionChips from "~/components/chat/input/SuggestionChips.vue";
 import TypingAnimation from "~/components/chat/TypingAnimation.vue";
 import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
 import AskAnythingInput from "~/components/chat/input/AskAnythingInput.vue";
+import SourcesPanel from "~/components/chat/SourcesPanel.vue";
 import { useChatStore } from "~//stores/chat";
 import type { Message, MessageAction } from "~/models/chat";
 import { useChatActions } from "~/composables/useChatActions";
