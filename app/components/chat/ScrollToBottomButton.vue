@@ -2,7 +2,8 @@
   <UButton
     v-if="!isAtBottom"
     variant="ghost"
-    class="fixed bottom-44 left-1/2 -translate-x-1/2 transform rounded-full p-2 bg-gray-800/60 z-50"
+    class="fixed bottom-44 left-1/2 -translate-x-1/2 transform rounded-full p-2 bg-gray-800/60 z-50 transition-all duration-300"
+    :class="{ 'lg:ml-32': chatStore.sidebarOpen }"
     @click="scrollToBottom"
   >
     <Icon name="heroicons:arrow-down" class="w-5 h-5" />
@@ -10,6 +11,9 @@
 </template>
 
 <script setup lang="ts">
+import { useChatStore } from '~/stores/chat';
+
+const chatStore = useChatStore();
 const isAtBottom = ref(true);
 
 // Scroll to bottom function
