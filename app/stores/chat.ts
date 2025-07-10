@@ -4,6 +4,7 @@ import { throttleConversation } from "~/utils/helpers";
 import { useMessageService } from "~/composables/services/useMessageService";
 import { useConversationService } from "~/composables/services/useConversationService";
 import { useConversationRepository } from "~/composables/repositories/chat/useConversationRepository";
+import type { FileObject } from "openai/resources/files.mjs";
 
 export const useChatStore = defineStore("chat", () => {
   // State
@@ -16,6 +17,7 @@ export const useChatStore = defineStore("chat", () => {
   const anyMessagesSentForCurrentSession = ref(false); // need to know if they just opened the app.
   const isSourcesPanelOpen = ref(false);
   const activeSources = ref<Source[]>([]);
+  const uploadedFiles = ref<FileObject[]>([]);
 
   // Getters
   const selectedConversation = computed<Conversation | undefined>(() => {
@@ -55,6 +57,18 @@ export const useChatStore = defineStore("chat", () => {
     activeSources.value = [];
   }
 
+  function addUploadedFile(file: FileObject) {
+    uploadedFiles.value.push(file);
+  }
+
+  function removeUploadedFile(fileId: string) {
+    uploadedFiles.value = uploadedFiles.value.filter((f: FileObject) => f.id !== fileId);
+  }
+
+  function clearUploadedFiles() {
+    uploadedFiles.value = [];
+  }
+
   // Dependencies
   const { sendMessage } = useMessageService();
   const { createNewConversation, selectConversation } = useConversationService();
@@ -79,6 +93,7 @@ export const useChatStore = defineStore("chat", () => {
     chatStatus,
     isSourcesPanelOpen,
     activeSources,
+    uploadedFiles,
 
     // Getters
     selectedConversation,
@@ -94,5 +109,8 @@ export const useChatStore = defineStore("chat", () => {
     associateConversationsWithUser,
     openSourcesPanel,
     closeSourcesPanel,
+    addUploadedFile,
+    removeUploadedFile,
+    clearUploadedFiles,
   };
 });

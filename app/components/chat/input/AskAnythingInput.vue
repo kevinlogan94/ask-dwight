@@ -4,7 +4,7 @@
       <DojoMeter />
     </div>
 
-    <input type="file" ref="fileInput" @change="handleFileChange" class="hidden" multiple />
+    <input type="file" ref="fileInput" @change="handleFileUpload" class="hidden" multiple />
     <UChatPrompt
       variant="outline"
       :disabled="chatStore.throttleSelectedConversation"
@@ -15,15 +15,15 @@
       autofocus
       class="p-3 focus-within:ring-1 focus-within:ring-primary-500/30"
     >
-        <!-- Uploaded File Display -->
+      <!-- Uploaded File Display -->
       <template #header v-if="uploadedFiles.length > 0">
         <div class="flex flex-row flex-wrap items-center gap-2 p-2">
           <div v-for="(file, index) in uploadedFiles" :key="index" class="flex items-center justify-between text-sm">
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-file-text" class="text-neutral-400" />
-              <span class="font-medium">{{ file.name }}</span>
+              <span class="font-medium">{{ file.filename }}</span>
             </div>
-            <UButton icon="i-lucide-x" size="xs" color="neutral" variant="ghost" @click="removeFile(index)" />
+            <UButton icon="i-lucide-x" size="xs" color="neutral" variant="ghost" @click="chatStore.removeUploadedFile(file.id)" />
           </div>
         </div>
       </template>
@@ -55,22 +55,32 @@
 </template>
 
 <script setup lang="ts">
-import { useChatStore } from "~//stores/chat";
+import { useChatStore } from "~/stores/chat";
 import DojoMeter from "~/components/chat/DojoMeter.vue";
+import { useVectorStoreService } from "~/composables/services/useVectorStoreService";
 
 const chatStore = useChatStore();
+const { createFile } = useVectorStoreService();
 const searchQuery = ref("");
-const uploadedFiles = ref<File[]>([]);
+const uploadedFiles = computed(() => chatStore.uploadedFiles);
 const fileInput = ref<HTMLInputElement | null>(null);
 
 const triggerFileInput = () => {
   fileInput.value?.click();
 };
 
-const handleFileChange = (event: Event) => {
+const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files) {
-    uploadedFiles.value.push(...Array.from(target.files));
+    for (const file of Array.from(target.files)) {
+      try {
+        const uploadedFile = await createFile(file);
+        chatStore.addUploadedFile(uploadedFile);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        // Optionally, show an error message to the user
+      }
+    }
   }
   // Reset the input value to allow selecting the same file again
   if (fileInput.value) {
@@ -78,15 +88,17 @@ const handleFileChange = (event: Event) => {
   }
 };
 
-const removeFile = (index: number) => {
-  uploadedFiles.value.splice(index, 1);
-};
-
-const handleSubmit = () => {
+const handleSubmit = async () => {
   // TODO: Handle file submission along with the message
-  if (searchQuery.value.trim() && chatStore.chatStatus !== 'streaming' && chatStore.chatStatus !== 'submitted' && !chatStore.throttleSelectedConversation) {
-    chatStore.sendMessage(searchQuery.value);
+  if (
+    searchQuery.value.trim() &&
+    chatStore.chatStatus !== "streaming" &&
+    chatStore.chatStatus !== "submitted" &&
+    !chatStore.throttleSelectedConversation
+  ) {
+    await chatStore.sendMessage(searchQuery.value);
     searchQuery.value = "";
+    chatStore.clearUploadedFiles();
 
     useTrackEvent("form_submit_question", {
       event_category: "engagement",
