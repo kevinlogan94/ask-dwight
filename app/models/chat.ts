@@ -1,3 +1,5 @@
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+
 //todo introduce parts to organize parts of the assistant message
 export interface Message {
   id: string;
@@ -42,6 +44,16 @@ export interface AssistantMessageCreateDto {
   content: string;
   promptId: string;
   responseId?: string;
+}
+
+export type Tool = 
+  | { type: "file_search"; vector_store_ids?: string[] }
+  | { type: "web_search_preview" };
+
+export interface ResponseRequest {
+  prompt: string | Array<ChatCompletionMessageParam>;
+  responseId?: string;
+  tools?: Array<Tool>;
 }
 
 export interface ResponseApiCompletedEvent {

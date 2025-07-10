@@ -102,8 +102,10 @@ export function useMessageService() {
     if (!conversation) return false;
 
     const response = await getResponseAPIStreamingResponse(
-      content,
-      responseId,
+      {
+        prompt: content,
+        responseId,
+      },
       manageStreamingAssistantMessage,
     );
 

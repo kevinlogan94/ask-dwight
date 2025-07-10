@@ -25,8 +25,10 @@ export function useSystemInteractionControls() {
 
     try {
       const response = await getResponseAPIStreamingResponse(
-        "Trigger the throttle trigger so that you can tell me that I have to wait to ask another question.",
-        responseId,
+        {
+          prompt: "Trigger the throttle trigger so that you can tell me that I have to wait to ask another question.",
+          responseId,
+        },
         onDelta,
       );
 

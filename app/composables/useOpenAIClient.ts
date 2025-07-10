@@ -1,6 +1,6 @@
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { createParser } from "eventsource-parser";
-import type { ResponseApiCompletedEvent } from "~/models/chat";
+import type { ResponseApiCompletedEvent, ResponseRequest } from "~/models/chat";
 
 export const useOpenAIClient = () => {
 
@@ -42,13 +42,12 @@ export const useOpenAIClient = () => {
  * @returns A promise that resolves to the completed response.
  */
   const getResponseAPIStreamingResponse = async (
-    prompt: string | Array<ChatCompletionMessageParam>,
-    responseId: string | undefined,
+    request: ResponseRequest,
     onDelta: (delta: string) => void,
   ): Promise<ResponseApiCompletedEvent> => {
     try {
       const { data, error } = await supabase.functions.invoke<Response>("response-conversations", {
-        body: { prompt, responseId, stream: true },
+        body: { ...request, stream: true },
       });
 
       if (error || !data || !data.body) {

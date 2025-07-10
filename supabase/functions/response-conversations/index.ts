@@ -44,7 +44,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    const { prompt, responseId, stream = true } = await req.json();
+    const { prompt, responseId, stream = true, tools } = await req.json();
 
     // Validate the prompt
     const isStringPrompt = typeof prompt === "string" && prompt.trim() !== "";
@@ -65,6 +65,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
       max_output_tokens: 10000,
       stream: stream,
     };
+
+    if (tools) {
+      payload.tools = tools;
+    }
 
     if (responseId) {
       payload.previous_response_id = responseId;
