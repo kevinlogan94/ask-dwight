@@ -1,10 +1,10 @@
-import { useSupabaseClient } from '#imports'
+import type { FileObject, FileDeleted } from "openai/resources/files.mjs";
 
 /**
  * A composable service for managing files within an OpenAI vector store using Supabase functions.
  */
 export const useVectorStoreService = () => {
-  const supabase = useSupabaseClient()
+  const supabase = useSupabaseClient();
 
   /**
    * Fetches all files from a specific vector store.
@@ -12,47 +12,69 @@ export const useVectorStoreService = () => {
    * @param vectorStoreId The ID of the vector store.
    * @returns A promise that resolves to an array of file objects, each with an id and name.
    */
-  const fetchFiles = async (vectorStoreId: string) => {
+  const fetchFiles = async (vectorStoreId: string): Promise<FileObject[]> => {
     try {
-      const { data: listData, error: listError } = await supabase.functions.invoke('list-vector-store-files', {
+      const { data: listData, error: listError } = await supabase.functions.invoke("list-vector-store-files", {
         body: { vectorStoreId },
-      })
+      });
 
       if (listError) {
-        throw new Error(`Error fetching file list: ${listError.message}`)
+        throw new Error(`Error fetching file list: ${listError.message}`);
       }
 
       // Assuming listData.files is an array of objects with an 'id' property
-      const files = listData?.files ?? []
+      const files = listData?.files ?? [];
       if (!files || files.length === 0) {
-        return []
+        return [];
       }
 
       const fileDetailPromises = files.map((file: { id: string }) =>
-        supabase.functions.invoke('get-file-details', {
+        supabase.functions.invoke("get-file-details", {
           body: { fileId: file.id },
         }),
-      )
+      );
 
-      const fileDetailResults = await Promise.all(fileDetailPromises)
+      const fileDetailResults = await Promise.all(fileDetailPromises);
 
-      return fileDetailResults
-        .map((result) => {
-          if (result.error) {
-            console.error(`Error fetching details for a file: ${result.error.message}`)
-            return null
-          }
-          // OpenAI uses filename property, which we map to name.
-          const { id, filename } = result.data
-          return { id, name: filename }
-        })
-        .filter(Boolean) as { id: string, name: string }[] // Remove nulls and assert type
+      return fileDetailResults;
+    } catch (error) {
+      console.error("An unexpected error occurred in fetchFiles:", error);
+      return [];
     }
-    catch (error) {
-      console.error('An unexpected error occurred in fetchFiles:', error)
-      return []
+  };
+
+  /**
+   * Uploads a file to OpenAI and returns its ID.
+   * @param file The file object to be uploaded.
+   * @returns A promise that resolves with the ID of the uploaded file.
+   */
+  /**
+   * Uploads a file to OpenAI and returns the file object.
+   * @param file The file object to be uploaded.
+   * @returns A promise that resolves with the OpenAI file object.
+   */
+  const createFile = async (file: File): Promise<FileObject> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const { data, error } = await supabase.functions.invoke<FileObject>("create-file", {
+        body: formData,
+      });
+
+      if (error) {
+        throw new Error(`Error creating file: ${error.message}`);
+      }
+      if (!data) {
+        throw new Error("No data returned from file creation.");
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Error in createFile:", error);
+      throw new Error("Failed to create file via Supabase function.");
     }
-  }
+  };
 
   /**
    * Adds a new file to a specific vector store.
@@ -61,36 +83,29 @@ export const useVectorStoreService = () => {
    * @param file The file object to be uploaded.
    * @returns A promise that resolves with the result of adding the file to the store.
    */
-  const addFile = async (vectorStoreId: string, file: File) => {
+  const addFile = async (vectorStoreId: string, file: File): Promise<any> => {
     try {
-      const formData = new FormData()
-      formData.append('file', file)
+      // First, upload the file to OpenAI to get a file object.
+      const fileObject = await createFile(file);
 
-      const { data: uploadData, error: uploadError } = await supabase.functions.invoke('upload-file', {
-        body: formData,
-      })
-
-      if (uploadError) {
-        throw new Error(`Error uploading file: ${uploadError.message}`)
-      }
-
-      const fileId = uploadData.id // Assuming the response contains the file ID
-
-      const { data: addData, error: addError } = await supabase.functions.invoke('add-file-to-vector-store', {
-        body: { vectorStoreId, fileId },
-      })
+      // Then, attach the file to the vector store.
+      const { data: vectorStoreFileData, error: addError } = await supabase.functions.invoke("add-file-to-vector-store", {
+        body: { vectorStoreId, fileId: fileObject.id },
+      });
 
       if (addError) {
-        throw new Error(`Error adding file to vector store: ${addError.message}`)
+        throw new Error(`Error adding file to vector store: ${addError.message}`);
+      }
+      if (!vectorStoreFileData) {
+        throw new Error("No data returned from adding file to vector store.");
       }
 
-      return addData
+      return vectorStoreFileData;
+    } catch (error) {
+      console.error("An unexpected error occurred in addFile:", error);
+      throw error; // Re-throw the error to be handled by the caller
     }
-    catch (error) {
-      console.error('An unexpected error occurred in addFile:', error)
-      return null
-    }
-  }
+  };
 
   /**
    * Removes a file from a specific vector store.
@@ -98,52 +113,51 @@ export const useVectorStoreService = () => {
    * @param fileId The ID of the file to remove.
    * @returns A promise that resolves with the result of the removal operation.
    */
-  const removeFile = async (vectorStoreId: string, fileId: string) => {
+  const removeFile = async (vectorStoreId: string, fileId: string): Promise<FileDeleted> => {
     try {
-      const { data, error } = await supabase.functions.invoke('remove-file-from-vector-store', {
+      const { data, error } = await supabase.functions.invoke("remove-file-from-vector-store", {
         body: { vectorStoreId, fileId },
-      })
+      });
 
       if (error) {
-        throw new Error(`Error removing file from vector store: ${error.message}`)
+        throw new Error(`Error removing file from vector store: ${error.message}`);
       }
 
-      return data
+      return data;
+    } catch (error) {
+      console.error("An unexpected error occurred in removeFile:", error);
+      throw error; // Re-throw the error to be handled by the caller
     }
-    catch (error) {
-      console.error('An unexpected error occurred in removeFile:', error)
-      return null
-    }
-  }
+  };
 
   /**
    * Creates a new vector store.
    * @param name The name for the new vector store.
    * @returns A promise that resolves to the ID of the newly created vector store.
    */
-  const createNewStore = async (name: string) => {
+  const createNewStore = async (name: string): Promise<string | null> => {
     try {
-      const { data, error } = await supabase.functions.invoke('create-vector-store', {
+      const { data, error } = await supabase.functions.invoke("create-vector-store", {
         body: { name },
-      })
+      });
 
       if (error) {
-        throw new Error(`Error creating new vector store: ${error.message}`)
+        throw new Error(`Error creating new vector store: ${error.message}`);
       }
 
       // Assuming the response contains the new vector store's ID
-      return data.id
+      return data.id;
+    } catch (error) {
+      console.error("An unexpected error occurred in createNewStore:", error);
+      return null;
     }
-    catch (error) {
-      console.error('An unexpected error occurred in createNewStore:', error)
-      return null
-    }
-  }
+  };
 
   return {
     fetchFiles,
+    createFile,
     addFile,
     removeFile,
     createNewStore,
-  }
-}
+  };
+};
