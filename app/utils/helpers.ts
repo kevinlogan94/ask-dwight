@@ -1,11 +1,7 @@
 import { marked } from "marked";
 import DOMPurify from "isomorphic-dompurify";
 import type { Conversation, Message } from "~/models/chat";
-import type { FileObject } from "openai/resources/files.mjs";
-import type {
-  ResponseInputItem,
-  ResponseInput,
-} from "openai/resources/responses/responses.mjs";
+import type { ResponseInputItem } from "openai/resources/responses/responses.mjs";
 
 // Session utilities
 const SESSION_ID_KEY = "supabase-session-id";
@@ -136,9 +132,7 @@ export const throttlePerMessages = (messages: Message[]) => {
 export const deleteSupabaseCookies = () => {
   document.cookie.split(";").forEach((cookie) => {
     if (cookie.trim().startsWith("sb-")) {
-      document.cookie = cookie
-        .replace(/^ +/, "")
-        .replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/");
+      document.cookie = cookie.replace(/^ +/, "").replace(/=.*/, "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/");
     }
   });
 };
