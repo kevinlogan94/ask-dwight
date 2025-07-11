@@ -1,11 +1,11 @@
 import type { Message, AssistantMessageCreateDto } from "~/models/chat";
 import { useOpenAIClient } from "~/composables/useOpenAIClient";
-import { parseMarkdown, organizeResponsesInputForFileUpload } from "~/utils/helpers";
+import { parseMarkdown } from "~/utils/helpers";
 import { useMessageRepository } from "~/composables/repositories/chat/useMessageRepository";
 import { useConversationService } from "~/composables/services/useConversationService";
 import { useSuggestionService } from "~/composables/services/useSuggestionService";
 import { useSystemInteractionControls } from "~/composables/useSystemInteractionControls";
-import type { ResponseInput } from "openai/resources/responses/responses.mjs";
+import type { ResponseInput, Tool } from "openai/resources/responses/responses.mjs";
 
 export const DEFAULT_ERROR_MESSAGE =
   "Your sales coach is temporarily off the grid—probably closing a deal or wrestling an API. Don't worry. We're rerouting. Try again in a few.";
@@ -98,10 +98,20 @@ export function useMessageService() {
     const conversation = chatStore.selectedConversation;
     if (!conversation) return false;
 
+    let tools: Array<Tool> | undefined;
+
+    if (chatStore.vectorStoreId) {
+      tools = [{
+        type: "file_search",
+        vector_store_ids: [chatStore.vectorStoreId!]
+      }];
+    }
+
     const response = await getResponseAPIStreamingResponse(
       {
         prompt: content,
         responseId,
+        tools,
       },
       manageStreamingAssistantMessage,
     );
@@ -248,8 +258,6 @@ export function useMessageService() {
     if (!lastResponseId && conversation.messages.length > 1) {
       contentToSend = organizeMessagesForApi(conversation.messages);
     }
-
-    contentToSend = organizeResponsesInputForFileUpload(contentToSend, chatStore.uploadedFiles);
 
     try {
       const success = await _handleStreamingChat(contentToSend, lastResponseId);

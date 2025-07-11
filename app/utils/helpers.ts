@@ -27,52 +27,6 @@ export const getOrCreateSessionId = (): string => {
 };
 
 /**
- * Organizes the input for the OpenAI API when file uploads are involved.
- * If files are present, it constructs a multi-part message containing both the text and file references.
- * @param content The initial content, which can be a string or a `ResponseInput` object.
- * @param uploadedFiles An array of `FileObject` from OpenAI representing the uploaded files.
- * @returns The modified content, ready for the API, which will be a `ResponseInput` if files were added.
- */
-export function organizeResponsesInputForFileUpload(
-  content: string | ResponseInput,
-  uploadedFiles: FileObject[],
-): string | ResponseInput {
-  let contentToSend: string | ResponseInput = content;
-
-  // If there are uploaded files, modify the last message to include them.
-  if (uploadedFiles.length > 0) {
-    const textContent = typeof content === "string" ? content : ""; // Fallback for safety
-
-    const multiPartContent = [
-      ...uploadedFiles.map((file) => ({
-        type: "input_file" as const,
-        file_id: file.id,
-      })),
-      { type: "input_text" as const, text: textContent },
-    ];
-
-    if (Array.isArray(contentToSend)) {
-      // If this is a setup for the responses
-      const lastMessage = contentToSend[contentToSend.length - 1];
-      // Type guard to ensure we're modifying a user message
-      if (lastMessage && 'role' in lastMessage && lastMessage.role === "user") {
-        lastMessage.content = multiPartContent;
-      }
-    } else if (typeof contentToSend === 'string') {
-      // If we are just trying to pass an input, create a new message
-      contentToSend = [
-        {
-          role: "user",
-          content: multiPartContent,
-        },
-      ];
-    }
-  }
-
-  return contentToSend;
-}
-
-/**
  * Organizes an array of chat messages for the API.
  * It filters out system messages and messages that are still loading.
  * @param messages The array of `Message` objects from the conversation.
