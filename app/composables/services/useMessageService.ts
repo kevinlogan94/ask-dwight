@@ -1,11 +1,11 @@
 import type { Message, AssistantMessageCreateDto } from "~/models/chat";
 import { useOpenAIClient } from "~/composables/useOpenAIClient";
-import { parseMarkdown } from "~/utils/helpers";
+import { parseMarkdown, organizeResponsesInputForFileUpload } from "~/utils/helpers";
 import { useMessageRepository } from "~/composables/repositories/chat/useMessageRepository";
 import { useConversationService } from "~/composables/services/useConversationService";
 import { useSuggestionService } from "~/composables/services/useSuggestionService";
 import { useSystemInteractionControls } from "~/composables/useSystemInteractionControls";
-import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
+import type { ResponseInput } from "openai/resources/responses/responses.mjs";
 
 export const DEFAULT_ERROR_MESSAGE =
   "Your sales coach is temporarily off the grid—probably closing a deal or wrestling an API. Don't worry. We're rerouting. Try again in a few.";
@@ -21,13 +21,13 @@ export function useMessageService() {
   const { getThrottlingResponseStreaming } = useSystemInteractionControls();
   const { createNewConversation } = useConversationService();
 
-
   // Watch for chat status changes to manage loading indicators
   watch(
     () => chatStore.chatStatus,
     (newStatus, oldStatus) => {
       if (newStatus === "submitted") {
         AddSystemMessage("loading");
+        // @ts-ignore
       } else if (oldStatus === "submitted" && newStatus !== "submitted") {
         removeLoadingMessage();
       }
@@ -94,10 +94,7 @@ export function useMessageService() {
   /**
    * Handles the logic for a streaming chat response.
    */
-  async function _handleStreamingChat(
-    content: string | ChatCompletionMessageParam[],
-    responseId?: string,
-  ): Promise<boolean> {
+  async function _handleStreamingChat(content: string | ResponseInput, responseId?: string): Promise<boolean> {
     const conversation = chatStore.selectedConversation;
     if (!conversation) return false;
 
@@ -115,7 +112,10 @@ export function useMessageService() {
       await _finalizeStreamedMessage(finalContent, newResponseId);
 
       if (chatStore.throttleSelectedConversation) {
-        const throttlingResponseEvent = await getThrottlingResponseStreaming(newResponseId, manageStreamingAssistantMessage);
+        const throttlingResponseEvent = await getThrottlingResponseStreaming(
+          newResponseId,
+          manageStreamingAssistantMessage,
+        );
 
         if (throttlingResponseEvent) {
           const finalThrottleContent = throttlingResponseEvent.response.output[0]?.content[0]?.text ?? "";
@@ -161,10 +161,7 @@ export function useMessageService() {
         responseId,
       };
 
-      await saveAssistantResponseToSupabase(
-        streamingMessage.id,
-        dto,
-      );
+      await saveAssistantResponseToSupabase(streamingMessage.id, dto);
 
       streamingMessage.status = "sent";
     } catch (error) {
@@ -209,7 +206,7 @@ export function useMessageService() {
         role: "assistant",
         timestamp: new Date(),
         status: "streaming",
-        isThrottleMessage: chatStore.throttleSelectedConversation
+        isThrottleMessage: chatStore.throttleSelectedConversation,
       };
       conversation.messages.push(newMessage);
     }
@@ -231,7 +228,7 @@ export function useMessageService() {
       conversation = await createNewConversation();
       if (!conversation) {
         console.error("Failed to create or find a conversation.");
-        AddSystemMessage("error"); 
+        AddSystemMessage("error");
         chatStore.chatStatus = "error";
         return;
       }
@@ -245,11 +242,14 @@ export function useMessageService() {
     const lastResponseId =
       assistantMessages.length > 0 ? assistantMessages[assistantMessages.length - 1]!.responseId : undefined;
 
-    //we need to account for old conversations that were being used by the old api that we don't have a stored conversation thread.
-    let contentToSend: string | ChatCompletionMessageParam[] = content;
+    let contentToSend: string | ResponseInput = content;
+
+    // Organize the full conversation if we have yet to setup the responses api for this conversation
     if (!lastResponseId && conversation.messages.length > 1) {
       contentToSend = organizeMessagesForApi(conversation.messages);
     }
+
+    contentToSend = organizeResponsesInputForFileUpload(contentToSend, chatStore.uploadedFiles);
 
     try {
       const success = await _handleStreamingChat(contentToSend, lastResponseId);

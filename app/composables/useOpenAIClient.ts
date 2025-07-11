@@ -47,7 +47,12 @@ export const useOpenAIClient = () => {
   ): Promise<ResponseApiCompletedEvent> => {
     try {
       const { data, error } = await supabase.functions.invoke<Response>("response-conversations", {
-        body: { ...request, stream: true },
+        body: {
+          prompt: request.prompt,
+          responseId: request.responseId,
+          tools: request.tools,
+          stream: true,
+        },
       });
 
       if (error || !data || !data.body) {

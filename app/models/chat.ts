@@ -1,4 +1,4 @@
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import type { ResponseInput } from "openai/resources/responses/responses.mjs";
 
 //todo introduce parts to organize parts of the assistant message
 export interface Message {
@@ -51,7 +51,7 @@ export type Tool =
   | { type: "web_search_preview" };
 
 export interface ResponseRequest {
-  prompt: string | Array<ChatCompletionMessageParam>;
+  prompt: string | ResponseInput;
   responseId?: string;
   tools?: Array<Tool>;
 }
