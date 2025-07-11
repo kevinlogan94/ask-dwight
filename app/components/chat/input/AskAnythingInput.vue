@@ -27,10 +27,22 @@
         <div class="flex flex-row flex-wrap items-center gap-2 p-2">
           <div v-for="(file, index) in uploadedFiles" :key="index" class="flex items-center justify-between text-sm">
             <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-file-text" class="text-neutral-400" />
+              <UIcon
+                v-if="file.status === 'uploading'"
+                name="i-lucide-loader-circle"
+                class="animate-spin text-neutral-400"
+              />
+              <UIcon v-else name="i-lucide-file-text" class="text-neutral-400" />
               <span class="font-medium">{{ file.filename }}</span>
             </div>
-            <UButton icon="i-lucide-x" size="xs" color="neutral" variant="ghost" @click="handleRemoveFile(file)" />
+            <UButton
+              icon="i-lucide-x"
+              size="xs"
+              color="neutral"
+              variant="ghost"
+              @click="handleRemoveFile(file)"
+              :disabled="file.status === 'uploading'"
+            />
           </div>
         </div>
       </template>
@@ -50,7 +62,7 @@
         v-if="chatStore.chatStatus === 'ready'"
         color="success"
         variant="solid"
-        :disabled="chatStore.throttleSelectedConversation"
+        :disabled="chatStore.throttleSelectedConversation || isUploadingFiles"
         icon="heroicons:arrow-up"
       />
     </UChatPrompt>
@@ -65,14 +77,23 @@
 import { useChatStore } from "~/stores/chat";
 import DojoMeter from "~/components/chat/DojoMeter.vue";
 import { useVectorStoreService } from "~/composables/services/useVectorStoreService";
-import type { FileObject } from "openai/resources/files.mjs";
+
+interface UploadedFile {
+  id: string;
+  filename: string;
+  status: "uploading" | "completed";
+}
 
 const chatStore = useChatStore();
 const toast = useToast();
 const { createNewStore, addFile, removeFile } = useVectorStoreService();
 const searchQuery = ref("");
-const uploadedFiles = ref<FileObject[]>([]);
+const uploadedFiles = ref<UploadedFile[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
+
+const isUploadingFiles = computed(() => {
+  return uploadedFiles.value.some((file) => file.status === "uploading");
+});
 
 const supportedFileTypes = [
   { ext: ".c", mime: "text/x-c" },
@@ -106,7 +127,7 @@ const triggerFileInput = () => {
   fileInput.value?.click();
 };
 
-const handleRemoveFile = async (file: FileObject) => {
+const handleRemoveFile = async (file: UploadedFile) => {
   const originalFiles = [...uploadedFiles.value];
   uploadedFiles.value = uploadedFiles.value.filter((f) => f.id !== file.id);
 
@@ -118,13 +139,28 @@ const handleRemoveFile = async (file: FileObject) => {
   } catch (error) {
     console.error("Error removing file:", error);
     uploadedFiles.value = originalFiles;
-    toast.add({ icon: "i-lucide-circle-x", title: "Removal Failed", description: `Could not remove file '${file.filename}'.`, color: "error" });
+    toast.add({
+      icon: "i-lucide-circle-x",
+      title: "Removal Failed",
+      description: `Could not remove file '${file.filename}'.`,
+      color: "error",
+    });
   }
 };
 
 const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (!target.files) return;
+
+  if (!chatStore.vectorStoreId) {
+    const newStoreId = await createNewStore("Chat Session Store");
+
+    if (newStoreId) {
+      chatStore.setVectorStoreId(newStoreId);
+    } else {
+      throw new Error("Failed to create a new vector store.");
+    }
+  }
 
   for (const file of Array.from(target.files)) {
     const maxSizeInMB = 25;
@@ -141,26 +177,17 @@ const handleFileUpload = async (event: Event) => {
     }
 
     const tempId = `temp-${Date.now()}`;
-    const optimisticFile = { id: tempId, filename: file.name };
-    uploadedFiles.value.push(optimisticFile as any);
+    const optimisticFile: UploadedFile = { id: tempId, filename: file.name, status: "uploading" };
+    uploadedFiles.value.push(optimisticFile);
 
     try {
-      // If this is the first file, create a new vector store.
-      if (!chatStore.vectorStoreId) {
-        const newStoreId = await createNewStore("Chat Session Store");
-
-        if (newStoreId) {
-          chatStore.setVectorStoreId(newStoreId);
-        } else {
-          throw new Error("Failed to create a new vector store.");
-        }
-      }
-
       const uploadedFile = await addFile(chatStore.vectorStoreId!, file);
       if (uploadedFile) {
         const index = uploadedFiles.value.findIndex((f) => f.id === tempId);
         if (index !== -1) {
-          uploadedFiles.value[index]!.id = uploadedFile.id;
+          const fileToUpdate = uploadedFiles.value[index]!;
+          fileToUpdate.id = uploadedFile.id;
+          fileToUpdate.status = "completed";
         }
       } else {
         throw new Error("Upload failed to return file details.");
