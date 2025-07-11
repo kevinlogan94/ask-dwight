@@ -1,9 +1,9 @@
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { organizeMessagesForApi } from "~/utils/helpers";
 import { useChatStore } from "~/stores/chat";
 import { useSuggestionRepository } from "~/composables/repositories/chat/useSuggestionRepository";
 import { useOpenAIClient } from "~/composables/useOpenAIClient";
 import type { Message } from "~/models/chat";
+import type { ResponseInputItem } from "openai/resources/responses/responses.mjs";
 
 export function useSuggestionService() {
   const chatStore = useChatStore();
@@ -25,7 +25,7 @@ export function useSuggestionService() {
     const assistantMsg = chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1] as Message;
     assistantMsg.suggestions = ["loading", "loading", "loading"];
 
-    const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(
+    const messagesForApi: ResponseInputItem[] = organizeMessagesForApi(
       chatStore.selectedConversation.messages,
     );
 
