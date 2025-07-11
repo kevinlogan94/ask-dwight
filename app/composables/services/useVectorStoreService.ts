@@ -58,7 +58,7 @@ export const useVectorStoreService = () => {
     formData.append("file", file);
 
     try {
-      const { data, error } = await supabase.functions.invoke<FileObject>("create-file", {
+      const { data, error } = await supabase.functions.invoke<FileObject>("upload-file", {
         body: formData,
       });
 

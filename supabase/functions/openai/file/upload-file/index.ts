@@ -41,10 +41,10 @@ Deno.serve(async (req: Request) => {
     const file = formData.get("file");
 
     if (!file || !(file instanceof File)) {
-        return new Response(JSON.stringify({ error: "No file provided" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
-        });
+      return new Response(JSON.stringify({ error: "No file provided" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     // Upload the file to OpenAI
@@ -54,10 +54,9 @@ Deno.serve(async (req: Request) => {
     });
 
     // Return the new file ID
-    return new Response(JSON.stringify({ fileId: openaiFile.id }), {
+    return new Response(JSON.stringify(openaiFile), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-
   } catch (error) {
     console.error("Error processing request:", error);
     return new Response(JSON.stringify({ error: "Error processing request" }), {
