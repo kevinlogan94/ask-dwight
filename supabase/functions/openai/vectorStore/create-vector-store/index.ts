@@ -46,7 +46,7 @@ Deno.serve(async (req: Request) => {
     });
 
     // Return the new vector store ID
-    return new Response(JSON.stringify({ vectorStoreId: vectorStore.id }), {
+    return new Response(JSON.stringify(vectorStore), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
 
