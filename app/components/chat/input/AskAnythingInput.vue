@@ -60,6 +60,7 @@ import DojoMeter from "~/components/chat/DojoMeter.vue";
 import { useVectorStoreService } from "~/composables/services/useVectorStoreService";
 
 const chatStore = useChatStore();
+const toast = useToast();
 const { createFile } = useVectorStoreService();
 const searchQuery = ref("");
 const uploadedFiles = computed(() => chatStore.uploadedFiles);
@@ -78,7 +79,12 @@ const handleFileUpload = async (event: Event) => {
         chatStore.addUploadedFile(uploadedFile);
       } catch (error) {
         console.error("Error uploading file:", error);
-        // Optionally, show an error message to the user
+        toast.add({
+          title: "Error uploading file",
+          icon: 'i-lucide-circle-x',
+          description: `The file '${file.name}' failed to upload. Please try again.`,
+          color: "error",
+        });
       }
     }
   }
