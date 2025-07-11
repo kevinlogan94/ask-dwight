@@ -4,7 +4,14 @@
       <DojoMeter />
     </div>
 
-    <input type="file" ref="fileInput" @change="handleFileUpload" class="hidden" multiple :accept="supportedMimeTypes" />
+    <input
+      type="file"
+      ref="fileInput"
+      @change="handleFileUpload"
+      class="hidden"
+      multiple
+      :accept="supportedMimeTypes"
+    />
     <UChatPrompt
       variant="outline"
       :disabled="chatStore.throttleSelectedConversation"
@@ -92,7 +99,7 @@ const supportedFileTypes = [
 ];
 
 const supportedMimeTypes = computed(() => {
-  return supportedFileTypes.flatMap(t => t.mime).join(",");
+  return supportedFileTypes.flatMap((t) => t.mime).join(",");
 });
 
 const triggerFileInput = () => {
@@ -100,79 +107,78 @@ const triggerFileInput = () => {
 };
 
 const handleRemoveFile = async (file: FileObject) => {
-  if (!chatStore.vectorStoreId) {
-    console.error("No vector store associated with this chat.")
-    return;
-  }
+  const originalFiles = [...uploadedFiles.value];
+  uploadedFiles.value = uploadedFiles.value.filter((f) => f.id !== file.id);
+
   try {
+    if (!chatStore.vectorStoreId) {
+      throw new Error("Vector store ID is missing.");
+    }
     await removeFile(chatStore.vectorStoreId, file.id);
-    uploadedFiles.value = uploadedFiles.value.filter((f) => f.id !== file.id);
   } catch (error) {
     console.error("Error removing file:", error);
-    toast.add({
-      title: "Error removing file",
-      description: `Could not remove '${file.filename}'. Please try again.`,
-      color: "error",
-      icon: "i-lucide-circle-x",
-    });
+    uploadedFiles.value = originalFiles;
+    toast.add({ icon: "i-lucide-circle-x", title: "Removal Failed", description: `Could not remove file '${file.filename}'.`, color: "error" });
   }
 };
 
 const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
-  if (target.files) {
-    for (const file of Array.from(target.files)) {
-      const maxSizeInMB = 25;
-      const maxSizeBytes = maxSizeInMB * 1024 * 1024;
+  if (!target.files) return;
 
-      if (file.size > maxSizeBytes) {
-        toast.add({
-          title: "File Too Large",
-          description: `The file '${file.name}' exceeds the ${maxSizeInMB}MB size limit.`,
-          color: "error",
-          icon: "i-lucide-circle-x",
-        });
-        continue; // Skip this file
-      }
+  for (const file of Array.from(target.files)) {
+    const maxSizeInMB = 25;
+    const maxSizeBytes = maxSizeInMB * 1024 * 1024;
 
-      try {
-        // If this is the first file, create a new vector store.
-        if (!chatStore.vectorStoreId) {
-          const newStoreId = await createNewStore("Chat Session Store");
-          
-          if (newStoreId) {
-            chatStore.setVectorStoreId(newStoreId);
-          } else {
-            throw new Error("Failed to create a new vector store.");
-          }
-        }
+    if (file.size > maxSizeBytes) {
+      toast.add({
+        title: "File Too Large",
+        description: `The file '${file.name}' exceeds the ${maxSizeInMB}MB size limit.`,
+        color: "error",
+        icon: "i-lucide-circle-x",
+      });
+      continue; // Skip this file
+    }
 
-        // Add the file to the existing vector store.
-        if (chatStore.vectorStoreId) {
-          const uploadedFile = await addFile(chatStore.vectorStoreId, file);
+    const tempId = `temp-${Date.now()}`;
+    const optimisticFile = { id: tempId, filename: file.name };
+    uploadedFiles.value.push(optimisticFile as any);
 
-          // Assuming addFile returns a FileObject, adjust if it returns something else
-          uploadedFiles.value.push({
-            id: uploadedFile.id,
-            filename: file.name
-          } as any);
+    try {
+      // If this is the first file, create a new vector store.
+      if (!chatStore.vectorStoreId) {
+        const newStoreId = await createNewStore("Chat Session Store");
+
+        if (newStoreId) {
+          chatStore.setVectorStoreId(newStoreId);
         } else {
-          throw new Error("Vector store ID is not set.");
+          throw new Error("Failed to create a new vector store.");
         }
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        toast.add({
-          title: "Error uploading file",
-          icon: 'i-lucide-circle-x',
-          description: `The file '${file.name}' failed to upload. Please try again.`,
-          color: "error",
-        });
       }
+
+      const uploadedFile = await addFile(chatStore.vectorStoreId!, file);
+      if (uploadedFile) {
+        const index = uploadedFiles.value.findIndex((f) => f.id === tempId);
+        if (index !== -1) {
+          uploadedFiles.value[index]!.id = uploadedFile.id;
+        }
+      } else {
+        throw new Error("Upload failed to return file details.");
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      uploadedFiles.value = uploadedFiles.value.filter((f) => f.id !== tempId);
+      toast.add({
+        title: "Error uploading file",
+        icon: "i-lucide-circle-x",
+        description: `The file '${file.name}' failed to upload. Please try again.`,
+        color: "error",
+      });
     }
   }
-  // Reset the input value to allow selecting the same file again
-  if (fileInput.value) {
-    fileInput.value.value = "";
+
+  if (target) {
+    target.value = "";
   }
 };
 
@@ -186,7 +192,7 @@ const handleSubmit = async () => {
   ) {
     await chatStore.sendMessage(searchQuery.value);
     searchQuery.value = "";
-    uploadedFiles.value = []; 
+    uploadedFiles.value = [];
     chatStore.setVectorStoreId(null);
 
     useTrackEvent("form_submit_question", {
