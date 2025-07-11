@@ -1,4 +1,4 @@
-import type { ResponseInput } from "openai/resources/responses/responses.mjs";
+import type { ResponseInput, Tool } from "openai/resources/responses/responses.mjs";
 
 //todo introduce parts to organize parts of the assistant message
 export interface Message {
@@ -45,10 +45,6 @@ export interface AssistantMessageCreateDto {
   promptId: string;
   responseId?: string;
 }
-
-export type Tool = 
-  | { type: "file_search"; vector_store_ids?: string[] }
-  | { type: "web_search_preview" };
 
 export interface ResponseRequest {
   prompt: string | ResponseInput;

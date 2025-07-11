@@ -1,6 +1,6 @@
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { createParser } from "eventsource-parser";
 import type { ResponseApiCompletedEvent, ResponseRequest } from "~/models/chat";
+import type { ResponseInputItem } from "openai/resources/responses/responses.mjs";
 
 export const useOpenAIClient = () => {
 
@@ -12,7 +12,7 @@ export const useOpenAIClient = () => {
  * @param prompt The prompt to send to the API.
  * @returns A promise that resolves to the response text.
  */
-  const getResponseAPIResponse = async (prompt: Array<ChatCompletionMessageParam>): Promise<string> => {
+  const getResponseAPIResponse = async (prompt: Array<ResponseInputItem>): Promise<string> => {
     try {
       const { data, error } = await supabase.functions.invoke<{output_text: string}>("response-conversations", {
         body: { prompt, stream: false },
