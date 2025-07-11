@@ -4,7 +4,7 @@
       <DojoMeter />
     </div>
 
-    <input type="file" ref="fileInput" @change="handleFileUpload" class="hidden" multiple />
+    <input type="file" ref="fileInput" @change="handleFileUpload" class="hidden" multiple :accept="supportedMimeTypes" />
     <UChatPrompt
       variant="outline"
       :disabled="chatStore.throttleSelectedConversation"
@@ -23,7 +23,7 @@
               <UIcon name="i-lucide-file-text" class="text-neutral-400" />
               <span class="font-medium">{{ file.filename }}</span>
             </div>
-            <UButton icon="i-lucide-x" size="xs" color="neutral" variant="ghost" @click="chatStore.removeUploadedFile(file.id)" />
+            <UButton icon="i-lucide-x" size="xs" color="neutral" variant="ghost" @click="handleRemoveFile(file)" />
           </div>
         </div>
       </template>
@@ -58,25 +58,107 @@
 import { useChatStore } from "~/stores/chat";
 import DojoMeter from "~/components/chat/DojoMeter.vue";
 import { useVectorStoreService } from "~/composables/services/useVectorStoreService";
+import type { FileObject } from "openai/resources/files.mjs";
 
 const chatStore = useChatStore();
 const toast = useToast();
-const { createFile } = useVectorStoreService();
+const { createNewStore, addFile, removeFile } = useVectorStoreService();
 const searchQuery = ref("");
-const uploadedFiles = computed(() => chatStore.uploadedFiles);
+const uploadedFiles = ref<FileObject[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
+
+const supportedFileTypes = [
+  { ext: ".c", mime: "text/x-c" },
+  { ext: ".cpp", mime: "text/x-c++" },
+  { ext: ".cs", mime: "text/x-csharp" },
+  { ext: ".css", mime: "text/css" },
+  { ext: ".doc", mime: "application/msword" },
+  { ext: ".docx", mime: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+  { ext: ".go", mime: "text/x-golang" },
+  { ext: ".html", mime: "text/html" },
+  { ext: ".java", mime: "text/x-java" },
+  { ext: ".js", mime: "text/javascript" },
+  { ext: ".json", mime: "application/json" },
+  { ext: ".md", mime: "text/markdown" },
+  { ext: ".pdf", mime: "application/pdf" },
+  { ext: ".php", mime: "text/x-php" },
+  { ext: ".pptx", mime: "application/vnd.openxmlformats-officedocument.presentationml.presentation" },
+  { ext: ".py", mime: ["text/x-python", "text/x-script.python"] },
+  { ext: ".rb", mime: "text/x-ruby" },
+  { ext: ".sh", mime: "application/x-sh" },
+  { ext: ".tex", mime: "text/x-tex" },
+  { ext: ".ts", mime: "application/typescript" },
+  { ext: ".txt", mime: "text/plain" },
+];
+
+const supportedMimeTypes = computed(() => {
+  return supportedFileTypes.flatMap(t => t.mime).join(",");
+});
 
 const triggerFileInput = () => {
   fileInput.value?.click();
+};
+
+const handleRemoveFile = async (file: FileObject) => {
+  if (!chatStore.vectorStoreId) {
+    console.error("No vector store associated with this chat.")
+    return;
+  }
+  try {
+    await removeFile(chatStore.vectorStoreId, file.id);
+    uploadedFiles.value = uploadedFiles.value.filter((f) => f.id !== file.id);
+  } catch (error) {
+    console.error("Error removing file:", error);
+    toast.add({
+      title: "Error removing file",
+      description: `Could not remove '${file.filename}'. Please try again.`,
+      color: "error",
+      icon: "i-lucide-circle-x",
+    });
+  }
 };
 
 const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files) {
     for (const file of Array.from(target.files)) {
+      const maxSizeInMB = 25;
+      const maxSizeBytes = maxSizeInMB * 1024 * 1024;
+
+      if (file.size > maxSizeBytes) {
+        toast.add({
+          title: "File Too Large",
+          description: `The file '${file.name}' exceeds the ${maxSizeInMB}MB size limit.`,
+          color: "error",
+          icon: "i-lucide-circle-x",
+        });
+        continue; // Skip this file
+      }
+
       try {
-        const uploadedFile = await createFile(file);
-        chatStore.addUploadedFile(uploadedFile);
+        // If this is the first file, create a new vector store.
+        if (!chatStore.vectorStoreId) {
+          const newStoreId = await createNewStore("Chat Session Store");
+          
+          if (newStoreId) {
+            chatStore.setVectorStoreId(newStoreId);
+          } else {
+            throw new Error("Failed to create a new vector store.");
+          }
+        }
+
+        // Add the file to the existing vector store.
+        if (chatStore.vectorStoreId) {
+          const uploadedFile = await addFile(chatStore.vectorStoreId, file);
+
+          // Assuming addFile returns a FileObject, adjust if it returns something else
+          uploadedFiles.value.push({
+            id: uploadedFile.id,
+            filename: file.name
+          } as any);
+        } else {
+          throw new Error("Vector store ID is not set.");
+        }
       } catch (error) {
         console.error("Error uploading file:", error);
         toast.add({
@@ -104,7 +186,8 @@ const handleSubmit = async () => {
   ) {
     await chatStore.sendMessage(searchQuery.value);
     searchQuery.value = "";
-    chatStore.clearUploadedFiles();
+    uploadedFiles.value = []; 
+    chatStore.setVectorStoreId(null);
 
     useTrackEvent("form_submit_question", {
       event_category: "engagement",
