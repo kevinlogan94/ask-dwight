@@ -93,6 +93,18 @@ export function useMessageService() {
     const conversation = chatStore.selectedConversation;
     if (!conversation) return false;
 
+  // Create a placeholder message to avoid a race condition
+  const streamingMessage: Message = {
+    id: crypto.randomUUID(),
+    content: "",
+    htmlContent: "",
+    role: "assistant",
+    timestamp: new Date(),
+    status: "streaming",
+    isThrottleMessage: chatStore.throttleSelectedConversation,
+  };
+  conversation.messages.push(streamingMessage);
+
     let tools: Array<Tool> | undefined;
 
     if (conversation.vector_store_id) {
@@ -203,17 +215,6 @@ export function useMessageService() {
     if (streamingMessage) {
       streamingMessage.content += delta;
       streamingMessage.htmlContent = await parseMarkdown(streamingMessage.content);
-    } else {
-      const newMessage: Message = {
-        id: crypto.randomUUID(),
-        content: delta,
-        htmlContent: await parseMarkdown(delta),
-        role: "assistant",
-        timestamp: new Date(),
-        status: "streaming",
-        isThrottleMessage: chatStore.throttleSelectedConversation,
-      };
-      conversation.messages.push(newMessage);
     }
   }
 
