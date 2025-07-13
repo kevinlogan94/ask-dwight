@@ -112,7 +112,7 @@ export function useMessageService() {
     );
 
     if (response) {
-      const finalContent = response.response.output[0]?.content[0]?.text ?? "";
+      const finalContent = response.response.output[response.response.output.length - 1]?.content[0]?.text ?? "";
       const newResponseId = response.response.id;
       await _finalizeStreamedMessage(finalContent, newResponseId);
 
