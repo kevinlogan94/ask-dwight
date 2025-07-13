@@ -38,11 +38,6 @@ export function useMessageService() {
    * Add a user message to the current conversation
    */
   async function addUserMessage(content: string): Promise<Message> {
-    // Create a new conversation if none is selected
-    if (!chatStore.selectedConversationId) {
-      await createNewConversation();
-    }
-
     if (!chatStore.selectedConversation || !chatStore.selectedConversationId) {
       console.error("No conversation selected to add message");
       throw new Error("No conversation selected");
@@ -100,10 +95,10 @@ export function useMessageService() {
 
     let tools: Array<Tool> | undefined;
 
-    if (chatStore.vectorStoreId) {
+    if (conversation.vector_store_id) {
       tools = [{
         type: "file_search",
-        vector_store_ids: [chatStore.vectorStoreId!]
+        vector_store_ids: [conversation.vector_store_id]
       }];
     }
 
@@ -188,7 +183,7 @@ export function useMessageService() {
     if (!conversation) return;
 
     // Find index of the message to remove
-    const messageIndex = conversation.messages.findIndex((m: Message) => m.status === "loading");
+        const messageIndex = conversation.messages.findIndex((m: Message) => m.status === "loading");
     if (messageIndex !== -1) {
       // Remove the message from the array
       conversation.messages.splice(messageIndex, 1);
@@ -229,13 +224,13 @@ export function useMessageService() {
    *          The Promise resolves to void, but the response is saved to the conversation
    *          and the conversation is updated in the store.
    */
-  async function sendMessage(content: string): Promise<void> {
+    async function sendMessage(content: string, vectorStoreId: string | null = null): Promise<void> {
     chatStore.anyMessagesSentForCurrentSession = true;
     let conversation = chatStore.selectedConversation;
 
     // If no conversation exists or is selected, create a new one
     if (!conversation) {
-      conversation = await createNewConversation();
+      conversation = await createNewConversation(vectorStoreId);
       if (!conversation) {
         console.error("Failed to create or find a conversation.");
         AddSystemMessage("error");

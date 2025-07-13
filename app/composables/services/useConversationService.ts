@@ -1,7 +1,7 @@
 import { useChatStore } from "~//stores/chat";
 import { useConversationRepository } from "~/composables/repositories/chat/useConversationRepository";
 import type { Conversation } from "~/models/chat";
-import type { ConversationUpdateDto } from "~/models/chat";
+import type { TablesUpdate } from "~/models/supabase";
 
 export function useConversationService() {
   const chatStore = useChatStore();
@@ -10,18 +10,19 @@ export function useConversationService() {
   /*
   * Creates a new conversation in the chat store and in Supabase.
   */
-async function createNewConversation() {
+async function createNewConversation(vectorStoreId: string | null = null) {
   const conversationNumber = chatStore.conversations.length + 1;
   const title = `Conversation ${conversationNumber}`;
 
-  try {
-      const conversationId = await createConversationInSupabase(title);
+    try {
+      const conversationId = await createConversationInSupabase(title, vectorStoreId);
 
       // Create new conversation with the ID from Supabase
       const newConversation: Conversation = {
         id: conversationId,
         title,
         messages: [],
+        vector_store_id: vectorStoreId,
         createdAt: new Date(),
       };
 
@@ -42,7 +43,7 @@ async function createNewConversation() {
   }
 
   //todo use this when we start setting the title of conversations
-  async function updateConversation(conversationId: string, dto: ConversationUpdateDto) {
+  async function updateConversation(conversationId: string, dto: TablesUpdate<"conversations">) {
     const conversation = chatStore.conversations.find(c => c.id === conversationId);
     if (!conversation) {
       console.error(`updateConversation: Conversation with ID ${conversationId} not found`);
@@ -50,7 +51,12 @@ async function createNewConversation() {
     }
 
     // Update local state
-    conversation.title = dto.title || conversation.title;
+    if (dto.title) {
+      conversation.title = dto.title;
+    }
+    if (dto.vector_store_id) {
+      conversation.vector_store_id = dto.vector_store_id;
+    }
 
     await updateConversationInSupabase(conversationId, dto);
   }

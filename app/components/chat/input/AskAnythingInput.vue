@@ -77,6 +77,7 @@
 import { useChatStore } from "~/stores/chat";
 import DojoMeter from "~/components/chat/DojoMeter.vue";
 import { useVectorStoreService } from "~/composables/services/useVectorStoreService";
+import { useConversationService } from "~/composables/services/useConversationService";
 
 interface UploadedFile {
   id: string;
@@ -87,7 +88,9 @@ interface UploadedFile {
 const chatStore = useChatStore();
 const toast = useToast();
 const { createNewStore, addFile, removeFile } = useVectorStoreService();
+const { updateConversation } = useConversationService();
 const searchQuery = ref("");
+const newVectorStoreId = ref<string | null>(null);
 const uploadedFiles = ref<UploadedFile[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -132,10 +135,11 @@ const handleRemoveFile = async (file: UploadedFile) => {
   uploadedFiles.value = uploadedFiles.value.filter((f) => f.id !== file.id);
 
   try {
-    if (!chatStore.vectorStoreId) {
+    const vectorStoreId = chatStore.selectedConversation?.vector_store_id ?? newVectorStoreId.value;
+    if (!vectorStoreId) {
       throw new Error("Vector store ID is missing.");
     }
-    await removeFile(chatStore.vectorStoreId, file.id);
+    await removeFile(vectorStoreId, file.id);
   } catch (error) {
     console.error("Error removing file:", error);
     uploadedFiles.value = originalFiles;
@@ -152,13 +156,22 @@ const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (!target.files) return;
 
-  if (!chatStore.vectorStoreId) {
-    const newStoreId = await createNewStore("Chat Session Store");
+  let vectorStoreId = chatStore.selectedConversation?.vector_store_id ?? newVectorStoreId.value;
 
+  if (!vectorStoreId) {
+    const newStoreId = await createNewStore("Conversation Store");
     if (newStoreId) {
-      chatStore.setVectorStoreId(newStoreId);
+      newVectorStoreId.value = newStoreId;
+      vectorStoreId = newStoreId;
     } else {
-      throw new Error("Failed to create a new vector store.");
+      console.error("Failed to create a new vector store.");
+      toast.add({
+        title: "Upload Failed",
+        description: "Failed to upload the file. Please try again.",
+        color: "error",
+        icon: "i-lucide-circle-x",
+      });
+      return;
     }
   }
 
@@ -181,7 +194,7 @@ const handleFileUpload = async (event: Event) => {
     uploadedFiles.value.push(optimisticFile);
 
     try {
-      const uploadedFile = await addFile(chatStore.vectorStoreId!, file);
+      const uploadedFile = await addFile(vectorStoreId, file);
       if (uploadedFile) {
         const index = uploadedFiles.value.findIndex((f) => f.id === tempId);
         if (index !== -1) {
@@ -217,10 +230,18 @@ const handleSubmit = async () => {
     chatStore.chatStatus !== "submitted" &&
     !chatStore.throttleSelectedConversation
   ) {
-    await chatStore.sendMessage(searchQuery.value);
+    
+    // todo: Remove this later
+    // This will take care of existing conversations that don't have a vector_store_id
+    // This will take care of existing conversations that don't have a vector_store_id
+    if (newVectorStoreId.value && chatStore.selectedConversationId) {
+      await updateConversation(chatStore.selectedConversationId, { vector_store_id: newVectorStoreId.value });
+    }
+
+    await chatStore.sendMessage(searchQuery.value, newVectorStoreId.value);
     searchQuery.value = "";
     uploadedFiles.value = [];
-    chatStore.setVectorStoreId(null);
+    newVectorStoreId.value = null;
 
     useTrackEvent("form_submit_question", {
       event_category: "engagement",

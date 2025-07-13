@@ -1,10 +1,11 @@
 import { getOrCreateSessionId, throttlePerMessages } from "~/utils/helpers";
 import { organizePromptInfo } from "~/utils/gamification";
-import type { Conversation, Message, ConversationUpdateDto } from "~/models/chat";
+import type { Conversation, Message } from "~/models/chat";
+import type { Database, Tables, TablesUpdate } from "~/models/supabase";
 import { parseMarkdown } from "~/utils/helpers";
 
 export function useConversationRepository() {
-  const supabase = useSupabaseClient();
+  const supabase = useSupabaseClient<Database>();
   const user = useSupabaseUser();
 
   const conversationsQuery = supabase.from("conversations");
@@ -179,18 +180,18 @@ export function useConversationRepository() {
    * @param title The title of the conversation
    * @returns The ID of the newly created conversation
    */
-  async function createConversationInSupabase(title: string): Promise<string> {
+  async function createConversationInSupabase(title: string, vectorStoreId: string | null = null): Promise<string> {
     try {
       const sessionId = getOrCreateSessionId();
       const currentUserId = user.value?.id;
 
       // Create the conversation in Supabase
       const { data: newConversation, error } = await conversationsQuery
-        //@ts-ignore
         .insert({
           title,
           user_id: currentUserId || null,
           session_id: sessionId,
+          vector_store_id: vectorStoreId,
         })
         .select("id")
         .single();
@@ -218,8 +219,14 @@ export function useConversationRepository() {
     type RawCloudConversation = {
       id: string;
       title: string;
+      vector_store_id: string | null;
       created_at: string; // Timestamp for the conversation itself
-      user_prompts: { id: string; message: string; created_at: string; time_saved: string }[];
+      user_prompts: {
+        id: string;
+        message: string;
+        created_at: string;
+        time_saved: number | null;
+      }[];
       dwight_responses: {
         id: string;
         message: string;
@@ -245,6 +252,7 @@ export function useConversationRepository() {
           `
           id,
           title,
+          vector_store_id,
           created_at,
           user_prompts (
             id,
@@ -320,6 +328,7 @@ export function useConversationRepository() {
           title: rawConv.title,
           createdAt: new Date(rawConv.created_at),
           messages: messages,
+          vector_store_id: rawConv.vector_store_id,
         };
 
         if (conversation.messages.length > 0) {
@@ -350,26 +359,21 @@ export function useConversationRepository() {
   }
 
   /**
-   * Updates a single conversation in Supabase using a DTO.
+   * Updates a single conversation in Supabase.
    * @param id The ID of the conversation to update.
    * @param dto The data transfer object with the fields to update.
    */
-  async function updateConversationInSupabase(id: string, dto: ConversationUpdateDto): Promise<void> {
+  async function updateConversationInSupabase(
+    id: string,
+    dto: TablesUpdate<"conversations">,
+  ): Promise<void> {
     try {
-      // Map DTO to database column names (e.g., responseId -> response_id)
-      const updateData: { [key: string]: any } = {};
-      if (dto.title) {
-        updateData.title = dto.title;
-      }
-
-      // Ensure we don't try to send an empty update
-      if (Object.keys(updateData).length === 0) {
+      if (Object.keys(dto).length === 0) {
         console.log("updateConversationInSupabase: No fields to update.");
         return;
       }
 
-      //@ts-ignore
-      const { error } = await conversationsQuery.update(updateData).eq("id", id);
+      const { error } = await conversationsQuery.update(dto).eq("id", id);
 
       if (error) {
         console.error(`updateConversationInSupabase: Error updating conversation ${id}:`, error.message);

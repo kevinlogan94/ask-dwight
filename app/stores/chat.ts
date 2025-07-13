@@ -16,7 +16,6 @@ export const useChatStore = defineStore("chat", () => {
   const anyMessagesSentForCurrentSession = ref(false); // need to know if they just opened the app.
   const isSourcesPanelOpen = ref(false);
   const activeSources = ref<Source[]>([]);
-  const vectorStoreId = ref<string | null>(null);
 
   // Getters
   const selectedConversation = computed<Conversation | undefined>(() => {
@@ -56,10 +55,6 @@ export const useChatStore = defineStore("chat", () => {
     activeSources.value = [];
   }
 
-  function setVectorStoreId(id: string | null) {
-    vectorStoreId.value = id;
-  }
-
   // Dependencies
   const { sendMessage } = useMessageService();
   const { createNewConversation, selectConversation } = useConversationService();
@@ -84,7 +79,6 @@ export const useChatStore = defineStore("chat", () => {
     chatStatus,
     isSourcesPanelOpen,
     activeSources,
-    vectorStoreId,
 
     // Getters
     selectedConversation,
@@ -100,6 +94,6 @@ export const useChatStore = defineStore("chat", () => {
     associateConversationsWithUser,
     openSourcesPanel,
     closeSourcesPanel,
-    setVectorStoreId,
+
   };
 });

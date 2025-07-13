@@ -26,6 +26,7 @@ export interface Conversation {
   id: string;
   title: string;
   messages: Message[];
+  vector_store_id: string | null;
   createdAt: Date;
 }
 
@@ -33,10 +34,6 @@ export interface MessageAction {
   label: string;
   icon: string;
   onClick: (e: MouseEvent, message: Message) => void;
-}
-
-export interface ConversationUpdateDto {
-  title?: string;
 }
 
 export interface AssistantMessageCreateDto {
