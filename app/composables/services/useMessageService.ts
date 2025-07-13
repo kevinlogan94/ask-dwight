@@ -239,6 +239,7 @@ export function useMessageService() {
       }
     }
 
+    chatStore.clearSources();
     clearSuggestions();
     await addUserMessage(content);
     chatStore.chatStatus = "submitted";

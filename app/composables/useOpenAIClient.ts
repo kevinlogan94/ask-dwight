@@ -66,17 +66,26 @@ export const useOpenAIClient = () => {
         try {
           const parsedData = JSON.parse(event.data);
 
-          if (parsedData.type === "response.created") {
-            chatStore.chatStatus = "streaming";
-          }
-
-          if (parsedData.type === "response.output_text.delta") {
-            const delta = parsedData.delta;
-            onDelta(delta);
-          }
-
-          if (parsedData.type === "response.completed") {
-            responseCompletedEvent = parsedData;
+          switch (parsedData.type) {
+            case "response.created":
+              chatStore.chatStatus = "streaming";
+              break;
+            case "response.output_text.delta":
+              const delta = parsedData.delta;
+              onDelta(delta);
+              break;
+            case "response.completed":
+              responseCompletedEvent = parsedData;
+              break;
+            case "response.output_text.annotation.added":
+              const { annotation } = parsedData;
+              if (annotation.type === "file_citation") {
+                chatStore.addSource({
+                  title: annotation.filename,
+                  type: 'file',
+                });
+              }
+              break;
           }
         } catch (e) {
           console.error("Failed to parse event data from stream:", event.data, e);

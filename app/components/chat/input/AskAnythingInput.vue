@@ -223,7 +223,6 @@ const handleFileUpload = async (event: Event) => {
 };
 
 const handleSubmit = async () => {
-  // TODO: Handle file submission along with the message
   if (
     searchQuery.value.trim() &&
     chatStore.chatStatus !== "streaming" &&
@@ -232,7 +231,6 @@ const handleSubmit = async () => {
   ) {
     
     // todo: Remove this later
-    // This will take care of existing conversations that don't have a vector_store_id
     // This will take care of existing conversations that don't have a vector_store_id
     if (newVectorStoreId.value && chatStore.selectedConversationId) {
       await updateConversation(chatStore.selectedConversationId, { vector_store_id: newVectorStoreId.value });

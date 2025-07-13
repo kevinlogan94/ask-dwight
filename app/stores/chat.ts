@@ -55,6 +55,20 @@ export const useChatStore = defineStore("chat", () => {
     activeSources.value = [];
   }
 
+  function addSource(source: Source) {
+    // Check if the source already exists to avoid duplicates
+    const exists = activeSources.value.some(
+      (s) => s.title === source.title && s.type === source.type,
+    );
+    if (!exists) {
+      activeSources.value.push(source);
+    }
+  }
+
+  function clearSources() {
+    activeSources.value = [];
+  }
+
   // Dependencies
   const { sendMessage } = useMessageService();
   const { createNewConversation, selectConversation } = useConversationService();
@@ -94,6 +108,8 @@ export const useChatStore = defineStore("chat", () => {
     associateConversationsWithUser,
     openSourcesPanel,
     closeSourcesPanel,
+    addSource,
+    clearSources,
 
   };
 });
