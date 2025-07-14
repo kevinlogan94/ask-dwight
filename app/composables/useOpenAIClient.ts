@@ -80,9 +80,12 @@ export const useOpenAIClient = () => {
             case "response.output_text.annotation.added":
               const { annotation } = parsedData;
               if (annotation.type === "file_citation") {
+                const messageId = chatStore.selectedConversation!.messages[chatStore.selectedConversation!.messages.length - 1]!.id;
+
                 chatStore.addSource({
                   title: annotation.filename,
                   type: 'file',
+                  messageId,
                 });
               }
               break;

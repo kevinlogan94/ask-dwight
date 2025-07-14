@@ -30,7 +30,7 @@
               v-html="message.htmlContent || message.content"
             ></div>
             <!-- Sources Button -->
-            <div v-if="chatStore.activeSources && chatStore.activeSources.length" class="mt-4">
+            <div v-if="messageHasSources(message)" class="mt-4">
               <UButton
                 icon="i-lucide-book-open"
                 size="md"
@@ -127,6 +127,10 @@ const chatStore = useChatStore();
 const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 
 const { handleCopyMessage, handleReaction } = useChatActions();
+
+function messageHasSources(message: Message): boolean {
+  return !!chatStore.activeSources?.some((s) => s.messageId === message.id);
+}
 
 function getActionIcon(action: MessageAction, message: Message): string {
   if (action.label === "Thumbs Up" && message.reaction === "thumbs_up") {

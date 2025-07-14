@@ -19,6 +19,7 @@ export interface Message {
 export interface Source {
   title: string;
   type: 'web' | 'file';
+  messageId: string;
 }
 
 export interface Conversation {

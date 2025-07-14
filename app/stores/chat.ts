@@ -4,6 +4,7 @@ import { throttleConversation } from "~/utils/helpers";
 import { useMessageService } from "~/composables/services/useMessageService";
 import { useConversationService } from "~/composables/services/useConversationService";
 import { useConversationRepository } from "~/composables/repositories/chat/useConversationRepository";
+import { useLocalStorage } from "@vueuse/core";
 
 export const useChatStore = defineStore("chat", () => {
   // State
@@ -68,6 +69,8 @@ export const useChatStore = defineStore("chat", () => {
     await syncConversationsToSupabase();
     conversations.value = await fetchConversationsFromSupabase();
 
+    activeSources.value = useLocalStorage("ask-dwight-active-sources", []).value;
+
     if (conversations.value.length > 0 && !selectedConversationId.value) {
       selectedConversationId.value = conversations.value[0]!.id;
     }
@@ -97,6 +100,5 @@ export const useChatStore = defineStore("chat", () => {
     associateConversationsWithUser,
     addSource,
     clearSources,
-
   };
 });
