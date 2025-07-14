@@ -72,7 +72,7 @@ export const useChatStore = defineStore("chat", () => {
     activeSources.value = useLocalStorage("ask-dwight-active-sources", []).value;
 
     if (conversations.value.length > 0 && !selectedConversationId.value) {
-      selectedConversationId.value = conversations.value[0]!.id;
+      selectedConversationId.value = conversations.value.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]!.id;
     }
   });
 

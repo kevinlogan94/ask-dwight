@@ -22,7 +22,7 @@
 
       <!-- Main navigation -->
       <div class="p-2 space-y-1">
-        <UButton
+        <!-- <UButton
           to="/my-playbook"
           icon="i-lucide-notebook-tabs"
           variant="ghost"
@@ -30,8 +30,8 @@
           class="w-full justify-start text-base font-normal"
         >
           My Playbook
-        </UButton>
-
+        </UButton> -->
+<!-- 
         <UAccordion v-if="accounts.length > 0" :items="accordionItems" :ui="{ label:'text-base font-normal', item: 'p-0 w-full', trigger: 'px-3 py-2 hover:bg-transparent dark:hover:bg-transparent' }">
           
           <template #accounts-body>
@@ -67,7 +67,7 @@
           class="w-full justify-start text-base font-normal"
         >
           Accounts
-        </UButton>
+        </UButton> -->
 
         <UButton
           icon="i-lucide-plus-circle"
@@ -90,7 +90,7 @@
         </div>
 
         <UButton
-          v-for="conversation in chatStore.conversations"
+          v-for="conversation in sortedConversations"
           :key="conversation.id"
           icon="i-lucide-message-square"
           variant="ghost"
@@ -145,6 +145,12 @@ const accounts = ref([
 
 // Use the chat store
 const chatStore = useChatStore();
+
+const sortedConversations = computed(() => {
+  return [...chatStore.conversations].sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+});
 
 // Local state for component functionality
 const isOpen = computed({
