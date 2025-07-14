@@ -1,7 +1,7 @@
 <template>
-  <USlideover v-model="isSourcesPanelOpen" title="Sources" description="Dwight used the following documents to generate this response">
-    <UCard class="flex flex-col flex-1">
-      <div class="p-4 flex-1 space-y-6">
+  <USlideover v-model:open="chatStore.isSourcesPanelOpen" title="Sources" description="Dwight used the following documents to generate this response">
+    <template #body>
+      <div class="flex-1 space-y-6">
         <!-- Documents Section -->
         <div v-if="documentSources.length > 0" class="space-y-2">
           <p class="text-sm font-medium text-gray-900 dark:text-white">Documents</p>
@@ -10,8 +10,7 @@
               <UButton
                 color="neutral"
                 variant="outline"
-                block
-                class="text-left"
+                class="text-left w-full p-4 text-md"
                 icon="i-lucide-file-text"
               >
                 <span class="truncate">{{ source.title }}</span>
@@ -28,8 +27,7 @@
               <UButton
                 color="neutral"
                 variant="outline"
-                block
-                class="text-left"
+                class="text-left w-full p-4 text-md"
                 icon="i-lucide-link"
               >
                 <span class="truncate">{{ source.title }}</span>
@@ -38,7 +36,7 @@
           </ul>
         </div>
       </div>
-    </UCard>
+    </template>
   </USlideover>
 </template>
 
@@ -46,15 +44,6 @@
 import { useChatStore } from "~/stores/chat";
 
 const chatStore = useChatStore();
-
-const isSourcesPanelOpen = computed({
-  get: () => chatStore.isSourcesPanelOpen,
-  set: (value) => {
-    if (!value) {
-      chatStore.closeSourcesPanel();
-    }
-  },
-});
 
 const activeSources = computed(() => chatStore.activeSources);
 

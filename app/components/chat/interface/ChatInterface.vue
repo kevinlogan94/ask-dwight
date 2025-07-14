@@ -5,7 +5,6 @@
       <!-- Chat messages area-->
       <div class="flex-1 py-4 px-4 md:px-6">
         <div v-for="message in chatStore.currentMessages" :key="message.id" class="mb-4" v-motion-slide-bottom>
-
           <!-- System Message (Loading, Errors) -->
           <div v-if="message.role === 'system'" class="flex items-start">
             <div class="max-w-[80%]">
@@ -31,21 +30,21 @@
               v-html="message.htmlContent || message.content"
             ></div>
             <!-- Sources Button -->
-            <div v-if="message.sources && message.sources.length" class="mt-2">
+            <div v-if="chatStore.activeSources && chatStore.activeSources.length" class="mt-4">
               <UButton
                 icon="i-lucide-book-open"
-                size="sm"
+                size="md"
                 color="neutral"
                 variant="link"
-                :label="`Sources (${message.sources.length})`"
-                :padded="false"
-                @click="chatStore.openSourcesPanel(message.sources)"
+                :label="`Sources (${chatStore.activeSources.length})`"
+                class="p-0"
+                @click="chatStore.isSourcesPanelOpen = true"
               />
             </div>
             <!-- Assistant Message Actions -->
             <UButtonGroup
               :class="[
-                'mt-2',
+                'mt-4',
                 {
                   'opacity-0 group-hover:opacity-100 transition-opacity duration-300':
                     chatStore.currentMessages.indexOf(message) !== chatStore.currentMessages.length - 1,
@@ -130,10 +129,10 @@ const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 const { handleCopyMessage, handleReaction } = useChatActions();
 
 function getActionIcon(action: MessageAction, message: Message): string {
-  if (action.label === "Thumbs Up" && message.reaction === 'thumbs_up') {
+  if (action.label === "Thumbs Up" && message.reaction === "thumbs_up") {
     return "i-heroicons-hand-thumb-up-solid";
   }
-  if (action.label === "Thumbs Down" && message.reaction === 'thumbs_down') {
+  if (action.label === "Thumbs Down" && message.reaction === "thumbs_down") {
     return "i-heroicons-hand-thumb-down-solid";
   }
 
@@ -144,12 +143,12 @@ const assistantMessageActions: MessageAction[] = [
   {
     label: "Thumbs Up",
     icon: "i-heroicons-hand-thumb-up",
-    onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_up'),
+    onClick: (e: MouseEvent, message: Message) => handleReaction(message, "thumbs_up"),
   },
   {
     label: "Thumbs Down",
     icon: "i-heroicons-hand-thumb-down",
-    onClick: (e: MouseEvent, message: Message) => handleReaction(message, 'thumbs_down'),
+    onClick: (e: MouseEvent, message: Message) => handleReaction(message, "thumbs_down"),
   },
   {
     label: "Copy",

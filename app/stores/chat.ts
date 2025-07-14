@@ -44,17 +44,6 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
-  function openSourcesPanel(sources: Source[]) {
-    activeSources.value = sources;
-    isSourcesPanelOpen.value = true;
-  }
-
-  function closeSourcesPanel() {
-    isSourcesPanelOpen.value = false;
-    // We can clear the sources when the panel closes
-    activeSources.value = [];
-  }
-
   function addSource(source: Source) {
     // Check if the source already exists to avoid duplicates
     const exists = activeSources.value.some(
@@ -106,8 +95,6 @@ export const useChatStore = defineStore("chat", () => {
     selectConversation,
     sendMessage,
     associateConversationsWithUser,
-    openSourcesPanel,
-    closeSourcesPanel,
     addSource,
     clearSources,
 
