@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { useEventListener } from "@vueuse/core";
-import { useFileUpload } from "~/composables/useFileUpload";
+import { useFileUpload, supportedMimeTypes } from "~/composables/useFileUpload";
 import NewConversationScreen from "~/components/chat/interface/NewConversationScreen.vue";
 import ChatInterface from "~/components/chat/interface/ChatInterface.vue";
 import { useChatStore } from "~/stores/chat";
@@ -31,11 +31,16 @@ const { processFiles } = useFileUpload();
 // Counter to track drag events over the window
 let dragCounter = 0;
 
-useEventListener(window, "dragenter", (event) => {
+useEventListener(window, "dragenter", (event: DragEvent) => {
   event.preventDefault();
-  if (event.dataTransfer?.types.includes("Files")) {
-    dragCounter++;
-    chatStore.isDragging = true;
+  if (event.dataTransfer?.items) {
+    const items = Array.from(event.dataTransfer.items);
+    const containsSupportedFile = items.some((item) => item.kind === "file" && supportedMimeTypes.includes(item.type));
+
+    if (containsSupportedFile) {
+      dragCounter++;
+      chatStore.isDragging = true;
+    }
   }
 });
 
