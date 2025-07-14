@@ -17,6 +17,7 @@ export const useChatStore = defineStore("chat", () => {
   const anyMessagesSentForCurrentSession = ref(false); // need to know if they just opened the app.
   const isSourcesPanelOpen = ref(false);
   const activeSources = ref<Source[]>([]);
+  const isDragging = ref(false);
 
   // Getters
   const selectedConversation = computed<Conversation | undefined>(() => {
@@ -85,6 +86,7 @@ export const useChatStore = defineStore("chat", () => {
     chatStatus,
     isSourcesPanelOpen,
     activeSources,
+    isDragging,
 
     // Getters
     selectedConversation,
