@@ -1,5 +1,16 @@
 <template>
-  <div>
+  <div ref="dropZoneRef" class="relative">
+    <!-- Dropzone Overlay -->
+    <div
+      v-if="isOverDropZone"
+      class="absolute inset-0 flex items-center justify-center rounded-lg border-2 border-dashed border-primary-500 bg-primary-500/30 z-10"
+    >
+      <div class="text-center text-black dark:text-white">
+        <UIcon name="i-lucide-upload-cloud" class="w-12 h-12 mx-auto" />
+        <p class="mt-2 font-semibold">Drop files to upload</p>
+      </div>
+    </div>
+
     <div class="flex justify-end mb-2 mr-1" v-if="!chatStore.showNewConversationScreen">
       <DojoMeter />
     </div>
@@ -78,6 +89,7 @@ import { useChatStore } from "~/stores/chat";
 import DojoMeter from "~/components/chat/DojoMeter.vue";
 import { useVectorStoreService } from "~/composables/services/useVectorStoreService";
 import { useConversationService } from "~/composables/services/useConversationService";
+import { useDropZone } from "@vueuse/core";
 
 interface UploadedFile {
   id: string;
@@ -93,6 +105,18 @@ const searchQuery = ref("");
 const newVectorStoreId = ref<string | null>(null);
 const uploadedFiles = ref<UploadedFile[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
+const dropZoneRef = ref<HTMLDivElement>();
+
+function onDrop(files: File[] | null) {
+  if (files) {
+    // Create a FileList object to maintain consistency with the processFiles function
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => dataTransfer.items.add(file));
+    processFiles(dataTransfer.files);
+  }
+}
+
+const { isOverDropZone } = useDropZone(dropZoneRef, { onDrop });
 
 const isUploadingFiles = computed(() => {
   return uploadedFiles.value.some((file) => file.status === "uploading");
@@ -155,6 +179,10 @@ const handleRemoveFile = async (file: UploadedFile) => {
 const handleFileUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (!target.files) return;
+  processFiles(target.files);
+};
+
+const processFiles = async (files: FileList) => {
 
   let vectorStoreId = chatStore.selectedConversation?.vector_store_id ?? newVectorStoreId.value;
 
@@ -175,7 +203,7 @@ const handleFileUpload = async (event: Event) => {
     }
   }
 
-  for (const file of Array.from(target.files)) {
+    for (const file of Array.from(files)) {
     const maxSizeInMB = 25;
     const maxSizeBytes = maxSizeInMB * 1024 * 1024;
 
@@ -217,8 +245,9 @@ const handleFileUpload = async (event: Event) => {
     }
   }
 
-  if (target) {
-    target.value = "";
+    const fileInputElement = fileInput.value;
+  if (fileInputElement) {
+    fileInputElement.value = "";
   }
 };
 
