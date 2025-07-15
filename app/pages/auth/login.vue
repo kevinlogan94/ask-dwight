@@ -18,6 +18,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ showSidebar: false });
+
 const supabase = useSupabaseClient();
 
 const providers = [

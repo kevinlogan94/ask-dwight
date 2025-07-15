@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useChatStore } from "~//stores/chat";
+definePageMeta({ showSidebar: false });
+import { useChatStore } from "~/stores/chat";
 
 const user = useSupabaseUser();
 const chatStore = useChatStore();
