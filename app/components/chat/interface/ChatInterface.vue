@@ -118,7 +118,7 @@ import TypingAnimation from "~/components/chat/TypingAnimation.vue";
 import ScrollToBottomButton from "~/components/chat/ScrollToBottomButton.vue";
 import AskAnythingInput from "~/components/chat/input/AskAnythingInput.vue";
 import SourcesPanel from "~/components/chat/SourcesPanel.vue";
-import { useChatStore } from "~//stores/chat";
+import { useChatStore } from "~/stores/chat";
 import type { Message, MessageAction } from "~/models/chat";
 import { useChatActions } from "~/composables/useChatActions";
 
@@ -163,7 +163,9 @@ const assistantMessageActions: MessageAction[] = [
 
 onMounted(() => {
   nextTick(() => {
-    scrollButton.value?.scrollToBottom();
+    setTimeout(() => {
+      scrollButton.value?.scrollToBottom();
+    }, 100); // 100ms delay to wait for animations
   });
 });
 
@@ -176,9 +178,12 @@ function setupForNewConversation() {
 watch(
   () => chatStore.currentMessages,
   () => {
-    // Use nextTick to ensure DOM is updated before scrolling
+    // Use nextTick to ensure DOM is updated before scrolling. The timeout allows
+    // for the v-motion animations to complete before we calculate the scroll position.
     nextTick(() => {
-      scrollButton.value?.scrollToBottom();
+      setTimeout(() => {
+        scrollButton.value?.scrollToBottom();
+      }, 100); // 100ms delay to wait for animations
     });
   },
   { deep: true },
