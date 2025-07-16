@@ -196,7 +196,7 @@ function updateLastMessageHeight() {
 
     // 2. Calculate the total available space for the new message.
     // This is the full window height minus the user's message, the navbar, the input controls, and other spacing.
-    const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - fixedControlsHeight - chatMessageAreaPadding - buffer;
+    const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - chatMessageAreaPadding - buffer;
 
     // 3. Apply the calculated height.
     // The condition checks if the calculated space is large enough to warrant an expansion.
@@ -204,7 +204,7 @@ function updateLastMessageHeight() {
     if (availableSpace > lastMessageEl.offsetHeight + fixedControlsHeight) {
       lastMessageStyle.value = { minHeight: `${availableSpace}px` };
     } else {
-      lastMessageStyle.value = { 'margin-bottom': '170px' };
+      lastMessageStyle.value = { 'margin-bottom': '180px' };
     }
   });
 }
