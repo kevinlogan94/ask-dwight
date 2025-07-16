@@ -1,5 +1,5 @@
 <template>
-  <div ref="chatContainerRef" class="flex flex-col pb-40">
+  <div class="flex flex-col">
     <!-- Chat container - centered with max width -->
     <div class="flex-1 flex flex-col w-full max-w-3xl mx-auto">
       <!-- Chat messages area-->
@@ -17,17 +17,20 @@
             </div>
           </div>
 
+          
           <!-- Assistant Message (AI Response) -->
-          <div v-else-if="message.role === 'assistant'" class="flex flex-col group"
-          :ref="
-                (el) => {
-                  if (index === chatStore.currentMessages.length - 1) {
-                    lastAssistantMessageContentRef = el as HTMLElement;
-                  }
+          <div
+            v-else-if="message.role === 'assistant'"
+            class="flex flex-col group"
+            :ref="
+              (el) => {
+                if (index === chatStore.currentMessages.length - 1) {
+                  lastAssistantMessageContentRef = el as HTMLElement;
                 }
-              "
-              :style="index === chatStore.currentMessages.length - 1 ? lastMessageStyle : {}"
-            >
+              }
+            "
+            :style="index === chatStore.currentMessages.length - 1 ? lastMessageStyle : {}"
+          >
             <!-- Display AI response content -->
             <div
               :class="
@@ -91,7 +94,13 @@
           </div>
 
           <!-- User Message -->
-          <div v-else-if="message.role === 'user'" class="flex justify-end">
+          <div v-else-if="message.role === 'user'" class="flex justify-end" :ref="
+              (el) => {
+                if (index === chatStore.currentMessages.length - 2) {
+                  lastUserMessageContentRef = el as HTMLElement;
+                }
+              }
+            ">
             <p class="bg-primary-600 rounded-lg p-3 text-white max-w-[80%] text-wrap">
               {{ message.content }}
             </p>
@@ -138,9 +147,8 @@ const chatStore = useChatStore();
 const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 
 // Refs for DOM elements
-const chatContainerRef = ref<HTMLElement | null>(null);
-const fixedControlsRef = ref<HTMLElement | null>(null);
 const lastAssistantMessageContentRef = ref<HTMLElement | null>(null);
+const lastUserMessageContentRef = ref<HTMLElement | null>(null);
 
 // Reactive state for dynamic styling
 const lastMessageStyle = ref({});
@@ -166,22 +174,32 @@ function updateLastMessageHeight() {
   // nextTick ensures that the DOM has been updated with the latest message before we measure it
   nextTick(() => {
     const lastMessageEl = lastAssistantMessageContentRef.value;
-    const fixedControlsEl = fixedControlsRef.value;
+    const lastUserMessageEl = lastUserMessageContentRef.value;
 
-    if (!lastMessageEl || !fixedControlsEl) return;
+    if (!lastMessageEl || !lastUserMessageEl) return;
 
-    const lastMessageRect = lastMessageEl.getBoundingClientRect();
-    const fixedControlsHeight = fixedControlsEl.offsetHeight;
+    const lastUserMessageHeight = lastUserMessageEl.offsetHeight;
+    const navbarHeight = 63;
+    const chatMessageAreaPadding = 16;
 
-    // Calculate the available vertical space between the top of the last message and the top of the fixed controls
-    const availableSpace = windowHeight.value - lastMessageRect.top - fixedControlsHeight;
+    // Calculate the available vertical space between the bottom of the viewport and the top of the fixed controls.
+    const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - chatMessageAreaPadding;
+    console.log("windowheight: ", windowHeight.value);
+    console.log("lastUserMessageHeight: ", lastUserMessageHeight);//
+    console.log("rect: ", lastMessageEl.getBoundingClientRect().top - 16);
 
-    // The new min-height is the message's current height plus the remaining available space
-    const newMinHeight = lastMessageRect.height + availableSpace;
+    // The new min-height is the total available space minus the message's starting position from the top of the viewport.
+    // A small buffer (1rem = 16px) is subtracted for comfortable spacing.
+    const newMinHeight = availableSpace;
 
-    // Only apply the style if it expands the message, preventing it from shrinking
-    if (newMinHeight > lastMessageRect.height) {
+    console.log("newMinHeight: ", newMinHeight);
+    console.log("lastMessageEl.offsetHeight: ", lastMessageEl.offsetHeight);//
+    // Only apply the style if it expands the message, preventing it from shrinking or collapsing.
+    if (newMinHeight > lastMessageEl.offsetHeight) {
       lastMessageStyle.value = { minHeight: `${newMinHeight}px` };
+    }
+    else {
+      lastMessageStyle.value = { 'margin-bottom': '40px'};
     }
   });
 }
