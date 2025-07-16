@@ -1,10 +1,10 @@
 <template>
-  <div class="flex flex-col pb-40">
+  <div ref="chatContainerRef" class="flex flex-col pb-40">
     <!-- Chat container - centered with max width -->
     <div class="flex-1 flex flex-col w-full max-w-3xl mx-auto">
       <!-- Chat messages area-->
       <div class="flex-1 py-4 px-4 md:px-6">
-        <div v-for="message in chatStore.currentMessages" :key="message.id" class="mb-4" v-motion-slide-bottom>
+        <div v-for="(message, index) in chatStore.currentMessages" :key="message.id" class="mb-4" v-motion-slide-bottom>
           <!-- System Message (Loading, Errors) -->
           <div v-if="message.role === 'system'" class="flex items-start">
             <div class="max-w-[80%]">
@@ -18,7 +18,16 @@
           </div>
 
           <!-- Assistant Message (AI Response) -->
-          <div v-else-if="message.role === 'assistant'" class="flex flex-col group">
+          <div v-else-if="message.role === 'assistant'" class="flex flex-col group"
+          :ref="
+                (el) => {
+                  if (index === chatStore.currentMessages.length - 1) {
+                    lastAssistantMessageContentRef = el as HTMLElement;
+                  }
+                }
+              "
+              :style="index === chatStore.currentMessages.length - 1 ? lastMessageStyle : {}"
+            >
             <!-- Display AI response content -->
             <div
               :class="
@@ -93,6 +102,7 @@
 
     <!-- Fixed elements container at bottom -->
     <div
+      ref="fixedControlsRef"
       class="fixed bottom-0 left-0 right-0 flex flex-col items-center pb-4 transition-all duration-300"
       :class="{ 'lg:ml-64': chatStore.sidebarOpen }"
     >
@@ -120,13 +130,61 @@ import AskAnythingInput from "~/components/chat/input/AskAnythingInput.vue";
 import SourcesPanel from "~/components/chat/SourcesPanel.vue";
 import { useChatStore } from "~/stores/chat";
 import type { Message, MessageAction } from "~/models/chat";
+import { useWindowSize } from "@vueuse/core";
 import { useChatActions } from "~/composables/useChatActions";
 
 // Use the chat store
 const chatStore = useChatStore();
 const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 
+// Refs for DOM elements
+const chatContainerRef = ref<HTMLElement | null>(null);
+const fixedControlsRef = ref<HTMLElement | null>(null);
+const lastAssistantMessageContentRef = ref<HTMLElement | null>(null);
+
+// Reactive state for dynamic styling
+const lastMessageStyle = ref({});
+const { height: windowHeight } = useWindowSize();
+
 const { handleCopyMessage, handleReaction } = useChatActions();
+
+/**
+ * Calculates and applies a minimum height to the last assistant message to fill the remaining screen space.
+ * This creates an immersive, focused view for the most recent response.
+ */
+function updateLastMessageHeight() {
+  // Reset style before recalculating
+  lastMessageStyle.value = {};
+
+  const lastMessage = chatStore.currentMessages[chatStore.currentMessages.length - 1];
+
+  // Only apply this logic to the very last message, and only if it's from the assistant
+  if (!lastMessage || lastMessage.role !== "assistant") {
+    return;
+  }
+
+  // nextTick ensures that the DOM has been updated with the latest message before we measure it
+  nextTick(() => {
+    const lastMessageEl = lastAssistantMessageContentRef.value;
+    const fixedControlsEl = fixedControlsRef.value;
+
+    if (!lastMessageEl || !fixedControlsEl) return;
+
+    const lastMessageRect = lastMessageEl.getBoundingClientRect();
+    const fixedControlsHeight = fixedControlsEl.offsetHeight;
+
+    // Calculate the available vertical space between the top of the last message and the top of the fixed controls
+    const availableSpace = windowHeight.value - lastMessageRect.top - fixedControlsHeight;
+
+    // The new min-height is the message's current height plus the remaining available space
+    const newMinHeight = lastMessageRect.height + availableSpace;
+
+    // Only apply the style if it expands the message, preventing it from shrinking
+    if (newMinHeight > lastMessageRect.height) {
+      lastMessageStyle.value = { minHeight: `${newMinHeight}px` };
+    }
+  });
+}
 
 function messageHasSources(message: Message): boolean {
   return !!chatStore.activeSources?.some((s) => s.messageId === message.id);
@@ -160,6 +218,15 @@ const assistantMessageActions: MessageAction[] = [
     onClick: (e: MouseEvent, message: Message) => handleCopyMessage(message),
   },
 ];
+
+watch(
+  [() => chatStore.currentMessages, windowHeight],
+  () => {
+    // A short timeout to allow for DOM updates and animations to settle before calculating
+    setTimeout(updateLastMessageHeight, 100);
+  },
+  { deep: true, immediate: true },
+);
 
 onMounted(() => {
   nextTick(() => {
