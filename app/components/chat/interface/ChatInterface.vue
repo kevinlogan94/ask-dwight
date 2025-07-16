@@ -149,6 +149,7 @@ const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
 // Refs for DOM elements
 const lastAssistantMessageContentRef = ref<HTMLElement | null>(null);
 const lastUserMessageContentRef = ref<HTMLElement | null>(null);
+const fixedControlsRef = ref<HTMLElement | null>(null);
 
 // Reactive state for dynamic styling
 const lastMessageStyle = ref({});
@@ -175,31 +176,35 @@ function updateLastMessageHeight() {
   nextTick(() => {
     const lastMessageEl = lastAssistantMessageContentRef.value;
     const lastUserMessageEl = lastUserMessageContentRef.value;
+    const fixedControlsEl = fixedControlsRef.value;
 
-    if (!lastMessageEl || !lastUserMessageEl) return;
+    if (!lastMessageEl || !lastUserMessageEl || !fixedControlsEl) return;
 
+    // --- Dynamic Height Calculation --- 
+    // This logic calculates a min-height for the last assistant message to create space for the response to stream in,
+    // ensuring the user's last message is visible at the top.
+
+    // 1. Measure all UI elements that affect vertical space.
     const lastUserMessageHeight = lastUserMessageEl.offsetHeight;
-    const navbarHeight = 63;
-    const chatMessageAreaPadding = 16;
+    const fixedControlsHeight = fixedControlsEl.offsetHeight;
+    const chatMessageAreaPadding = 16; // Vertical padding in the chat area.
+    const buffer = 40; // An additional buffer for comfortable spacing.
 
-    // Calculate the available vertical space between the bottom of the viewport and the top of the fixed controls.
-    const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - chatMessageAreaPadding;
-    console.log("windowheight: ", windowHeight.value);
-    console.log("lastUserMessageHeight: ", lastUserMessageHeight);//
-    console.log("rect: ", lastMessageEl.getBoundingClientRect().top - 16);
+    // Dynamically get the navbar height. Fallback to 63px if not found.
+    const navbarEl = document.getElementById('main-navbar');
+    const navbarHeight = navbarEl ? navbarEl.offsetHeight : 63;
 
-    // The new min-height is the total available space minus the message's starting position from the top of the viewport.
-    // A small buffer (1rem = 16px) is subtracted for comfortable spacing.
-    const newMinHeight = availableSpace;
+    // 2. Calculate the total available space for the new message.
+    // This is the full window height minus the user's message, the navbar, the input controls, and other spacing.
+    const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - fixedControlsHeight - chatMessageAreaPadding - buffer;
 
-    console.log("newMinHeight: ", newMinHeight);
-    console.log("lastMessageEl.offsetHeight: ", lastMessageEl.offsetHeight);//
-    // Only apply the style if it expands the message, preventing it from shrinking or collapsing.
-    if (newMinHeight > lastMessageEl.offsetHeight) {
-      lastMessageStyle.value = { minHeight: `${newMinHeight}px` };
-    }
-    else {
-      lastMessageStyle.value = { 'margin-bottom': '40px'};
+    // 3. Apply the calculated height.
+    // The condition checks if the calculated space is large enough to warrant an expansion.
+    // If not, it applies a fixed margin to ensure consistent spacing.
+    if (availableSpace > lastMessageEl.offsetHeight + fixedControlsHeight) {
+      lastMessageStyle.value = { minHeight: `${availableSpace}px` };
+    } else {
+      lastMessageStyle.value = { 'margin-bottom': '170px' };
     }
   });
 }
