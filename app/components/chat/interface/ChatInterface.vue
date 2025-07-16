@@ -17,7 +17,6 @@
             </div>
           </div>
 
-          
           <!-- Assistant Message (AI Response) -->
           <div
             v-else-if="message.role === 'assistant'"
@@ -94,13 +93,17 @@
           </div>
 
           <!-- User Message -->
-          <div v-else-if="message.role === 'user'" class="flex justify-end" :ref="
+          <div
+            v-else-if="message.role === 'user'"
+            class="flex justify-end"
+            :ref="
               (el) => {
                 if (index === chatStore.currentMessages.length - 2) {
                   lastUserMessageContentRef = el as HTMLElement;
                 }
               }
-            ">
+            "
+          >
             <p class="bg-primary-600 rounded-lg p-3 text-white max-w-[80%] text-wrap">
               {{ message.content }}
             </p>
@@ -180,7 +183,7 @@ function updateLastMessageHeight() {
 
     if (!lastMessageEl || !lastUserMessageEl || !fixedControlsEl) return;
 
-    // --- Dynamic Height Calculation --- 
+    // --- Dynamic Height Calculation ---
     // This logic calculates a min-height for the last assistant message to create space for the response to stream in,
     // ensuring the user's last message is visible at the top.
 
@@ -191,7 +194,7 @@ function updateLastMessageHeight() {
     const buffer = 40; // An additional buffer for comfortable spacing.
 
     // Dynamically get the navbar height. Fallback to 63px if not found.
-    const navbarEl = document.getElementById('main-navbar');
+    const navbarEl = document.querySelector("header");
     const navbarHeight = navbarEl ? navbarEl.offsetHeight : 63;
 
     // 2. Calculate the total available space for the new message.
@@ -204,7 +207,7 @@ function updateLastMessageHeight() {
     if (availableSpace > lastMessageEl.offsetHeight + fixedControlsHeight) {
       lastMessageStyle.value = { minHeight: `${availableSpace}px` };
     } else {
-      lastMessageStyle.value = { 'margin-bottom': '180px' };
+      lastMessageStyle.value = { "margin-bottom": "180px" };
     }
   });
 }
@@ -245,10 +248,15 @@ const assistantMessageActions: MessageAction[] = [
 watch(
   [() => chatStore.currentMessages, windowHeight],
   () => {
-    // A short timeout to allow for DOM updates and animations to settle before calculating
-    setTimeout(updateLastMessageHeight, 100);
+    nextTick(() => {
+      // A short timeout to allow for DOM updates and animations to settle before calculating
+      setTimeout(updateLastMessageHeight, 100);
+      setTimeout(() => {
+        scrollButton.value?.scrollToBottom();
+      }, 100);
+    });
   },
-  { deep: true, immediate: true },
+  { deep: true },
 );
 
 onMounted(() => {
@@ -263,19 +271,4 @@ function setupForNewConversation() {
   // Select null to display the new conversation screen
   chatStore.selectConversation(null);
 }
-
-// Watch for changes in the messages array and scroll down when new messages are added
-watch(
-  () => chatStore.currentMessages,
-  () => {
-    // Use nextTick to ensure DOM is updated before scrolling. The timeout allows
-    // for the v-motion animations to complete before we calculate the scroll position.
-    nextTick(() => {
-      setTimeout(() => {
-        scrollButton.value?.scrollToBottom();
-      }, 100); // 100ms delay to wait for animations
-    });
-  },
-  { deep: true },
-);
 </script>
