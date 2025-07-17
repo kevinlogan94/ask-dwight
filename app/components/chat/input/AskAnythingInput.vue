@@ -84,14 +84,8 @@ const { updateConversation } = useConversationService();
 const searchQuery = ref("");
 const fileInput = ref<HTMLInputElement | null>(null);
 
-const {
-  newVectorStoreId,
-  uploadedFiles,
-  isUploadingFiles,
-  processFiles,
-  removeUploadedFile,
-  resetUploadState,
-} = useFileUpload();
+const { newVectorStoreId, uploadedFiles, isUploadingFiles, processFiles, removeUploadedFile, resetUploadState } =
+  useFileUpload();
 
 const triggerFileInput = () => {
   fileInput.value?.click();
@@ -110,7 +104,6 @@ const handleSubmit = async () => {
     chatStore.chatStatus !== "submitted" &&
     !chatStore.throttleSelectedConversation
   ) {
-    
     // todo: Remove this later
     // This will take care of existing conversations that don't have a vector_store_id
     if (newVectorStoreId.value && chatStore.selectedConversationId) {

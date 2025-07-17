@@ -89,9 +89,12 @@ export const useVectorStoreService = () => {
       const fileObject = await createFile(file);
 
       // Then, attach the file to the vector store.
-      const { data: vectorStoreFileData, error: addError } = await supabase.functions.invoke("add-file-to-vector-store", {
-        body: { vectorStoreId, fileId: fileObject.id },
-      });
+      const { data: vectorStoreFileData, error: addError } = await supabase.functions.invoke(
+        "add-file-to-vector-store",
+        {
+          body: { vectorStoreId, fileId: fileObject.id },
+        },
+      );
 
       if (addError) {
         throw new Error(`Error adding file to vector store: ${addError.message}`);

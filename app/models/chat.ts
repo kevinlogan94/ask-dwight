@@ -12,13 +12,13 @@ export interface Message {
   status?: "loading" | "sent" | "streaming" | "error";
   suggestions?: string[];
   isThrottleMessage?: boolean;
-  reaction?: 'thumbs_up' | 'thumbs_down' | null;
+  reaction?: "thumbs_up" | "thumbs_down" | null;
   responseId?: string; // The unique ID from the OpenAI response
 }
 
 export interface Source {
   title: string;
-  type: 'web' | 'file';
+  type: "web" | "file";
   messageId: string;
 }
 

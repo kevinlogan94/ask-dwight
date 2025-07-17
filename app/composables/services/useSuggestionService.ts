@@ -22,12 +22,12 @@ export function useSuggestionService() {
     }
 
     // Set placeholder suggestions while loading
-    const assistantMsg = chatStore.selectedConversation.messages[chatStore.selectedConversation.messages.length - 1] as Message;
+    const assistantMsg = chatStore.selectedConversation.messages[
+      chatStore.selectedConversation.messages.length - 1
+    ] as Message;
     assistantMsg.suggestions = ["loading", "loading", "loading"];
 
-    const messagesForApi: ResponseInputItem[] = organizeMessagesForApi(
-      chatStore.selectedConversation.messages,
-    );
+    const messagesForApi: ResponseInputItem[] = organizeMessagesForApi(chatStore.selectedConversation.messages);
 
     messagesForApi.push({
       role: "user",

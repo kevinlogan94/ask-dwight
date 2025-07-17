@@ -39,23 +39,19 @@ Deno.serve(async (req: Request) => {
     // Parse the JSON body and validate
     const { vectorStoreId, fileId } = await req.json();
     if (!vectorStoreId || !fileId) {
-        return new Response(JSON.stringify({ error: "Missing vectorStoreId or fileId" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
-        });
+      return new Response(JSON.stringify({ error: "Missing vectorStoreId or fileId" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     // Remove the file from the vector store
-    const deletedFile = await openai.vectorStores.files.delete(
-        fileId,
-        {vector_store_id: vectorStoreId}
-    );
+    const deletedFile = await openai.vectorStores.files.delete(fileId, { vector_store_id: vectorStoreId });
 
     // Return the confirmation
     return new Response(JSON.stringify(deletedFile), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-
   } catch (error) {
     console.error("Error processing request:", error);
     return new Response(JSON.stringify({ error: "Error processing request" }), {

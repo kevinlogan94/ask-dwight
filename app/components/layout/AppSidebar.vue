@@ -31,7 +31,7 @@
         >
           My Playbook
         </UButton> -->
-<!-- 
+        <!-- 
         <UAccordion v-if="accounts.length > 0" :items="accordionItems" :ui="{ label:'text-base font-normal', item: 'p-0 w-full', trigger: 'px-3 py-2 hover:bg-transparent dark:hover:bg-transparent' }">
           
           <template #accounts-body>
@@ -131,9 +131,9 @@ const router = useRouter();
 
 const accordionItems = [
   {
-    label: 'Accounts',
-    icon: 'i-lucide-users',
-    slot: 'accounts-body',
+    label: "Accounts",
+    icon: "i-lucide-users",
+    slot: "accounts-body",
   },
 ];
 
@@ -165,10 +165,9 @@ const toggleSidebar = () => {
 const handleNewConversation = () => {
   // Select null to display the new conversation screen
   chatStore.selectConversation(null);
-  if (router.currentRoute.value.path !== '/') {
-    router.push('/');
+  if (router.currentRoute.value.path !== "/") {
+    router.push("/");
   }
-  
 
   if (window.innerWidth < 1024) {
     // Auto-close sidebar on mobile after creating a new conversation
@@ -184,8 +183,8 @@ const handleNewConversation = () => {
 
 const selectConversation = (conversation: Conversation) => {
   chatStore.selectConversation(conversation.id);
-  if (router.currentRoute.value.path !== '/') {
-    router.push('/');
+  if (router.currentRoute.value.path !== "/") {
+    router.push("/");
   }
   if (window.innerWidth < 1024) {
     // Auto-close sidebar on mobile after selecting a conversation

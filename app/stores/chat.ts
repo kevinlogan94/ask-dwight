@@ -47,15 +47,13 @@ export const useChatStore = defineStore("chat", () => {
 
   function addSource(source: Source) {
     // Check if the source already exists to avoid duplicates
-    const exists = activeSources.value.some(
-      (s) => s.title === source.title && s.type === source.type,
-    );
+    const exists = activeSources.value.some((s) => s.title === source.title && s.type === source.type);
     if (!exists) {
       activeSources.value.push(source);
       localStorage.setItem("ask-dwight-active-sources", JSON.stringify(activeSources.value));
     }
   }
-  
+
   function clearSources() {
     activeSources.value = [];
     localStorage.setItem("ask-dwight-active-sources", "[]");
@@ -74,7 +72,9 @@ export const useChatStore = defineStore("chat", () => {
     activeSources.value = JSON.parse(localStorage.getItem("ask-dwight-active-sources") || "[]");
 
     if (conversations.value.length > 0 && !selectedConversationId.value) {
-      selectedConversationId.value = conversations.value.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]!.id;
+      selectedConversationId.value = conversations.value.sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+      )[0]!.id;
     }
   });
 

@@ -39,23 +39,19 @@ Deno.serve(async (req: Request) => {
     // Parse the JSON body and validate
     const { vectorStoreId, fileId } = await req.json();
     if (!vectorStoreId || !fileId) {
-        return new Response(JSON.stringify({ error: "Missing vectorStoreId or fileId" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
-        });
+      return new Response(JSON.stringify({ error: "Missing vectorStoreId or fileId" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     // Add the file to the vector store
-    const vectorStoreFile = await openai.vectorStores.files.create(
-        vectorStoreId,
-        { file_id: fileId }
-    );
+    const vectorStoreFile = await openai.vectorStores.files.create(vectorStoreId, { file_id: fileId });
 
     // Return the confirmation
     return new Response(JSON.stringify(vectorStoreFile), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-
   } catch (error) {
     console.error("Error processing request:", error);
     return new Response(JSON.stringify({ error: "Error processing request" }), {

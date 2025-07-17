@@ -33,7 +33,7 @@ Ask Dwight is an AI-powered sales assistant designed to help sales professionals
 
 ## Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm
 - Supabase CLI
 - OpenAI API key
@@ -85,6 +85,7 @@ cp supabase/functions/.env.example supabase/functions/.env
 ```
 
 **Note:** For local development, update your main `.env` file with local Supabase URLs:
+
 - `NUXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321`
 - Get the local anon key from `supabase status`
 
@@ -110,6 +111,7 @@ pnpm dev
 ```
 
 Your local setup will be available at:
+
 - **Nuxt App:** http://localhost:3000
 - **Supabase Studio:** http://localhost:54323
 - **Edge Functions:** http://127.0.0.1:54321/functions/v1/
@@ -188,6 +190,7 @@ supabase functions deploy chat-conversations
 ### Function Environment Variables
 
 Functions automatically load environment variables from:
+
 - `supabase/functions/.env` (local development)
 - Supabase Dashboard > Edge Functions > Secrets (production)
 
@@ -262,14 +265,17 @@ supabase secrets set --env-file ./supabase/.env
 ### Local Development Issues
 
 **Database connection errors:**
+
 - Ensure `supabase start` is running
 - Check that `.env` has correct local URLs and anon key
 
 **Function errors:**
+
 - Verify `supabase/functions/.env` has required environment variables
 - Check function logs with `supabase functions serve`
 
 **Type generation:**
+
 - Regenerate types with `supabase gen types typescript --local > app/models/supabase.ts`
 
 ### Common Commands
@@ -291,6 +297,7 @@ git check-ignore .env supabase/functions/.env
 ---
 
 For more information:
+
 - [Nuxt Documentation](https://nuxt.com/docs)
 - [Supabase Documentation](https://supabase.com/docs)
 - [Nuxt UI Pro Documentation](https://ui.nuxt.com/pro)

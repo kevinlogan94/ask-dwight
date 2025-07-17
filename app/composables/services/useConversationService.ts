@@ -8,11 +8,11 @@ export function useConversationService() {
   const { createConversationInSupabase, updateConversationInSupabase } = useConversationRepository();
 
   /*
-  * Creates a new conversation in the chat store and in Supabase.
-  */
-async function createNewConversation(vectorStoreId: string | null = null) {
-  const conversationNumber = chatStore.conversations.length + 1;
-  const title = `Conversation ${conversationNumber}`;
+   * Creates a new conversation in the chat store and in Supabase.
+   */
+  async function createNewConversation(vectorStoreId: string | null = null) {
+    const conversationNumber = chatStore.conversations.length + 1;
+    const title = `Conversation ${conversationNumber}`;
 
     try {
       const conversationId = await createConversationInSupabase(title, vectorStoreId);
@@ -44,7 +44,7 @@ async function createNewConversation(vectorStoreId: string | null = null) {
 
   //todo use this when we start setting the title of conversations
   async function updateConversation(conversationId: string, dto: TablesUpdate<"conversations">) {
-    const conversation = chatStore.conversations.find(c => c.id === conversationId);
+    const conversation = chatStore.conversations.find((c) => c.id === conversationId);
     if (!conversation) {
       console.error(`updateConversation: Conversation with ID ${conversationId} not found`);
       return;

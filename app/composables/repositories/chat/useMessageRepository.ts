@@ -51,10 +51,7 @@ export function useMessageRepository() {
    * @param dto The assistant message create DTO
    * @returns The ID of the created response
    */
-  async function saveAssistantResponseToSupabase(
-    id: string,
-    dto: AssistantMessageCreateDto,
-  ): Promise<string> {
+  async function saveAssistantResponseToSupabase(id: string, dto: AssistantMessageCreateDto): Promise<string> {
     try {
       // Insert the response
       const { data, error } = await dwightResponsesQuery

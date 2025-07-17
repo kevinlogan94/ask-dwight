@@ -39,10 +39,10 @@ Deno.serve(async (req: Request) => {
     // Parse the JSON body and validate
     const { vectorStoreId } = await req.json();
     if (!vectorStoreId) {
-        return new Response(JSON.stringify({ error: "Missing vectorStoreId" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
-        });
+      return new Response(JSON.stringify({ error: "Missing vectorStoreId" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     // List the files in the vector store
@@ -52,7 +52,6 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify(vectorStoreFiles), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-
   } catch (error) {
     console.error("Error processing request:", error);
     return new Response(JSON.stringify({ error: "Error processing request" }), {

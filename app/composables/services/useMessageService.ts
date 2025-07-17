@@ -80,25 +80,27 @@ export function useMessageService() {
     const conversation = chatStore.selectedConversation;
     if (!conversation) return false;
 
-  // Create a placeholder message to avoid a race condition
-  const streamingMessage: Message = {
-    id: crypto.randomUUID(),
-    content: "",
-    htmlContent: "",
-    role: "assistant",
-    timestamp: new Date(),
-    status: "streaming",
-    isThrottleMessage: chatStore.throttleSelectedConversation,
-  };
-  conversation.messages.push(streamingMessage);
+    // Create a placeholder message to avoid a race condition
+    const streamingMessage: Message = {
+      id: crypto.randomUUID(),
+      content: "",
+      htmlContent: "",
+      role: "assistant",
+      timestamp: new Date(),
+      status: "streaming",
+      isThrottleMessage: chatStore.throttleSelectedConversation,
+    };
+    conversation.messages.push(streamingMessage);
 
     let tools: Array<Tool> | undefined;
 
     if (conversation.vector_store_id) {
-      tools = [{
-        type: "file_search",
-        vector_store_ids: [conversation.vector_store_id]
-      }];
+      tools = [
+        {
+          type: "file_search",
+          vector_store_ids: [conversation.vector_store_id],
+        },
+      ];
     }
 
     const response = await getResponseAPIStreamingResponse(
@@ -133,7 +135,8 @@ export function useMessageService() {
         );
 
         if (throttlingResponseEvent) {
-          const finalThrottleContent = response.response.output[response.response.output.length - 1]?.content[0]?.text ?? "";
+          const finalThrottleContent =
+            response.response.output[response.response.output.length - 1]?.content[0]?.text ?? "";
           await _finalizeStreamedMessage(finalThrottleContent, newResponseId);
         }
       } else {
@@ -193,7 +196,7 @@ export function useMessageService() {
     if (!conversation) return;
 
     // Find index of the message to remove
-        const messageIndex = conversation.messages.findIndex((m: Message) => m.status === "loading");
+    const messageIndex = conversation.messages.findIndex((m: Message) => m.status === "loading");
     if (messageIndex !== -1) {
       // Remove the message from the array
       conversation.messages.splice(messageIndex, 1);
@@ -223,7 +226,7 @@ export function useMessageService() {
    *          The Promise resolves to void, but the response is saved to the conversation
    *          and the conversation is updated in the store.
    */
-    async function sendMessage(content: string, vectorStoreId: string | null = null): Promise<void> {
+  async function sendMessage(content: string, vectorStoreId: string | null = null): Promise<void> {
     chatStore.anyMessagesSentForCurrentSession = true;
     let conversation = chatStore.selectedConversation;
 

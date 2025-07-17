@@ -363,10 +363,7 @@ export function useConversationRepository() {
    * @param id The ID of the conversation to update.
    * @param dto The data transfer object with the fields to update.
    */
-  async function updateConversationInSupabase(
-    id: string,
-    dto: TablesUpdate<"conversations">,
-  ): Promise<void> {
+  async function updateConversationInSupabase(id: string, dto: TablesUpdate<"conversations">): Promise<void> {
     try {
       if (Object.keys(dto).length === 0) {
         console.log("updateConversationInSupabase: No fields to update.");

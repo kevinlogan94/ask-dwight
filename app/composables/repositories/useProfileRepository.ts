@@ -15,10 +15,7 @@ export function useProfileRepository() {
       return null;
     }
     try {
-      const { data, error } = await profilesQuery
-        .select("*")
-        .eq("id", user.value.id)
-        .single();
+      const { data, error } = await profilesQuery.select("*").eq("id", user.value.id).single();
 
       if (error) {
         // It's okay if a profile doesn't exist yet, so don't throw.
@@ -40,10 +37,7 @@ export function useProfileRepository() {
    */
   async function createProfile(dto: TablesInsert<"profiles">): Promise<Tables<"profiles"> | null> {
     try {
-      const { data, error } = await profilesQuery
-        .insert(dto)
-        .select()
-        .single();
+      const { data, error } = await profilesQuery.insert(dto).select().single();
 
       if (error) {
         console.error("Error creating profile:", error);

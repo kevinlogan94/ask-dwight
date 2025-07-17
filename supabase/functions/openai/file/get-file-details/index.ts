@@ -39,10 +39,10 @@ Deno.serve(async (req: Request) => {
     // Parse the JSON body and validate
     const { fileId } = await req.json();
     if (!fileId) {
-        return new Response(JSON.stringify({ error: "Missing fileId" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
-        });
+      return new Response(JSON.stringify({ error: "Missing fileId" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
     }
 
     // Retrieve the file details
@@ -52,7 +52,6 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify(fileDetails), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-
   } catch (error) {
     console.error("Error processing request:", error);
     return new Response(JSON.stringify({ error: "Error processing request" }), {

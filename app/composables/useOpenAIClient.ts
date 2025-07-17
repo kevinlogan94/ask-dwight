@@ -3,18 +3,17 @@ import type { ResponseApiCompletedEvent, ResponseRequest } from "~/models/chat";
 import type { ResponseInputItem } from "openai/resources/responses/responses.mjs";
 
 export const useOpenAIClient = () => {
-
   const chatStore = useChatStore();
   const supabase = useSupabaseClient();
-  
+
   /**
- * Gets a response from the OpenAI API.
- * @param prompt The prompt to send to the API.
- * @returns A promise that resolves to the response text.
- */
+   * Gets a response from the OpenAI API.
+   * @param prompt The prompt to send to the API.
+   * @returns A promise that resolves to the response text.
+   */
   const getResponseAPIResponse = async (prompt: Array<ResponseInputItem>): Promise<string> => {
     try {
-      const { data, error } = await supabase.functions.invoke<{output_text: string}>("response-conversations", {
+      const { data, error } = await supabase.functions.invoke<{ output_text: string }>("response-conversations", {
         body: { prompt, stream: false },
       });
 
@@ -35,12 +34,12 @@ export const useOpenAIClient = () => {
   };
 
   /**
- * Gets a streaming response from the OpenAI API.
- * @param prompt The prompt to send to the API.
- * @param responseId The ID of the response to stream.
- * @param onDelta A callback function to be called when a delta is received.
- * @returns A promise that resolves to the completed response.
- */
+   * Gets a streaming response from the OpenAI API.
+   * @param prompt The prompt to send to the API.
+   * @param responseId The ID of the response to stream.
+   * @param onDelta A callback function to be called when a delta is received.
+   * @returns A promise that resolves to the completed response.
+   */
   const getResponseAPIStreamingResponse = async (
     request: ResponseRequest,
     onDelta: (delta: string) => void,
@@ -80,11 +79,12 @@ export const useOpenAIClient = () => {
             case "response.output_text.annotation.added":
               const { annotation } = parsedData;
               if (annotation.type === "file_citation") {
-                const messageId = chatStore.selectedConversation!.messages[chatStore.selectedConversation!.messages.length - 1]!.id;
+                const messageId =
+                  chatStore.selectedConversation!.messages[chatStore.selectedConversation!.messages.length - 1]!.id;
 
                 chatStore.addSource({
                   title: annotation.filename,
-                  type: 'file',
+                  type: "file",
                   messageId,
                 });
               }

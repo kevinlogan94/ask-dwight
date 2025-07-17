@@ -1,6 +1,6 @@
-import { ref, computed } from 'vue';
-import { useChatStore } from '~/stores/chat';
-import { useVectorStoreService } from '~/composables/services/useVectorStoreService';
+import { ref, computed } from "vue";
+import { useChatStore } from "~/stores/chat";
+import { useVectorStoreService } from "~/composables/services/useVectorStoreService";
 
 export const supportedMimeTypes = [
   "text/x-c",
@@ -36,7 +36,7 @@ export const supportedMimeTypesString = supportedMimeTypes.join(",");
 export interface UploadedFile {
   id: string;
   filename: string;
-  status: 'uploading' | 'completed';
+  status: "uploading" | "completed";
 }
 
 const newVectorStoreId = ref<string | null>(null);
@@ -48,7 +48,7 @@ export function useFileUpload() {
   const { createNewStore, addFile, removeFile } = useVectorStoreService();
 
   const isUploadingFiles = computed(() => {
-    return uploadedFiles.value.some((file) => file.status === 'uploading');
+    return uploadedFiles.value.some((file) => file.status === "uploading");
   });
 
   const processFiles = async (files: FileList) => {
@@ -86,7 +86,7 @@ export function useFileUpload() {
       }
 
       const tempId = `temp-${Date.now()}`;
-      const optimisticFile: UploadedFile = { id: tempId, filename: file.name, status: 'uploading' };
+      const optimisticFile: UploadedFile = { id: tempId, filename: file.name, status: "uploading" };
       uploadedFiles.value.push(optimisticFile);
 
       try {
@@ -96,7 +96,7 @@ export function useFileUpload() {
           if (index !== -1) {
             const fileToUpdate = uploadedFiles.value[index]!;
             fileToUpdate.id = uploadedFile.id;
-            fileToUpdate.status = 'completed';
+            fileToUpdate.status = "completed";
           }
         } else {
           throw new Error("Upload failed to return file details.");

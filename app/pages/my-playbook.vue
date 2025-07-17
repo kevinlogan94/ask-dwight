@@ -164,7 +164,7 @@ const AddFile = async () => {
     selectedFileName.value = "No file chosen";
     toast.add({
       title: "Playbook Updated",
-      icon: 'i-lucide-circle-check',
+      icon: "i-lucide-circle-check",
       description: "Your file has been successfully uploaded.",
       color: "primary",
     });
@@ -172,7 +172,7 @@ const AddFile = async () => {
     console.error("Failed to upload playbook file:", error);
     toast.add({
       title: "Upload Failed",
-      icon: 'i-lucide-circle-x',
+      icon: "i-lucide-circle-x",
       description: "There was an error uploading your file. Please try again.",
       color: "error",
     });
@@ -187,7 +187,7 @@ const removeFile = async (fileId: string) => {
     await playbookStore.removeFileFromPlaybook(fileId);
     toast.add({
       title: "File Removed",
-      icon: 'i-lucide-circle-check',
+      icon: "i-lucide-circle-check",
       description: "The file has been successfully removed from your playbook.",
       color: "primary",
     });
@@ -195,7 +195,7 @@ const removeFile = async (fileId: string) => {
     console.error("Failed to remove playbook file:", error);
     toast.add({
       title: "Removal Failed",
-      icon: 'i-lucide-circle-x',
+      icon: "i-lucide-circle-x",
       description: "There was an error removing the file. Please try again.",
       color: "error",
     });

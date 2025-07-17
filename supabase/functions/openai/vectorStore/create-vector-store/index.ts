@@ -42,14 +42,13 @@ Deno.serve(async (req: Request) => {
 
     // Create the vector store
     const vectorStore = await openai.vectorStores.create({
-        name: name,
+      name: name,
     });
 
     // Return the new vector store ID
     return new Response(JSON.stringify(vectorStore), {
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
-
   } catch (error) {
     console.error("Error processing request:", error);
     return new Response(JSON.stringify({ error: "Error processing request" }), {

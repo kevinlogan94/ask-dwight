@@ -15,9 +15,7 @@ export function useAccountRepository() {
       return [];
     }
     try {
-      const { data, error } = await accountsQuery
-        .select("*")
-        .eq("user_id", user.value.id);
+      const { data, error } = await accountsQuery.select("*").eq("user_id", user.value.id);
 
       if (error) {
         console.error("Error fetching accounts:", error);
@@ -38,10 +36,7 @@ export function useAccountRepository() {
    */
   async function createAccount(dto: TablesInsert<"accounts">): Promise<Tables<"accounts"> | null> {
     try {
-      const { data, error } = await accountsQuery
-        .insert(dto)
-        .select()
-        .single();
+      const { data, error } = await accountsQuery.insert(dto).select().single();
 
       if (error) {
         console.error("Error creating account:", error);
@@ -63,11 +58,7 @@ export function useAccountRepository() {
    */
   async function updateAccount(id: string, dto: TablesUpdate<"accounts">): Promise<Tables<"accounts"> | null> {
     try {
-      const { data, error } = await accountsQuery
-        .update(dto)
-        .eq("id", id)
-        .select()
-        .single();
+      const { data, error } = await accountsQuery.update(dto).eq("id", id).select().single();
 
       if (error) {
         console.error(`Error updating account ${id}:`, error);
