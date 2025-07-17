@@ -116,9 +116,9 @@ const handleSubmit = async () => {
     if (newVectorStoreId.value && chatStore.selectedConversationId) {
       await updateConversation(chatStore.selectedConversationId, { vector_store_id: newVectorStoreId.value });
     }
-
-    await chatStore.sendMessage(searchQuery.value, newVectorStoreId.value);
+    const currentSearchQuery = searchQuery.value;
     searchQuery.value = "";
+    await chatStore.sendMessage(currentSearchQuery, newVectorStoreId.value);
     resetUploadState();
 
     useTrackEvent("form_submit_question", {

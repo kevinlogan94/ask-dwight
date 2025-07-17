@@ -245,26 +245,29 @@ const assistantMessageActions: MessageAction[] = [
   },
 ];
 
-watch(
-  [() => chatStore.currentMessages, windowHeight],
-  () => {
-    nextTick(() => {
-      // A short timeout to allow for DOM updates and animations to settle before calculating
-      setTimeout(updateLastMessageHeight, 100);
-      setTimeout(() => {
-        scrollButton.value?.scrollToBottom();
-      }, 100);
-    });
-  },
-  { deep: true },
-);
-
-onMounted(() => {
+/**
+ * Handles chat view updates, including adjusting message height and scrolling.
+ * This function is triggered on mount and when chat messages or window height change.
+ */
+function handleChatUpdate() {
   nextTick(() => {
+    updateLastMessageHeight();
+  })
+  // Use nextTick to ensure the DOM is updated before calculations.
+  nextTick(() => {
+    // A short timeout allows for DOM updates and animations to settle before calculating heights and scrolling.
     setTimeout(() => {
       scrollButton.value?.scrollToBottom();
-    }, 100); // 100ms delay to wait for animations
+    }, 100);
   });
+}
+
+// Watch for changes in messages or window height to trigger UI updates.
+watch([() => chatStore.currentMessages, windowHeight], handleChatUpdate, { deep: true });
+
+// Perform initial setup and adjustments when the component is mounted.
+onMounted(() => {
+  handleChatUpdate();
 });
 
 function setupForNewConversation() {
