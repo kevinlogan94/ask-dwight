@@ -17,7 +17,7 @@
             <!-- This will render a user message if it's the very last message -->
             <div v-else-if="group.message?.role === 'assistant'">
               <div
-              class="prose max-w-none dark:prose-invert"
+                class="prose max-w-none dark:prose-invert"
                 :class="
                   group.message.isThrottleMessage
                     ? 'text-white bg-gray-900 backdrop-blur-sm rounded-lg p-3'
@@ -235,11 +235,11 @@ function updateLastMessageHeight() {
 
     const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - chatMessageAreaPadding;
 
-    // if (availableSpace > (lastMessageEl.offsetHeight)) {
-    lastMessageStyle.value = { minHeight: `${availableSpace}px` };
-    // } else {
-    //   lastMessageStyle.value = { "margin-bottom": "180px" };
-    // }
+    if (availableSpace > lastMessageEl.offsetHeight + fixedControlsHeight) {
+      lastMessageStyle.value = { minHeight: `${availableSpace}px` };
+    } else {
+      lastMessageStyle.value = { "margin-bottom": "180px" };
+    }
   });
 }
 
