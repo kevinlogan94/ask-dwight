@@ -129,13 +129,24 @@ export function useMessageService() {
       await _finalizeStreamedMessage(finalContent, newResponseId);
 
       if (chatStore.throttleSelectedConversation) {
+        const streamingMessage: Message = {
+          id: crypto.randomUUID(),
+          content: "",
+          htmlContent: "",
+          role: "assistant",
+          timestamp: new Date(),
+          status: "streaming",
+          isThrottleMessage: chatStore.throttleSelectedConversation,
+        };
+        conversation.messages.push(streamingMessage);
+
         const throttlingResponseEvent = await getThrottlingResponseStreaming(
           newResponseId,
           manageStreamingAssistantMessage,
         );
 
         if (throttlingResponseEvent) {
-          const finalThrottleContent = throttlingResponseEvent.response.output[0]?.content[0]?.text ?? "";
+          const finalThrottleContent = response.response.output[response.response.output.length - 1]?.content[0]?.text ?? "";
           await _finalizeStreamedMessage(finalThrottleContent, newResponseId);
         }
       } else {
