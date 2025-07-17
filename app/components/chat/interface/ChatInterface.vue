@@ -20,7 +20,7 @@
           <!-- Assistant Message (AI Response) -->
           <div
             v-else-if="message.role === 'assistant'"
-            class="flex flex-col group"
+            class="flex flex-col group transition-all duration-300"
             :ref="
               (el) => {
                 if (index === chatStore.currentMessages.length - 1) {
