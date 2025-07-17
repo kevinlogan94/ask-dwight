@@ -4,7 +4,6 @@ import { throttleConversation } from "~/utils/helpers";
 import { useMessageService } from "~/composables/services/useMessageService";
 import { useConversationService } from "~/composables/services/useConversationService";
 import { useConversationRepository } from "~/composables/repositories/chat/useConversationRepository";
-import { useLocalStorage } from "@vueuse/core";
 
 export const useChatStore = defineStore("chat", () => {
   // State
@@ -53,11 +52,13 @@ export const useChatStore = defineStore("chat", () => {
     );
     if (!exists) {
       activeSources.value.push(source);
+      localStorage.setItem("ask-dwight-active-sources", JSON.stringify(activeSources.value));
     }
   }
-
+  
   function clearSources() {
     activeSources.value = [];
+    localStorage.setItem("ask-dwight-active-sources", "[]");
   }
 
   // Dependencies
@@ -70,7 +71,7 @@ export const useChatStore = defineStore("chat", () => {
     await syncConversationsToSupabase();
     conversations.value = await fetchConversationsFromSupabase();
 
-    activeSources.value = useLocalStorage("ask-dwight-active-sources", []).value;
+    activeSources.value = JSON.parse(localStorage.getItem("ask-dwight-active-sources") || "[]");
 
     if (conversations.value.length > 0 && !selectedConversationId.value) {
       selectedConversationId.value = conversations.value.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]!.id;
