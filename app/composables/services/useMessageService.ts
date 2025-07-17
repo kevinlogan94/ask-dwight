@@ -21,19 +21,6 @@ export function useMessageService() {
   const { getThrottlingResponseStreaming } = useSystemInteractionControls();
   const { createNewConversation } = useConversationService();
 
-  // Watch for chat status changes to manage loading indicators
-  watch(
-    () => chatStore.chatStatus,
-    (newStatus, oldStatus) => {
-      if (newStatus === "submitted") {
-        AddSystemMessage("loading");
-        // @ts-ignore
-      } else if (oldStatus === "submitted" && newStatus !== "submitted") {
-        removeLoadingMessage();
-      }
-    },
-  );
-
   /**
    * Add a user message to the current conversation
    */
@@ -69,7 +56,7 @@ export function useMessageService() {
     return newMessage;
   }
 
-  function AddSystemMessage(messageType: "loading" | "error"): Message {
+  function AddErrorMessage(): Message {
     if (!chatStore.selectedConversation) {
       console.error("No conversation selected to add message");
       throw new Error("No conversation selected");
@@ -77,9 +64,9 @@ export function useMessageService() {
     const generatedId = crypto.randomUUID();
     const newMessage: Message = {
       id: generatedId,
-      content: messageType === "loading" ? "" : DEFAULT_ERROR_MESSAGE,
+      content: DEFAULT_ERROR_MESSAGE,
       role: "system",
-      status: messageType === "loading" ? "loading" : "sent",
+      status: "sent",
       timestamp: new Date(),
     };
     chatStore.selectedConversation.messages.push(newMessage);
@@ -245,7 +232,7 @@ export function useMessageService() {
       conversation = await createNewConversation(vectorStoreId);
       if (!conversation) {
         console.error("Failed to create or find a conversation.");
-        AddSystemMessage("error");
+        AddErrorMessage();
         chatStore.chatStatus = "error";
         return;
       }
@@ -273,13 +260,13 @@ export function useMessageService() {
       if (success) {
         chatStore.chatStatus = "ready";
       } else {
-        AddSystemMessage("error");
+        AddErrorMessage();
         chatStore.chatStatus = "error";
         console.error("Failed to get a valid response from the API.");
       }
     } catch (error) {
       console.error("Error during sendMessage:", error);
-      AddSystemMessage("error");
+      AddErrorMessage();
       chatStore.chatStatus = "error";
     }
   }
