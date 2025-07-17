@@ -4,7 +4,9 @@
       <Navbar />
       <UMain>
         <NuxtRouteAnnouncer />
-        <NuxtPage />
+        <NuxtLayout>
+          <NuxtPage />
+        </NuxtLayout>
       </UMain>
     </div>
     <NoConnectionModal />
@@ -12,6 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import { en } from '@nuxt/ui-pro/locale';
+import { en } from "@nuxt/ui-pro/locale";
 import NoConnectionModal from "~/components/NoConnectionModal.vue";
 </script>

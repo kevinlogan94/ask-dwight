@@ -1,11 +1,6 @@
 <template>
   <UModal v-model:open="isOpen" title="Provide Feedback">
-    <UButton
-      icon="i-heroicons-chat-bubble-left-ellipsis"
-      color="neutral"
-      variant="ghost"
-      aria-label="Open Feedback Form"
-    />
+    <UButton icon="i-lucide-message-square" color="neutral" variant="ghost" aria-label="Open Feedback Form" />
     <template #body>
       <form @submit.prevent="submit" name="feedback" netlify class="space-y-4">
         <input type="hidden" name="form-name" value="feedback" />

@@ -1,42 +1,45 @@
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { organizeMessagesForApi } from "~/utils/helpers";
-import type { Conversation } from "~/models/chat";
+import type { ResponseApiCompletedEvent } from "~/models/chat";
 
 /**
  * Composable for system-level interaction controls via Dwight.
  Sends a special message to the OpenAI client to indicate throttling.
  */
 export function useSystemInteractionControls() {
-  const { getClientSideChatCompletion } = useOpenAIClient();
+  const { getResponseAPIStreamingResponse } = useOpenAIClient();
   const chatStore = useChatStore();
 
   /**
-   * Triggers conversation throttling by sending a special message to the AI.
-   * @returns The AI response message or null if the request failed
+   * Triggers conversation throttling by sending a special message to the AI via streaming.
+   * @param responseId The ID of the response to stream.
+   * @param onDelta A callback function to be called when a delta is received.
+   * @returns A promise that resolves to the completed response.
    */
-  async function getThrottlingResponse(): Promise<any> {
+  async function getThrottlingResponseStreaming(
+    responseId: string,
+    onDelta: (delta: string) => void,
+  ): Promise<ResponseApiCompletedEvent | undefined> {
     if (!chatStore.selectedConversation) {
       console.error("No conversation found to throttle.");
-      return null;
+      return undefined;
     }
 
-    const messagesForApi: ChatCompletionMessageParam[] = organizeMessagesForApi(
-      chatStore.selectedConversation.messages,
-    );
-    messagesForApi.push({
-      role: "user",
-      content: "trigger conversation throttling",
-    });
     try {
-      const response = await getClientSideChatCompletion(messagesForApi);
+      const response = await getResponseAPIStreamingResponse(
+        {
+          prompt: "Trigger the throttle trigger so that you can tell me that I have to wait to ask another question.",
+          responseId,
+        },
+        onDelta,
+      );
+
       return response;
     } catch (error) {
       console.error("Failed to trigger conversation throttling:", error);
-      return null;
+      return undefined;
     }
   }
 
   return {
-    getThrottlingResponse,
+    getThrottlingResponseStreaming,
   };
 }

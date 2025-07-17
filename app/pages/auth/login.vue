@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-center justify-center gap-4 p-4 min-h-screen">
     <UPageCard class="w-full max-w-md">
-      <UAuthForm title="Login" description="Login to your account" icon="i-heroicons-user" :providers="providers">
+      <UAuthForm title="Login" description="Login to your account" icon="i-lucide-user" :providers="providers">
         <template #footer>
           By signing in, you agree to our
           <ULink to="https://ask-dwight.com/terms" target="_blank" class="text-primary font-medium"
@@ -18,6 +18,8 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({ showSidebar: false });
+
 const supabase = useSupabaseClient();
 
 const providers = [

@@ -1,10 +1,10 @@
 // c:\Users\KevinLogan\githubRepositories\ask-dwight\composables\services\useFeedbackService.ts
 
-import { useFeedbackRepository } from '~/composables/repositories/useFeedbackRepository';
-import type { Message } from '~/models/chat';
-import type { Database } from '~/models/supabase';
+import { useFeedbackRepository } from "~/composables/repositories/chat/useFeedbackRepository";
+import type { Message } from "~/models/chat";
+import type { Database } from "~/models/supabase";
 
-type FeedbackReactionType = Database['public']['Enums']['feedback_reaction_type'];
+type FeedbackReactionType = Database["public"]["Enums"]["feedback_reaction_type"];
 
 export function useFeedbackService() {
   const { fetchFeedback, updateFeedback, insertFeedback } = useFeedbackRepository();
@@ -19,7 +19,7 @@ export function useFeedbackService() {
   async function recordFeedback(
     dwight_response_id: string,
     reactionToSet: FeedbackReactionType | null | undefined,
-    isCopiedToSet: boolean | undefined
+    isCopiedToSet: boolean | undefined,
   ) {
     try {
       // Step 1: Query for existing feedback
@@ -58,11 +58,11 @@ export function useFeedbackService() {
    * @param dwight_response_id - The ID of the response being evaluated.
    * @param reaction - The new reaction state (e.g., 'thumbs_up', 'thumbs_down').
    */
-  async function toggleReaction(dwightResponse: Message, reaction: 'thumbs_up' | 'thumbs_down') {
+  async function toggleReaction(dwightResponse: Message, reaction: "thumbs_up" | "thumbs_down") {
     try {
       const existingData = await fetchFeedback(dwightResponse.id);
-      
-      const newReactionState = (existingData && existingData.reaction === reaction) ? null : reaction;
+
+      const newReactionState = existingData && existingData.reaction === reaction ? null : reaction;
 
       dwightResponse.reaction = newReactionState;
 

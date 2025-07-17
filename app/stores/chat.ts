@@ -1,10 +1,9 @@
 import { defineStore } from "pinia";
-import type { User } from "~/models/user";
-import type { Message, Conversation } from "~/models/chat";
+import type { Message, Conversation, Source } from "~/models/chat";
 import { throttleConversation } from "~/utils/helpers";
 import { useMessageService } from "~/composables/services/useMessageService";
 import { useConversationService } from "~/composables/services/useConversationService";
-import { useConversationRepository } from "~/composables/repositories/useConversationRepository";
+import { useConversationRepository } from "~/composables/repositories/chat/useConversationRepository";
 
 export const useChatStore = defineStore("chat", () => {
   // State
@@ -15,16 +14,9 @@ export const useChatStore = defineStore("chat", () => {
   const sidebarOpen = ref(false);
   const chatStatus = ref("ready" as "ready" | "error" | "submitted" | "streaming");
   const anyMessagesSentForCurrentSession = ref(false); // need to know if they just opened the app.
-
-  // todo: integrate supabase user
-  // this is currently just a placeholder
-  const user = ref<User>({
-    id: "",
-    name: "John Doe",
-    email: "",
-    subscription: { status: "active", tier: "free" },
-    createdAt: new Date(),
-  });
+  const isSourcesPanelOpen = ref(false);
+  const activeSources = ref<Source[]>([]);
+  const isDragging = ref(false);
 
   // Getters
   const selectedConversation = computed<Conversation | undefined>(() => {
@@ -53,6 +45,21 @@ export const useChatStore = defineStore("chat", () => {
     }
   }
 
+  function addSource(source: Source) {
+    // Check if the source already exists to avoid duplicates
+    const exists = activeSources.value.some((s) => s.title === source.title && s.type === source.type);
+    if (!exists) {
+      activeSources.value.push(source);
+      localStorage.setItem("ask-dwight-active-sources", JSON.stringify(activeSources.value));
+    }
+  }
+
+  function clearSources() {
+    activeSources.value = [];
+    localStorage.setItem("ask-dwight-active-sources", "[]");
+  }
+
+  // Dependencies
   const { sendMessage } = useMessageService();
   const { createNewConversation, selectConversation } = useConversationService();
   const { syncConversationsToSupabase, fetchConversationsFromSupabase, associateConversationsWithUser } =
@@ -62,8 +69,12 @@ export const useChatStore = defineStore("chat", () => {
     await syncConversationsToSupabase();
     conversations.value = await fetchConversationsFromSupabase();
 
+    activeSources.value = JSON.parse(localStorage.getItem("ask-dwight-active-sources") || "[]");
+
     if (conversations.value.length > 0 && !selectedConversationId.value) {
-      selectedConversationId.value = conversations.value[0]!.id;
+      selectedConversationId.value = conversations.value.sort(
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+      )[0]!.id;
     }
   });
 
@@ -74,6 +85,9 @@ export const useChatStore = defineStore("chat", () => {
     sidebarOpen,
     anyMessagesSentForCurrentSession,
     chatStatus,
+    isSourcesPanelOpen,
+    activeSources,
+    isDragging,
 
     // Getters
     selectedConversation,
@@ -87,5 +101,7 @@ export const useChatStore = defineStore("chat", () => {
     selectConversation,
     sendMessage,
     associateConversationsWithUser,
+    addSource,
+    clearSources,
   };
 });

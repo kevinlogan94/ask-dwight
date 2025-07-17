@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useChatStore } from "~//stores/chat";
+definePageMeta({ showSidebar: false });
+import { useChatStore } from "~/stores/chat";
 
 const user = useSupabaseUser();
 const chatStore = useChatStore();
@@ -28,7 +29,7 @@ watch(
   <div class="flex flex-col items-center justify-center gap-4 p-4 min-h-screen">
     <UPageCard class="w-full max-w-md">
       <div class="flex flex-col items-center justify-center p-6 space-y-6 text-center">
-        <UIcon name="i-heroicons-check-circle" class="text-primary w-16 h-16" />
+        <UIcon name="i-lucide-circle-check" class="text-primary w-16 h-16" />
 
         <div class="space-y-2">
           <h1 class="text-2xl font-bold">Authentication in Progress</h1>

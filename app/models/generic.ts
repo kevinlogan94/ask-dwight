@@ -3,3 +3,8 @@ export enum SupabaseFunctions {
   CHAT_CONVERSATIONS = "chat-conversations",
   RESPONSE_CONVERSATIONS = "response-conversations",
 }
+
+export interface File {
+  id: string;
+  name: string;
+}
