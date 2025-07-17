@@ -143,11 +143,12 @@ export function useMessageService() {
         await generateSuggestions();
       }
 
+      chatStore.chatStatus = "ready";
       return true;
     }
+    chatStore.chatStatus = "ready";
     return false;
   }
-
   /**
    * Finalizes a streamed message by saving it to the database and updating its local state.
    */
@@ -244,7 +245,6 @@ export function useMessageService() {
     chatStore.clearSources();
     clearSuggestions();
     await addUserMessage(content);
-    chatStore.chatStatus = "submitted";
 
     const assistantMessages = conversation.messages.filter((m) => m.role === "assistant" && m.responseId);
     const lastResponseId =

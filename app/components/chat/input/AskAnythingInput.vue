@@ -23,7 +23,7 @@
       class="p-3 focus-within:ring-1 focus-within:ring-primary-500/30"
     >
       <!-- Uploaded File Display -->
-      <template #header v-if="uploadedFiles.length > 0">
+      <template #header v-if="chatStore.chatStatus === 'ready' && uploadedFiles.length > 0">
         <div class="flex flex-row flex-wrap items-center gap-2 p-2">
           <div v-for="(file, index) in uploadedFiles" :key="index" class="flex items-center justify-between text-sm">
             <div class="flex items-center gap-2">
@@ -92,6 +92,7 @@ const triggerFileInput = () => {
 };
 
 const handleFileUpload = async (event: Event) => {
+  if (chatStore.chatStatus === "streaming" || chatStore.chatStatus === "submitted") return;
   const target = event.target as HTMLInputElement;
   if (!target.files) return;
   await processFiles(target.files);
@@ -111,6 +112,7 @@ const handleSubmit = async () => {
     }
     const currentSearchQuery = searchQuery.value;
     searchQuery.value = "";
+    chatStore.chatStatus = "submitted";
     await chatStore.sendMessage(currentSearchQuery, newVectorStoreId.value);
     resetUploadState();
 

@@ -235,7 +235,7 @@ function updateLastMessageHeight() {
 
     const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - chatMessageAreaPadding;
 
-    if (availableSpace > lastMessageEl.offsetHeight + fixedControlsHeight) {
+    if (availableSpace > (lastMessageEl.offsetHeight)) {
       lastMessageStyle.value = { minHeight: `${availableSpace}px` };
     } else {
       lastMessageStyle.value = { "margin-bottom": "180px" };
