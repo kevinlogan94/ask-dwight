@@ -6,7 +6,7 @@
       class="w-full transition-all duration-300"
       :class="{
         'lg:ml-64': showSidebar && chatStore.sidebarOpen,
-        'pt-28': applyPT && isBannerVisible,
+        'pt-24': applyPT && isBannerVisible,
         'pt-16': applyPT && !isBannerVisible
       }"
     >

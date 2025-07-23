@@ -233,7 +233,7 @@ function updateLastMessageHeight() {
     const chatMessageAreaPadding = 16;
     const navbarEl = document.querySelector<HTMLElement>("header");
     const navbarHeight = navbarEl ? navbarEl.offsetHeight : 63;
-    const bannerHeight = isBannerVisible.value ? 48 : 0; // Banner height is h-12 (48px)
+    const bannerHeight = isBannerVisible.value ? 32 : 0; // Banner height is h-8 (32px)
     const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - chatMessageAreaPadding - bannerHeight;
     if (availableSpace > (lastMessageEl.offsetHeight)) {
       lastMessageStyle.value = { minHeight: `${availableSpace}px` };

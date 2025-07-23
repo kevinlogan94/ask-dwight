@@ -3,7 +3,7 @@
     <!-- Sidebar container -->
     <div
       class="conversation-sidebar fixed inset-y-0 left-0 w-64 transition-transform duration-300 flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
-      :class="{ 'mt-12': isBannerVisible, '-translate-x-full': !isOpen }"
+      :class="{ 'mt-8': isBannerVisible, '-translate-x-full': !isOpen }"
     >
       <!-- Sidebar header with logo and close button -->
       <div class="flex items-center justify-between p-4 border-b border-gray-400 dark:border-gray-800">

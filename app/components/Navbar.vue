@@ -3,13 +3,14 @@
     <UBanner
       v-if="isBannerVisible"
       icon="i-lucide-rocket"
-      title="Unlock Your Full Potential: Go Pro!"
-      :actions="[{ label: 'Upgrade Now', to: 'https://ask-dwight.com/askdwight-commission', target: '_blank', trailingIcon: 'i-lucide-arrow-right' }]"
+      title="Unlock Your Full Potential: Ask-Dwight Pro!"
+      :actions="[{ label: 'Pre-Order Now', to: 'https://ask-dwight.com/askdwight-commission', target: '_blank', trailingIcon: 'i-lucide-arrow-right' }]"
       class="fixed w-full z-50"
+      :ui="{ container: 'h-8' }"
     />
     <UHeader
       class="fixed w-full z-50 bg-white dark:bg-gray-900 shadow-sm"
-      :class="{ 'mt-12': isBannerVisible }"
+      :class="{ 'mt-8': isBannerVisible }"
       :toggle="false"
       v-if="route.path !== '/auth/confirm'"
     >
