@@ -1,10 +1,19 @@
 <template>
-  <UHeader
-    class="fixed w-full z-50 bg-white dark:bg-gray-900 shadow-sm"
-    :toggle="false"
-    v-if="route.path !== '/auth/confirm'"
-  >
-    <template #title>
+  <div>
+    <UBanner
+      v-if="isBannerVisible"
+      icon="i-lucide-rocket"
+      title="Unlock Your Full Potential: Go Pro!"
+      :actions="[{ label: 'Upgrade Now', to: 'https://ask-dwight.com/askdwight-commission', target: '_blank', trailingIcon: 'i-lucide-arrow-right' }]"
+      class="fixed w-full z-50"
+    />
+    <UHeader
+      class="fixed w-full z-50 bg-white dark:bg-gray-900 shadow-sm"
+      :class="{ 'mt-12': isBannerVisible }"
+      :toggle="false"
+      v-if="route.path !== '/auth/confirm'"
+    >
+      <template #title>
       <div class="flex items-center">
         <UButton
           v-if="showSidebar"
@@ -45,9 +54,11 @@
       </UButton>
     </template>
   </UHeader>
+</div>
 </template>
 
 <script setup lang="ts">
+import { useBanner } from '~/composables/useBanner';
 import { useChatStore } from "~//stores/chat";
 import { useRoute } from "vue-router";
 import { useBreakpoints, breakpointsTailwind } from "@vueuse/core";
@@ -56,6 +67,7 @@ import { deleteSupabaseCookies } from "~/utils/helpers";
 
 const route = useRoute();
 const chatStore = useChatStore();
+const { isBannerVisible } = useBanner();
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
 const toast = useToast();

@@ -3,7 +3,7 @@
     <!-- Sidebar container -->
     <div
       class="conversation-sidebar fixed inset-y-0 left-0 w-64 transition-transform duration-300 flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
-      :class="{ '-translate-x-full': !isOpen }"
+      :class="{ 'mt-12': isBannerVisible, '-translate-x-full': !isOpen }"
     >
       <!-- Sidebar header with logo and close button -->
       <div class="flex items-center justify-between p-4 border-b border-gray-400 dark:border-gray-800">
@@ -126,8 +126,11 @@
 import { useChatStore } from "~/stores/chat";
 import type { Conversation } from "~/models/chat";
 import FeedbackButton from "~/components/chat/FeedbackButton.vue";
+import { useBanner } from "~/composables/useBanner";
 
 const router = useRouter();
+const { isBannerVisible } = useBanner();
+const chatStore = useChatStore();
 
 const accordionItems = [
   {
@@ -142,9 +145,6 @@ const accounts = ref([
   { label: "Acme Corp", to: "/accounts/acme" },
   { label: "MegaCorp", to: "/accounts/mega" },
 ]);
-
-// Use the chat store
-const chatStore = useChatStore();
 
 const sortedConversations = computed(() => {
   return [...chatStore.conversations].sort((a, b) => {

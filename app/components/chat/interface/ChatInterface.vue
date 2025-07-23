@@ -161,6 +161,7 @@ import { useChatStore } from "~/stores/chat";
 import { useChatActions } from "~/composables/useChatActions";
 import type { Message, MessageAction } from "~/models/chat";
 import { useWindowSize } from "@vueuse/core";
+import { useBanner } from '~/composables/useBanner';
 
 const chatStore = useChatStore();
 const scrollButton = ref<ScrollToBottomButtonInstance | null>(null);
@@ -173,6 +174,7 @@ const fixedControlsRef = ref<HTMLElement | null>(null);
 // Reactive state for dynamic styling
 const lastMessageStyle = ref({});
 const { height: windowHeight } = useWindowSize();
+const { isBannerVisible } = useBanner();
 
 const { handleCopyMessage, handleReaction } = useChatActions();
 
@@ -228,13 +230,11 @@ function updateLastMessageHeight() {
     if (!lastMessageEl || !lastUserMessageEl || !fixedControlsEl) return;
 
     const lastUserMessageHeight = lastUserMessageEl.offsetHeight;
-    const fixedControlsHeight = fixedControlsEl.offsetHeight;
     const chatMessageAreaPadding = 16;
-    const navbarEl = document.querySelector("header");
+    const navbarEl = document.querySelector<HTMLElement>("header");
     const navbarHeight = navbarEl ? navbarEl.offsetHeight : 63;
-
-    const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - chatMessageAreaPadding;
-
+    const bannerHeight = isBannerVisible.value ? 48 : 0; // Banner height is h-12 (48px)
+    const availableSpace = windowHeight.value - lastUserMessageHeight - navbarHeight - chatMessageAreaPadding - bannerHeight;
     if (availableSpace > (lastMessageEl.offsetHeight)) {
       lastMessageStyle.value = { minHeight: `${availableSpace}px` };
     } else {

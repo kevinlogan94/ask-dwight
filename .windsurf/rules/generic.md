@@ -17,3 +17,4 @@ trigger: always_on
 13. We are using openai
 14. Make sure we are always following the existing coding pattern defined in our other files.
 15. Use Lucide Icons
+16. Group composables together in my typescript files
