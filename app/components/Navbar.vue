@@ -113,6 +113,11 @@ const profileMenuItems = computed(() => [
   ],
   [
     {
+      label: "Pricing",
+      icon: "heroicons:tag",
+      onSelect: () => navigateTo("https://ask-dwight.com/askdwight-commission", { external: true }),
+    },
+    {
       label: "Logout",
       icon: "heroicons:arrow-right-on-rectangle",
       onSelect: async () => {
