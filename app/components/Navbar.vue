@@ -113,11 +113,6 @@ const profileMenuItems = computed(() => [
   ],
   [
     {
-      label: "Pricing",
-      icon: "heroicons:tag",
-      onSelect: () => navigateTo("/pricing"),
-    },
-    {
       label: "Logout",
       icon: "heroicons:arrow-right-on-rectangle",
       onSelect: async () => {
