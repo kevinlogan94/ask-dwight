@@ -115,7 +115,7 @@ const profileMenuItems = computed(() => [
     {
       label: "Pricing",
       icon: "heroicons:tag",
-      onSelect: () => navigateTo("https://ask-dwight.com/askdwight-commission", { external: true }),
+      onSelect: () => window.open("https://ask-dwight.com/askdwight-commission", "_blank"),
     },
     {
       label: "Logout",
