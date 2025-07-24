@@ -4,7 +4,7 @@
       v-if="isBannerVisible"
       icon="i-lucide-rocket"
       title="Unlock Your Full Potential: Ask-Dwight Pro!"
-      :actions="[{ label: 'Pre-Order Now', to: 'https://ask-dwight.com/askdwight-commission', target: '_blank', trailingIcon: 'i-lucide-arrow-right' }]"
+      :actions="[{ label: 'Pre-Order Now', to: proLink, target: '_blank', trailingIcon: 'i-lucide-arrow-right' }]"
       class="fixed w-full z-50"
       :ui="{ container: 'h-8' }"
     />
@@ -79,6 +79,7 @@ const isMobile = breakpoints.smaller("sm"); // smaller than 640px
 const showSidebar = computed(() => route.meta.showSidebar === true);
 
 const avatarUrl = ref("");
+const proLink = ref("https://ask-dwight.com/pro");
 
 onMounted(async () => {
   avatarUrl.value = (await validateImageUrl(user.value?.user_metadata?.avatar_url))
@@ -115,7 +116,7 @@ const profileMenuItems = computed(() => [
     {
       label: "Pricing",
       icon: "heroicons:tag",
-      onSelect: () => window.open("https://ask-dwight.com/askdwight-commission", "_blank"),
+      onSelect: () => window.open(proLink.value, "_blank"),
     },
     {
       label: "Logout",
