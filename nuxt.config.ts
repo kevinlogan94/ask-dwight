@@ -1,10 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  runtimeConfig: {
-    public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL,
-    },
-  },
   app: {
     head: {
       title: "Ask-Dwight App | Your Sales-Specialized LLM",
@@ -72,6 +67,7 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/auth/login',
       callback: '/auth/confirm',
+      exclude: ['/auth/confirm'],
     },
   },
   future: {
