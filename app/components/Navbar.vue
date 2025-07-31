@@ -145,6 +145,7 @@ const profileMenuItems = computed(() => [
         });
         chatStore.conversations = [];
         chatStore.selectConversation(null);
+        navigateTo("/auth/login");
       },
     },
   ],
