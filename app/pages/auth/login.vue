@@ -36,7 +36,9 @@ const providers = [
       supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/confirm`,
+          redirectTo: import.meta.client
+            ? `${useRuntimeConfig().public.siteUrl || window.location.origin}/auth/confirm`
+            : undefined,
         },
       });
     },
