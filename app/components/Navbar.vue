@@ -144,6 +144,7 @@ const profileMenuItems = computed(() => [
           event_label: "authentication",
           non_interaction: false,
         });
+        navigateTo("/auth/login");
         chatStore.conversations = [];
         chatStore.selectConversation(null);
       },
